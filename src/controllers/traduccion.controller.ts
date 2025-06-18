@@ -5,14 +5,14 @@ import {TraduccionRepository} from '../repositories';
 import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
 
-@authenticate('jwt')
-@authorize({allowedRoles: ['API']})
-
 export class TraduccionController {
   constructor(
     @repository(TraduccionRepository)
     public traduccionRepository : TraduccionRepository,
   ) {}
+
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
 
   @post('/traducciones')
   @response(200, {
@@ -64,6 +64,9 @@ export class TraduccionController {
     return this.traduccionRepository.find(filter);
   }
 
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
+
   @patch('/traducciones')
   @response(200, {
     description: 'Traduccion PATCH success count',
@@ -99,6 +102,9 @@ export class TraduccionController {
     return this.traduccionRepository.findById(id, filter);
   }
 
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
+
   @patch('/traducciones/{id}')
   @response(204, {
     description: 'Traduccion PATCH success',
@@ -116,6 +122,9 @@ export class TraduccionController {
   ): Promise<void> {
     await this.traduccionRepository.updateById(id, traduccion);
   }
+ 
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
 
   @put('/traducciones/{id}')
   @response(204, {
@@ -127,6 +136,9 @@ export class TraduccionController {
   ): Promise<void> {
     await this.traduccionRepository.replaceById(id, traduccion);
   }
+
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
 
   @del('/traducciones/{id}')
   @response(204, {

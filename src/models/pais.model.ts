@@ -34,35 +34,6 @@ export class Pais extends Entity {
   @property({
     type: 'string',
     jsonSchema: {nullable: true},
-    length: 30,
-    generated: false,
-    mysql: {columnName: 'zona_horario', dataType: 'varchar', dataLength: 30, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
-  })
-  zonaHorario?: string;
-
-  @property({
-    type: 'number',
-    required: true,
-    jsonSchema: {nullable: false},
-    precision: 5,
-    scale: 0,
-    generated: false,
-    mysql: {columnName: 'moneda_id', dataType: 'smallint', dataLength: null, dataPrecision: 5, dataScale: 0, nullable: 'N', generated: false},
-  })
-  monedaId: number;
-
-  @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
-    length: 5,
-    generated: false,
-    mysql: {columnName: 'codigo_telefono', dataType: 'varchar', dataLength: 5, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
-  })
-  codigoTelefono?: string;
-
-  @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
     length: 1,
     generated: false,
     mysql: {columnName: 'activo_sn', dataType: 'varchar', dataLength: 1, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
@@ -105,24 +76,6 @@ export class Pais extends Entity {
     mysql: {columnName: 'usu_modificacion', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'Y', generated: false},
   })
   usuModificacion?: number;
-
-  @property({
-    type: 'date',
-    jsonSchema: {nullable: true},
-    generated: false,
-    mysql: {columnName: 'fecha_inactivo', dataType: 'datetime', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
-  })
-  fechaInactivo?: string;
-
-  @property({
-    type: 'number',
-    jsonSchema: {nullable: true},
-    precision: 10,
-    scale: 0,
-    generated: false,
-    mysql: {columnName: 'usu_inactivo', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'Y', generated: false},
-  })
-  usuInactivo?: number;
 
   // Define well-known properties here
 

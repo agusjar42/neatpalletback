@@ -14,13 +14,15 @@ export class PalletsMovements extends Entity {
   id?: number;
 
   @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
-    length: 50,
+    type: 'number',
+    required: true,
+    //jsonSchema: {nullable: false},
+    precision: 10,
+    scale: 0,
     generated: false,
-    mysql: {columnName: 'company', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'empresa_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'N', generated: false},
   })
-  company?: string;
+  empresa_Id: number;
 
   @property({
     type: 'string',
@@ -102,6 +104,15 @@ export class PalletsMovements extends Entity {
     mysql: {columnName: 'battery_pct', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   battery_pct?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 50,
+    generated: false,
+    mysql: {columnName: 'rssi', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  rssi?: string;
 
   // Define well-known properties here
 

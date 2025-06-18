@@ -15,3 +15,4 @@ export * from './empresa.controller';
 export * from './lista-permisos.controller';
 export * from './plantilla-email.controller';
 export * from './pallets-movements.controller';
+export * from './tipo-archivo.controller';

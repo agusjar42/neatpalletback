@@ -68,7 +68,7 @@ npm run lint:fix
 - `npm run migrate`: Migrar esquemas de bases de datos para modelos
 - `npm run openapi-spec`: Generar especificaciones OpenAPI en un archivo
 
-## EJEMPLO (NATHALIE) -> CREAR BACKEND API - NODEJS - LOOPBACK 4
+## EJEMPLO (NEATPALLET) -> CREAR BACKEND API - NODEJS - LOOPBACK 4
 
 - Importar el modelo de la base de datos en Workbench
 - Versión de NodeJs instalada: 20.13.1

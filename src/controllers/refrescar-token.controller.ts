@@ -2,11 +2,6 @@ import {  Count,  CountSchema,  Filter,  FilterExcludingWhere,  repository,  Whe
 import {  post,  param,  get,  getModelSchemaRef,  patch,  put,  del,  requestBody,  response,} from '@loopback/rest';
 import {RefrescarToken} from '../models';
 import {RefrescarTokenRepository} from '../repositories';
-import { authenticate } from '@loopback/authentication';
-import { authorize } from '@loopback/authorization';
-
-@authenticate('jwt')
-@authorize({allowedRoles: ['API']})
 
 export class RefrescarTokenController {
   constructor(

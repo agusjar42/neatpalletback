@@ -58,7 +58,49 @@ export class EmpresaController {
   async count(
     @param.where(Empresa) where?: Where<Empresa>,
   ): Promise<Count> {
-    return this.empresaRepository.count(where);
+    const dataSource = this.empresaRepository.dataSource;
+    //Aplicamos filtros
+    let filtros = '';
+    //Obtiene los filtros
+    filtros += ` WHERE 1=1`
+    if (where) {
+      for (const [key] of Object.entries(where)) {
+        if (key === 'and' || key === 'or') {
+          {
+            let first = true
+            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
+              if (subValue !== '' && subValue != null) {
+                if (!first) {
+                  if (key === 'and') {
+                    filtros += ` AND`;
+                  }
+                  else {
+                    filtros += ` OR`;
+                  }
+                }
+                else {
+                  filtros += ' AND ('
+                }
+                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
+                  filtros += ` ${subKey} = ${subValue}`;
+                }
+                else {
+                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
+                }
+                first = false
+              }
+            }
+            if (!first) {
+              filtros += `)`;
+            }
+          }
+        }
+
+      }
+    }
+    const query = `SELECT COUNT(*) AS count FROM empresa${filtros}`;
+    const registros = await dataSource.execute(query, []);
+    return registros;
   }
 
   @get('/empresas')
@@ -76,11 +118,75 @@ export class EmpresaController {
   async find(
     @param.filter(Empresa) filter?: Filter<Empresa>,
   ): Promise<Empresa[]> {
-    //
-    // Recuperamos los registros y llamamos a la función procesaRegistrosConImagenMiniatura que nos incluye las imagenMiniatura en la consulta
-    //
-    const registros = await this.empresaRepository.find(filter);
-    return registros
+    try{
+       const dataSource = this.empresaRepository.dataSource;
+      //Aplicamos filtros
+      let filtros = '';
+      //Obtiene los filtros
+      filtros += ` WHERE 1=1`
+      if (filter?.where) {
+        for (const [key] of Object.entries(filter?.where)) {
+          if (key === 'and' || key === 'or') {
+            {
+              let first = true
+              for (const [subKey, subValue] of Object.entries((filter?.where as any)[key])) {
+                if (subValue !== '' && subValue != null) {
+                  if (!first) {
+                    if (key === 'and') {
+                      filtros += ` AND`;
+                    }
+                    else {
+                      filtros += ` OR`;
+                    }
+                  }
+                  else {
+                    filtros += ' AND ('
+                  }
+                  if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
+                    filtros += ` ${subKey} = ${subValue}`;
+                  }
+                  else {
+                    filtros += ` ${subKey} LIKE '%${subValue}%'`;
+                  }
+                  first = false
+                }
+              }
+              if (!first) {
+                filtros += `)`;
+              }
+            }
+          }
+
+        }
+      }
+      // Agregar ordenamiento
+      if (filter?.order) {
+        filtros += ` ORDER BY ${filter.order}`;
+      }
+      // Agregar paginación
+      if (filter?.limit) {
+        filtros += ` LIMIT ${filter?.limit}`;
+      }
+      if (filter?.offset) {
+        filtros += ` OFFSET ${filter?.offset}`;
+      }
+      const query = `SELECT id,
+                            codigo,
+                            nombre,
+                            descripcion,
+                            email,
+                            fecha_creacion as fechaCreacion,
+                            fecha_modificacion as fechaModificacion,
+                            usu_creacion as usuCreacion,
+                            usu_modificacion as usuModificacion
+                      FROM empresa${filtros}`;
+      const registros = await dataSource.execute(query);
+      return registros;
+  
+    } catch (error) {
+      console.error('Error al aplicar filtros:', error);
+      throw new HttpErrors.BadRequest('Error al aplicar filtros.');
+    }
   }
 
   @patch('/empresas')
@@ -171,119 +277,6 @@ export class EmpresaController {
     @requestBody() empresa: Empresa,
   ): Promise<void> {
     await this.empresaRepository.replaceById(id, empresa);
-  }
-
-  @get('/vistaEmpresaMoneda')
-  @response(200, {
-    description: 'Devuelve empresas y su moneda',
-    content: { 'application/json': { schema: { type: 'object' } } },
-  })
-  async vistaEmpresaMoneda(@param.filter(Empresa) filter?: Filter<Object>,): Promise<Object[]> {
-    const dataSource = this.empresaRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (filter?.where) {
-      for (const [key] of Object.entries(filter?.where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((filter?.where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    // Agregar ordenamiento
-    if (filter?.order) {
-      filtros += ` ORDER BY ${filter.order}`;
-    }
-    // Agregar paginación
-    if (filter?.limit) {
-      filtros += ` LIMIT ${filter?.limit}`;
-    }
-    if (filter?.offset) {
-      filtros += ` OFFSET ${filter?.offset}`;
-    }
-    const query = `SELECT * FROM vista_empresa_moneda${filtros}`;
-    const registros = await dataSource.execute(query);
-    return registros;
-  };
-
-  @get('/vistaEmpresaMonedaCount')
-  @response(200, {
-    description: 'Devuelve empresas y su moneda',
-    content: { 'application/json': { schema: { type: 'object' } } },
-  })
-  async vistaEmpresaMonedaCount(@param.where(Empresa) where?: Where<Empresa>,): Promise<Empresa[]> {
-    const dataSource = this.empresaRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM vista_empresa_moneda${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros;
   }
 
   async compruebaLogo(logo: string): Promise<string> {

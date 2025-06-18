@@ -39,7 +39,6 @@ export class JWTService implements TokenService {
             rol_id: decodedToken.rol_id,
           },
         );
-        console.log('userProfile', userProfile);
       } catch (error) {
         throw new HttpErrors.Unauthorized(
           `Sesión caducada`,

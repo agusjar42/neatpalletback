@@ -14,17 +14,6 @@ export class Empresa extends Entity {
   id?: number;
 
   @property({
-    type: 'number',
-    required: true,
-    jsonSchema: {nullable: false},
-    precision: 5,
-    scale: 0,
-    generated: false,
-    mysql: {columnName: 'moneda_id', dataType: 'smallint', dataLength: null, dataPrecision: 5, dataScale: 0, nullable: 'N', generated: false},
-  })
-  monedaId: number;
-
-  @property({
     type: 'string',
     jsonSchema: {nullable: true},
     length: 20,

@@ -43,7 +43,49 @@ export class PaisController {
   async count(
     @param.where(Pais) where?: Where<Pais>,
   ): Promise<Count> {
-    return this.paisRepository.count(where);
+    const dataSource = this.paisRepository.dataSource;
+    //Aplicamos filtros
+    let filtros = '';
+    //Obtiene los filtros
+    filtros += ` WHERE 1=1`
+    if (where) {
+      for (const [key] of Object.entries(where)) {
+        if (key === 'and' || key === 'or') {
+          {
+            let first = true
+            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
+              if (subValue !== '' && subValue != null) {
+                if (!first) {
+                  if (key === 'and') {
+                    filtros += ` AND`;
+                  }
+                  else {
+                    filtros += ` OR`;
+                  }
+                }
+                else {
+                  filtros += ' AND ('
+                }
+                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
+                  filtros += ` ${subKey} = ${subValue}`;
+                }
+                else {
+                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
+                }
+                first = false
+              }
+            }
+            if (!first) {
+              filtros += `)`;
+            }
+          }
+        }
+
+      }
+    }
+    const query = `SELECT COUNT(*) AS count FROM pais${filtros}`;
+    const registros = await dataSource.execute(query, []);
+    return registros;
   }
 
   @get('/paises')
@@ -61,8 +103,68 @@ export class PaisController {
   async find(
     @param.filter(Pais) filter?: Filter<Pais>,
   ): Promise<Pais[]> {
-    const registros = await this.paisRepository.find(filter);
-    return registros
+    const dataSource = this.paisRepository.dataSource;
+    //Aplicamos filtros
+    let filtros = '';
+    //Obtiene los filtros
+    filtros += ` WHERE 1=1`
+    if (filter?.where) {
+      for (const [key] of Object.entries(filter?.where)) {
+        if (key === 'and' || key === 'or') {
+          {
+            let first = true
+            for (const [subKey, subValue] of Object.entries((filter?.where as any)[key])) {
+              if (subValue !== '' && subValue != null) {
+                if (!first) {
+                  if (key === 'and') {
+                    filtros += ` AND`;
+                  }
+                  else {
+                    filtros += ` OR`;
+                  }
+                }
+                else {
+                  filtros += ' AND ('
+                }
+                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
+                  filtros += ` ${subKey} = ${subValue}`;
+                }
+                else {
+                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
+                }
+                first = false
+              }
+            }
+            if (!first) {
+              filtros += `)`;
+            }
+          }
+        }
+
+      }
+    }
+    // Agregar ordenamiento
+    if (filter?.order) {
+      filtros += ` ORDER BY ${filter.order}`;
+    }
+    // Agregar paginación
+    if (filter?.limit) {
+      filtros += ` LIMIT ${filter?.limit}`;
+    }
+    if (filter?.offset) {
+      filtros += ` OFFSET ${filter?.offset}`;
+    }
+    const query = `SELECT id,
+                          iso,
+                          nombre,
+                          activo_sn as activoSn,
+                          fecha_creacion as fechaCreacion,
+                          fecha_modificacion as fechaModificacion,
+                          usu_creacion as usuCreacion,
+                          usu_modificacion as usuModificacion
+                     FROM pais${filtros}`;
+    const registros = await dataSource.execute(query);
+    return registros;
   }
 
   @patch('/paises')
@@ -116,6 +218,7 @@ export class PaisController {
     pais: Pais,
   ): Promise<void> {
     await this.paisRepository.updateById(id, pais);
+    
   }
 
   @put('/paises/{id}')
@@ -137,117 +240,5 @@ export class PaisController {
     await this.paisRepository.deleteById(id);
   }
 
-  @get('/vistaPaisMoneda')
-  @response(200, {
-    description: 'Devuelve paises y su moneda',
-    content: { 'application/json': { schema: { type: 'object' } } },
-  })
-  async vistaPaisMoneda(@param.filter(Pais) filter?: Filter<Object>,): Promise<Object[]> {
-    const dataSource = this.paisRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (filter?.where) {
-      for (const [key] of Object.entries(filter?.where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((filter?.where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    // Agregar ordenamiento
-    if (filter?.order) {
-      filtros += ` ORDER BY ${filter.order}`;
-    }
-    // Agregar paginación
-    if (filter?.limit) {
-      filtros += ` LIMIT ${filter?.limit}`;
-    }
-    if (filter?.offset) {
-      filtros += ` OFFSET ${filter?.offset}`;
-    }
-    const query = `SELECT * FROM vista_pais_moneda${filtros}`;
-    const registros = await dataSource.execute(query);
-    return registros;
-  };
-
-  @get('/vistaPaisMonedaCount')
-  @response(200, {
-    description: 'Devuelve paises y su moneda',
-    content: { 'application/json': { schema: { type: 'object' } } },
-  })
-  async vistaPaisMonedaCount(@param.where(Pais) where?: Where<Pais>,): Promise<Pais[]> {
-    const dataSource = this.paisRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM vista_pais_moneda${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros;
-  }
 
 }

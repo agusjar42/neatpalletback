@@ -98,7 +98,7 @@ export class NeatpalletBackApplication extends BootMixin(
     this.api({
       openapi: '3.0.0',
       info: {
-        title: 'Nathalie application',
+        title: 'NeatPallet application',
         version: '1.0.0',
       },
       paths: {},

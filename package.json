@@ -1,7 +1,7 @@
 {
   "name": "neatpallet_back",
   "version": "0.0.1",
-  "description": "Proyecto API encargado de ser la parte Backend de la aplicación web Nathalie",
+  "description": "Proyecto API encargado de ser la parte Backend de la aplicación web NEATPALLET",
   "keywords": [
     "loopback-application",
     "loopback"
@@ -36,7 +36,7 @@
     "type": "git",
     "url": ""
   },
-  "author": "Alej0jr <acaicedo@dynamizatic.com>",
+  "author": "Agusjar <agusjar@hotmail.com>",
   "license": "",
   "files": [
     "README.md",

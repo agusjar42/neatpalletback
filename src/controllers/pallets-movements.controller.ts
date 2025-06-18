@@ -31,23 +31,40 @@ export class PalletsMovementsController {
 
   @post('/pallets-movements')
   @response(200, {
-    description: 'PalletsMovements model instance',
-    content: {'application/json': {schema: getModelSchemaRef(PalletsMovements)}},
+    description: 'Array of PalletsMovements model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(PalletsMovements),
+        },
+      },
+    },
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(PalletsMovements, {
-            title: 'NewPalletsMovements',
-            exclude: ['id'],
-          }),
+          schema: {
+            type: 'array',
+            items: getModelSchemaRef(PalletsMovements, {
+              title: 'NewPalletsMovements',
+              exclude: ['id'],
+            }),
+          },
         },
       },
     })
-    palletsMovements: Omit<PalletsMovements, 'id'>,
-  ): Promise<PalletsMovements> {
-    return this.palletsMovementsRepository.create(palletsMovements);
+    palletsMovements: Omit<PalletsMovements, 'id'>[],
+  ): Promise<PalletsMovements[]> {
+    const created: PalletsMovements[] = [];
+
+    for (const movement of palletsMovements) {
+      const createdMovement = await this.palletsMovementsRepository.create(movement);
+      created.push(createdMovement);
+    }
+
+    return created;
   }
 
   @get('/pallets-movements/count')
@@ -58,7 +75,55 @@ export class PalletsMovementsController {
   async count(
     @param.where(PalletsMovements) where?: Where<PalletsMovements>,
   ): Promise<Count> {
-    return this.palletsMovementsRepository.count(where);
+    const dataSource = this.palletsMovementsRepository.dataSource;
+    //Aplicamos filtros
+    let filtros = '';
+    //Obtiene los filtros
+    filtros += ` WHERE 1=1`
+    if (where) {
+      for (const [key] of Object.entries(where)) {
+        if (key === 'and' || key === 'or') {
+          {
+            let first = true
+            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
+              if (subValue !== '' && subValue != null) {
+                if (!first) {
+                  if (key === 'and') {
+                    filtros += ` AND`;
+                  }
+                  else {
+                    filtros += ` OR`;
+                  }
+                }
+                else {
+                  filtros += ' AND ('
+                }
+                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
+                  filtros += ` ${subKey} = ${subValue}`;
+                }
+                else {
+                  //Corrije el nombre del campo
+                  if (subKey !== 'activoSn') {
+                    filtros += ` ${subKey} LIKE '%${subValue}%'`;
+                  }
+                  else {
+                    filtros += ` activo_sn LIKE '%${subValue}%'`;
+                  }
+                }
+                first = false
+              }
+            }
+            if (!first) {
+              filtros += `)`;
+            }
+          }
+        }
+
+      }
+    }
+    const query = `SELECT COUNT(*) AS count FROM pallets_movements${filtros}`;
+    const registros = await dataSource.execute(query, []);
+    return registros;
   }
 
   @get('/pallets-movements')
@@ -76,7 +141,66 @@ export class PalletsMovementsController {
   async find(
     @param.filter(PalletsMovements) filter?: Filter<PalletsMovements>,
   ): Promise<PalletsMovements[]> {
-    return this.palletsMovementsRepository.find(filter);
+    const dataSource = this.palletsMovementsRepository.dataSource;
+    //Aplicamos filtros
+    let filtros = '';
+    //Obtiene los filtros
+    filtros += ` WHERE 1=1`
+    if (filter?.where) {
+      for (const [key] of Object.entries(filter?.where)) {
+        if (key === 'and' || key === 'or') {
+          {
+            let first = true
+            for (const [subKey, subValue] of Object.entries((filter?.where as any)[key])) {
+              if (subValue !== '' && subValue != null) {
+                if (!first) {
+                  if (key === 'and') {
+                    filtros += ` AND`;
+                  }
+                  else {
+                    filtros += ` OR`;
+                  }
+                }
+                else {
+                  filtros += ' AND ('
+                }
+                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
+                  filtros += ` ${subKey} = ${subValue}`;
+                }
+                else {
+                  //Corrije el nombre del campo
+                  if (subKey !== 'activoSn') {
+                    filtros += ` ${subKey} LIKE '%${subValue}%'`;
+                  }
+                  else {
+                    filtros += ` activo_sn LIKE '%${subValue}%'`;
+                  }
+                }
+                first = false
+              }
+            }
+            if (!first) {
+              filtros += `)`;
+            }
+          }
+        }
+
+      }
+    }
+    // Agregar ordenamiento
+    if (filter?.order) {
+      filtros += ` ORDER BY ${filter.order}`;
+    }
+    // Agregar paginación
+    if (filter?.limit) {
+      filtros += ` LIMIT ${filter?.limit}`;
+    }
+    if (filter?.offset) {
+      filtros += ` OFFSET ${filter?.offset}`;
+    }
+    const query = `SELECT * FROM pallets_movements${filtros}`;
+    const registros = await dataSource.execute(query);
+    return registros;
   }
 
   @patch('/pallets-movements')
