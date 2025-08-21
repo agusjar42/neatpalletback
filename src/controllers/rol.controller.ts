@@ -263,10 +263,12 @@ export class RolController {
   })
   async buscarIdRol(
     @param.query.string('nombre') nombre: string,
+    @param.query.number('empresaId') empresaId: number,
   ): Promise<Rol[]> {
     const filter: Filter<Rol> = {
       where: {
         nombre: nombre,
+        empresaId: empresaId
       },
     };
     try {
