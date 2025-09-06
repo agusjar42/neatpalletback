@@ -1,7 +1,11 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
+import {Empresa} from './empresa.model';
+import {ParametrosPalletsDetalle} from './parametros-pallets-detalle.model';
 
-@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'pais'}}})
-export class Pais extends Entity {
+@model({
+  settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'parametros_pallets'}}
+})
+export class ParametrosPallets extends Entity {
   @property({
     type: 'number',
     jsonSchema: {nullable: false},
@@ -16,15 +20,6 @@ export class Pais extends Entity {
   @property({
     type: 'string',
     jsonSchema: {nullable: true},
-    length: 10,
-    generated: false,
-    mysql: {columnName: 'iso', dataType: 'varchar', dataLength: 10, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
-  })
-  iso?: string;
-
-  @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
     length: 50,
     generated: false,
     mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
@@ -34,9 +29,9 @@ export class Pais extends Entity {
   @property({
     type: 'string',
     jsonSchema: {nullable: true},
-    length: 1,
+    length: 50,
     generated: false,
-    mysql: {columnName: 'activo_sn', dataType: 'varchar', dataLength: 1, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'activo_sn', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   activoSn?: string;
 
@@ -49,23 +44,22 @@ export class Pais extends Entity {
   fechaCreacion?: string;
 
   @property({
+    type: 'number',
+    jsonSchema: {nullable: true},
+    precision: 11,
+    scale: 0,
+    generated: false,
+    mysql: {columnName: 'usu_creacion', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
+  })
+  usuCreacion?: number;
+
+  @property({
     type: 'date',
     jsonSchema: {nullable: true},
     generated: false,
     mysql: {columnName: 'fecha_modificacion', dataType: 'timestamp', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   fechaModificacion?: string;
-
-  @property({
-    type: 'number',
-    required: true,
-    jsonSchema: {nullable: false},
-    precision: 11,
-    scale: 0,
-    generated: false,
-    mysql: {columnName: 'usu_creacion', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
-  })
-  usuCreacion: number;
 
   @property({
     type: 'number',
@@ -77,19 +71,23 @@ export class Pais extends Entity {
   })
   usuModificacion?: number;
 
-  // Define well-known properties here
+  @belongsTo(() => Empresa, {name: 'empresa'})
+  empresaId: number;
 
-  // Indexer property to allow additional data
+  @hasMany(() => ParametrosPalletsDetalle, {keyTo: 'parametrosPalletsId'})
+  detalles: ParametrosPalletsDetalle[];
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<Pais>) {
+  constructor(data?: Partial<ParametrosPallets>) {
     super(data);
   }
 }
 
-export interface PaisRelations {
-  // describe navigational properties here
+export interface ParametrosPalletsRelations {
+  empresa?: Empresa;
+  detalles?: ParametrosPalletsDetalle[];
 }
 
-export type PaisWithRelations = Pais & PaisRelations;
+export type ParametrosPalletsWithRelations = ParametrosPallets & ParametrosPalletsRelations;

@@ -15,4 +15,14 @@ export * from './empresa.repository';
 export * from './lista-permisos.repository';
 export * from './plantilla-email.repository';
 export * from './archivo.repository';
-export * from './pallets-movements.repository'
+export * from './pallets-movements.repository';
+export * from './envio-contenido.repository';
+export * from './envio-pallet.repository';
+export * from './envio-parada.repository';
+export * from './envio-vehiculo.repository';
+export * from './envio.repository';
+export * from './pallet-configuracion.repository';
+export * from './pallet-configuracion-general.repository';
+export * from './pallet.repository';
+export * from './parametros-pallets-detalle.repository';
+export * from './parametros-pallets.repository';

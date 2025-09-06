@@ -1,7 +1,10 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Pallet} from './pallet.model';
 
-@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'seccion'}}})
-export class Seccion extends Entity {
+@model({
+  settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'envio_pallet'}}
+})
+export class EnvioPallet extends Entity {
   @property({
     type: 'number',
     jsonSchema: {nullable: false},
@@ -12,15 +15,6 @@ export class Seccion extends Entity {
     mysql: {columnName: 'id', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: 1},
   })
   id?: number;
-
-  @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
-    length: 50,
-    generated: false,
-    mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
-  })
-  nombre?: string;
 
   @property({
     type: 'date',
@@ -40,14 +34,13 @@ export class Seccion extends Entity {
 
   @property({
     type: 'number',
-    required: true,
-    jsonSchema: {nullable: false},
+    jsonSchema: {nullable: true},
     precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'usu_creacion', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
+    mysql: {columnName: 'usu_creacion', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
   })
-  usuCreacion: number;
+  usuCreacion?: number;
 
   @property({
     type: 'number',
@@ -59,19 +52,19 @@ export class Seccion extends Entity {
   })
   usuModificacion?: number;
 
-  // Define well-known properties here
+  @belongsTo(() => Pallet, {name: 'pallet'})
+  palletId: number;
 
-  // Indexer property to allow additional data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<Seccion>) {
+  constructor(data?: Partial<EnvioPallet>) {
     super(data);
   }
 }
 
-export interface SeccionRelations {
-  // describe navigational properties here
+export interface EnvioPalletRelations {
+  pallet?: Pallet;
 }
 
-export type SeccionWithRelations = Seccion & SeccionRelations;
+export type EnvioPalletWithRelations = EnvioPallet & EnvioPalletRelations;

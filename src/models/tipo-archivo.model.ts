@@ -7,11 +7,11 @@ export class TipoArchivo extends Entity {
   @property({
     type: 'number',
     jsonSchema: {nullable: false},
-    precision: 10,
+    precision: 11,
     scale: 0,
     generated: 1,
     id: 1,
-    mysql: {columnName: 'id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'N', generated: 1},
+    mysql: {columnName: 'id', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: 1},
   })
   id?: number;
 
@@ -19,10 +19,10 @@ export class TipoArchivo extends Entity {
     type: 'number',
     required: true,
     jsonSchema: {nullable: false},
-    precision: 5,
+    precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'empresa_id', dataType: 'smallint', dataLength: null, dataPrecision: 5, dataScale: 0, nullable: 'N', generated: false},
+    mysql: {columnName: 'empresa_id', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
   })
   empresaId: number;
 
@@ -30,10 +30,10 @@ export class TipoArchivo extends Entity {
     type: 'number',
     required: true,
     jsonSchema: {nullable: false},
-    precision: 5,
+    precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'seccion_id', dataType: 'smallint', dataLength: null, dataPrecision: 5, dataScale: 0, nullable: 'N', generated: false},
+    mysql: {columnName: 'seccion_id', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
   })
   seccionId: number;
 
@@ -58,10 +58,10 @@ export class TipoArchivo extends Entity {
   @property({
     type: 'number',
     jsonSchema: {nullable: true},
-    precision: 10,
+    precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'orden', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'Y', generated: false},
+    mysql: {columnName: 'orden', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
   })
   orden?: number;
 
@@ -94,20 +94,20 @@ export class TipoArchivo extends Entity {
     type: 'number',
     required: true,
     jsonSchema: {nullable: false},
-    precision: 10,
+    precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'usu_creacion', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'N', generated: false},
+    mysql: {columnName: 'usu_creacion', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
   })
   usuCreacion: number;
 
   @property({
     type: 'number',
     jsonSchema: {nullable: true},
-    precision: 10,
+    precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'usu_modificacion', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'Y', generated: false},
+    mysql: {columnName: 'usu_modificacion', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
   })
   usuModificacion?: number;
 

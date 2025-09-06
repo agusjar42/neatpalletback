@@ -7,21 +7,21 @@ export class UsuarioRestablecerPassword extends Entity {
   @property({
     type: 'number',
     //jsonSchema: {nullable: false},
-    precision: 10,
+    precision: 11,
     scale: 0,
     generated: true,
     id: true,
-    mysql: {columnName: 'id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'N', generated: true},
+    mysql: {columnName: 'id', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: true},
   })
   id?: number;
 
   @property({
     type: 'number',
     jsonSchema: {nullable: true},
-    precision: 10,
+    precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'usuario_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'N', generated: false},
+    mysql: {columnName: 'usuario_id', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
   })
   usuarioId?: number;
 

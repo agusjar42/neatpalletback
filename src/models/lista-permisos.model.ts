@@ -7,11 +7,11 @@ export class ListaPermisos extends Entity {
   @property({
     type: 'number',
     jsonSchema: {nullable: false},
-    precision: 10,
+    precision: 11,
     scale: 0,
     generated: 1,
     id: 1,
-    mysql: {columnName: 'id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'N', generated: 1},
+    mysql: {columnName: 'id', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: 1},
   })
   id?: number;
 

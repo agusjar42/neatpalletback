@@ -5,11 +5,11 @@ export class PalletsMovements extends Entity {
   @property({
     type: 'number',
     jsonSchema: {nullable: false},
-    precision: 10,
+    precision: 11,
     scale: 0,
     generated: 1,
     id: 1,
-    mysql: {columnName: 'id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'N', generated: 1},
+    mysql: {columnName: 'id', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: 1},
   })
   id?: number;
 
@@ -17,10 +17,10 @@ export class PalletsMovements extends Entity {
     type: 'number',
     required: true,
     //jsonSchema: {nullable: false},
-    precision: 10,
+    precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'empresa_id', dataType: 'int', dataLength: null, dataPrecision: 10, dataScale: 0, nullable: 'N', generated: false},
+    mysql: {columnName: 'empresa_id', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
   })
   empresa_Id: number;
 
