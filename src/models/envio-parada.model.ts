@@ -17,10 +17,11 @@ export class EnvioParada extends Entity {
   id?: number;
 
   @property({
-    type: 'date',
+    type: 'string',
     jsonSchema: {nullable: true},
+    length: 19,
     generated: false,
-    mysql: {columnName: 'fecha', dataType: 'timestamp', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'fecha', dataType: 'varchar', dataLength: 19, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   fecha?: string;
 

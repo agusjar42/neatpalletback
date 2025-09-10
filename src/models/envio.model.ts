@@ -66,18 +66,20 @@ export class Envio extends Entity {
   destinoCoordenadasGps?: string;
 
   @property({
-    type: 'date',
+    type: 'string',
     jsonSchema: {nullable: true},
+    length: 19,
     generated: false,
-    mysql: {columnName: 'fecha_salida', dataType: 'timestamp', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'fecha_salida', dataType: 'varchar', dataLength: 19, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   fechaSalida?: string;
 
   @property({
-    type: 'date',
+    type: 'string',
     jsonSchema: {nullable: true},
+    length: 19,
     generated: false,
-    mysql: {columnName: 'fecha_llegada', dataType: 'timestamp', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'fecha_llegada', dataType: 'varchar', dataLength: 19, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   fechaLlegada?: string;
 
@@ -126,7 +128,7 @@ export class Envio extends Entity {
   })
   fechaModificacion?: string;
 
-  @belongsTo(() => Empresa, {name: 'empresa'})
+  @belongsTo(() => Empresa, {name: 'empresa', keyFrom: 'empresaId'}, {mysql: {columnName: 'empresa_id'}})
   empresaId: number;
 
   @hasMany(() => EnvioContenido, {keyTo: 'envioId'})
