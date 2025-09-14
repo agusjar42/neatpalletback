@@ -17,45 +17,45 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {Pallet} from '../models';
-import {PalletRepository} from '../repositories';
+import {TipoSensor} from '../models';
+import {TipoSensorRepository} from '../repositories';
 
-export class PalletController {
+export class TipoSensorController {
   constructor(
-    @repository(PalletRepository)
-    public palletRepository : PalletRepository,
+    @repository(TipoSensorRepository)
+    public tipoSensorRepository : TipoSensorRepository,
   ) {}
 
-  @post('/pallet')
+  @post('/tipo-sensores')
   @response(200, {
-    description: 'Pallet model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Pallet)}},
+    description: 'TipoSensor model instance',
+    content: {'application/json': {schema: getModelSchemaRef(TipoSensor)}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Pallet, {
-            title: 'NewPallet',
+          schema: getModelSchemaRef(TipoSensor, {
+            title: 'NewTipoSensor',
             exclude: ['id'],
           }),
         },
       },
     })
-    pallet: Omit<Pallet, 'id'>,
-  ): Promise<Pallet> {
-    return this.palletRepository.create(pallet);
+    tipoSensor: Omit<TipoSensor, 'id'>,
+  ): Promise<TipoSensor> {
+    return this.tipoSensorRepository.create(tipoSensor);
   }
 
-  @get('/pallet/count')
+  @get('/tipo-sensores/count')
   @response(200, {
-    description: 'Pallet model count',
+    description: 'TipoSensor model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async count(
-    @param.where(Pallet) where?: Where<Pallet>,
+    @param.where(TipoSensor) where?: Where<TipoSensor>,
   ): Promise<Count> {
-    const dataSource = this.palletRepository.dataSource;
+    const dataSource = this.tipoSensorRepository.dataSource;
     //Aplicamos filtros
     let filtros = '';
     //Obtiene los filtros
@@ -95,27 +95,26 @@ export class PalletController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM pallet${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM tipo_sensor${filtros}`;
     const registros = await dataSource.execute(query, []);
-    return registros;
-  }
+    return registros;  }
 
-  @get('/pallet')
+  @get('/tipo-sensores')
   @response(200, {
-    description: 'Array of Pallet model instances',
+    description: 'Array of TipoSensor model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Pallet, {includeRelations: true}),
+          items: getModelSchemaRef(TipoSensor, {includeRelations: true}),
         },
       },
     },
   })
   async find(
-    @param.filter(Pallet) filter?: Filter<Pallet>,
-  ): Promise<Pallet[]> {
-    const dataSource = this.palletRepository.dataSource;
+    @param.filter(TipoSensor) filter?: Filter<TipoSensor>,
+  ): Promise<TipoSensor[]> {
+    const dataSource = this.tipoSensorRepository.dataSource;
     //Aplicamos filtros
     let filtros = '';
     //Obtiene los filtros
@@ -168,90 +167,56 @@ export class PalletController {
     }
     const query = `SELECT id,
                           empresa_id as empresaId,
-                          fecha_impresion as fechaImpresion,
-                          codigo,
-                          alias,
-                          periodo_envio_mail as periodoEnvioMail,
-                          medidas,
-                          modelo,
+                          nombre,
+                          activo_sn as activoSn,
                           fecha_creacion as fechaCreacion,
                           fecha_modificacion as fechaModificacion,
                           usuario_creacion as usuarioCreacion,
                           usuario_modificacion as usuarioModificacion
-                     FROM pallet${filtros}`;
+                     FROM tipo_sensor${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }
 
-  @patch('/pallet')
+  @get('/tipo-sensores/{id}')
   @response(200, {
-    description: 'Pallet PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Pallet, {partial: true}),
-        },
-      },
-    })
-    pallet: Pallet,
-    @param.where(Pallet) where?: Where<Pallet>,
-  ): Promise<Count> {
-    return this.palletRepository.updateAll(pallet, where);
-  }
-
-  @get('/pallet/{id}')
-  @response(200, {
-    description: 'Pallet model instance',
+    description: 'TipoSensor model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(Pallet, {includeRelations: true}),
+        schema: getModelSchemaRef(TipoSensor, {includeRelations: true}),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Pallet, {exclude: 'where'}) filter?: FilterExcludingWhere<Pallet>
-  ): Promise<Pallet> {
-    return this.palletRepository.findById(id, filter);
+    @param.filter(TipoSensor, {exclude: 'where'}) filter?: FilterExcludingWhere<TipoSensor>
+  ): Promise<TipoSensor> {
+    return this.tipoSensorRepository.findById(id, filter);
   }
 
-  @patch('/pallet/{id}')
+  @patch('/tipo-sensores/{id}')
   @response(204, {
-    description: 'Pallet PATCH success',
+    description: 'TipoSensor PATCH success',
   })
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Pallet, {partial: true}),
+          schema: getModelSchemaRef(TipoSensor, {partial: true}),
         },
       },
     })
-    pallet: Pallet,
+    tipoSensor: TipoSensor,
   ): Promise<void> {
-    await this.palletRepository.updateById(id, pallet);
+    await this.tipoSensorRepository.updateById(id, tipoSensor);
   }
 
-  @put('/pallet/{id}')
+  @del('/tipo-sensores/{id}')
   @response(204, {
-    description: 'Pallet PUT success',
-  })
-  async replaceById(
-    @param.path.number('id') id: number,
-    @requestBody() pallet: Pallet,
-  ): Promise<void> {
-    await this.palletRepository.replaceById(id, pallet);
-  }
-
-  @del('/pallet/{id}')
-  @response(204, {
-    description: 'Pallet DELETE success',
+    description: 'TipoSensor DELETE success',
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.palletRepository.deleteById(id);
+    await this.tipoSensorRepository.deleteById(id);
   }
 }

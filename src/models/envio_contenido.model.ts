@@ -1,20 +1,17 @@
-import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
-import {Empresa} from './empresa.model';
-import {EnvioPallet} from './envio_pallet.model';
-import {PalletParametro} from './pallet_parametro.model';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Envio} from './envio.model';
 
 @model({
   settings: {
     mysql: {
-      table: 'pallet'
+      table: 'envio_contenido'
     }
   }
 })
-export class Pallet extends Entity {
+export class EnvioContenido extends Entity {
   @property({
     type: 'number',
     id: true,
-    generated: true,
     mysql: {
       columnName: 'id',
       dataType: 'int',
@@ -22,57 +19,64 @@ export class Pallet extends Entity {
       nullable: 'N'
     }
   })
-  id?: number;
+  id: number;
 
-  @belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresa_id'}})
-  empresaId: number;
-
-  @property({
-    type: 'string',
-    length: 20,
-    mysql: {
-      columnName: 'fecha_impresion',
-      dataType: 'varchar',
-      dataLength: 20,
-      nullable: 'Y'
-    }
-  })
-  fechaImpresion?: string;
+  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envio_id'}})
+  envioId: number;
 
   @property({
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'codigo',
+      columnName: 'producto',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
     }
   })
-  codigo?: string;
+  producto?: string;
 
   @property({
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'alias',
+      columnName: 'referencia',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
     }
   })
-  alias?: string;
+  referencia?: string;
 
   @property({
     type: 'number',
+    precision: 18,
+    scale: 2,
     mysql: {
-      columnName: 'periodo_envio_mail',
-      dataType: 'int',
-      dataLength: 4,
+      columnName: 'peso_kgs',
+      dataType: 'decimal',
+      dataLength: 18,
+      dataPrecision: 18,
+      dataScale: 2,
       nullable: 'Y'
     }
   })
-  periodoEnvioMail?: number;
+  pesoKgs?: number;
+
+  @property({
+    type: 'number',
+    precision: 18,
+    scale: 2,
+    mysql: {
+      columnName: 'peso_total',
+      dataType: 'decimal',
+      dataLength: 18,
+      dataPrecision: 18,
+      dataScale: 2,
+      nullable: 'Y'
+    }
+  })
+  pesoTotal?: number;
 
   @property({
     type: 'string',
@@ -88,15 +92,27 @@ export class Pallet extends Entity {
 
   @property({
     type: 'string',
-    length: 50,
+    length: 250,
     mysql: {
-      columnName: 'modelo',
+      columnName: 'foto_producto',
       dataType: 'varchar',
-      dataLength: 50,
+      dataLength: 250,
       nullable: 'Y'
     }
   })
-  modelo?: string;
+  fotoProducto?: string;
+
+  @property({
+    type: 'string',
+    length: 250,
+    mysql: {
+      columnName: 'foto_pallet',
+      dataType: 'varchar',
+      dataLength: 250,
+      nullable: 'Y'
+    }
+  })
+  fotoPallet?: string;
 
   @property({
     type: 'number',
@@ -115,7 +131,7 @@ export class Pallet extends Entity {
     mysql: {
       columnName: 'fecha_creacion',
       dataType: 'timestamp',
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
   fechaCreacion?: string;
@@ -141,21 +157,13 @@ export class Pallet extends Entity {
   })
   fechaModificacion?: string;
 
-  @hasMany(() => EnvioPallet, {keyTo: 'palletId'})
-  envioPallets: EnvioPallet[];
-
-  @hasMany(() => PalletParametro, {keyTo: 'palletId'})
-  palletParametros: PalletParametro[];
-
-  constructor(data?: Partial<Pallet>) {
+  constructor(data?: Partial<EnvioContenido>) {
     super(data);
   }
 }
 
-export interface PalletRelations {
-  empresa?: Empresa;
-  envioPallets?: EnvioPallet[];
-  palletParametros?: PalletParametro[];
+export interface EnvioContenidoRelations {
+  envio?: Envio;
 }
 
-export type PalletWithRelations = Pallet & PalletRelations;
+export type EnvioContenidoWithRelations = EnvioContenido & EnvioContenidoRelations;

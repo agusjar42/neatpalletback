@@ -17,45 +17,45 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {Pallet} from '../models';
-import {PalletRepository} from '../repositories';
+import {EnvioSensor} from '../models';
+import {EnvioSensorRepository} from '../repositories';
 
-export class PalletController {
+export class EnvioSensorController {
   constructor(
-    @repository(PalletRepository)
-    public palletRepository : PalletRepository,
+    @repository(EnvioSensorRepository)
+    public envioSensorRepository : EnvioSensorRepository,
   ) {}
 
-  @post('/pallet')
+  @post('/envio-sensores')
   @response(200, {
-    description: 'Pallet model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Pallet)}},
+    description: 'EnvioSensor model instance',
+    content: {'application/json': {schema: getModelSchemaRef(EnvioSensor)}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Pallet, {
-            title: 'NewPallet',
+          schema: getModelSchemaRef(EnvioSensor, {
+            title: 'NewEnvioSensor',
             exclude: ['id'],
           }),
         },
       },
     })
-    pallet: Omit<Pallet, 'id'>,
-  ): Promise<Pallet> {
-    return this.palletRepository.create(pallet);
+    envioSensor: Omit<EnvioSensor, 'id'>,
+  ): Promise<EnvioSensor> {
+    return this.envioSensorRepository.create(envioSensor);
   }
 
-  @get('/pallet/count')
+  @get('/envio-sensores/count')
   @response(200, {
-    description: 'Pallet model count',
+    description: 'EnvioSensor model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async count(
-    @param.where(Pallet) where?: Where<Pallet>,
+    @param.where(EnvioSensor) where?: Where<EnvioSensor>,
   ): Promise<Count> {
-    const dataSource = this.palletRepository.dataSource;
+    const dataSource = this.envioSensorRepository.dataSource;
     //Aplicamos filtros
     let filtros = '';
     //Obtiene los filtros
@@ -95,27 +95,27 @@ export class PalletController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM pallet${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM envio_sensor${filtros}`;
     const registros = await dataSource.execute(query, []);
     return registros;
   }
 
-  @get('/pallet')
+  @get('/envio-sensores')
   @response(200, {
-    description: 'Array of Pallet model instances',
+    description: 'Array of EnvioSensor model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Pallet, {includeRelations: true}),
+          items: getModelSchemaRef(EnvioSensor, {includeRelations: true}),
         },
       },
     },
   })
   async find(
-    @param.filter(Pallet) filter?: Filter<Pallet>,
-  ): Promise<Pallet[]> {
-    const dataSource = this.palletRepository.dataSource;
+    @param.filter(EnvioSensor) filter?: Filter<EnvioSensor>,
+  ): Promise<EnvioSensor[]> {
+    const dataSource = this.envioSensorRepository.dataSource;
     //Aplicamos filtros
     let filtros = '';
     //Obtiene los filtros
@@ -167,91 +167,87 @@ export class PalletController {
       filtros += ` OFFSET ${filter?.offset}`;
     }
     const query = `SELECT id,
-                          empresa_id as empresaId,
-                          fecha_impresion as fechaImpresion,
-                          codigo,
-                          alias,
-                          periodo_envio_mail as periodoEnvioMail,
-                          medidas,
-                          modelo,
+                          envio_id as envioId,
+                          tipo_sensor_id as tipoSensorId,
+                          valor,
                           fecha_creacion as fechaCreacion,
                           fecha_modificacion as fechaModificacion,
                           usuario_creacion as usuarioCreacion,
                           usuario_modificacion as usuarioModificacion
-                     FROM pallet${filtros}`;
+                     FROM envio_sensor${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }
 
-  @patch('/pallet')
+  @patch('/envio-sensores')
   @response(200, {
-    description: 'Pallet PATCH success count',
+    description: 'EnvioSensor PATCH success count',
     content: {'application/json': {schema: CountSchema}},
   })
   async updateAll(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Pallet, {partial: true}),
+          schema: getModelSchemaRef(EnvioSensor, {partial: true}),
         },
       },
     })
-    pallet: Pallet,
-    @param.where(Pallet) where?: Where<Pallet>,
+    envioSensor: EnvioSensor,
+    @param.where(EnvioSensor) where?: Where<EnvioSensor>,
   ): Promise<Count> {
-    return this.palletRepository.updateAll(pallet, where);
+    return this.envioSensorRepository.updateAll(envioSensor, where);
   }
 
-  @get('/pallet/{id}')
+  @get('/envio-sensores/{id}')
   @response(200, {
-    description: 'Pallet model instance',
+    description: 'EnvioSensor model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(Pallet, {includeRelations: true}),
+        schema: getModelSchemaRef(EnvioSensor, {includeRelations: true}),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Pallet, {exclude: 'where'}) filter?: FilterExcludingWhere<Pallet>
-  ): Promise<Pallet> {
-    return this.palletRepository.findById(id, filter);
+    @param.filter(EnvioSensor, {exclude: 'where'}) filter?: FilterExcludingWhere<EnvioSensor>
+  ): Promise<EnvioSensor> {
+    return this.envioSensorRepository.findById(id, filter);
   }
 
-  @patch('/pallet/{id}')
+  @patch('/envio-sensores/{id}')
   @response(204, {
-    description: 'Pallet PATCH success',
+    description: 'EnvioSensor PATCH success',
   })
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Pallet, {partial: true}),
+          schema: getModelSchemaRef(EnvioSensor, {partial: true}),
         },
       },
     })
-    pallet: Pallet,
+    envioSensor: EnvioSensor,
   ): Promise<void> {
-    await this.palletRepository.updateById(id, pallet);
+    await this.envioSensorRepository.updateById(id, envioSensor);
   }
 
-  @put('/pallet/{id}')
+  @put('/envio-sensores/{id}')
   @response(204, {
-    description: 'Pallet PUT success',
+    description: 'EnvioSensor PUT success',
   })
   async replaceById(
     @param.path.number('id') id: number,
-    @requestBody() pallet: Pallet,
+    @requestBody() envioSensor: EnvioSensor,
   ): Promise<void> {
-    await this.palletRepository.replaceById(id, pallet);
+    await this.envioSensorRepository.replaceById(id, envioSensor);
   }
 
-  @del('/pallet/{id}')
+  @del('/envio-sensores/{id}')
   @response(204, {
-    description: 'Pallet DELETE success',
+    description: 'EnvioSensor DELETE success',
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.palletRepository.deleteById(id);
+    await this.envioSensorRepository.deleteById(id);
   }
 }

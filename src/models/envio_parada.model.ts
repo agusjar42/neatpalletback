@@ -1,16 +1,14 @@
-import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
-import {Empresa} from './empresa.model';
-import {EnvioPallet} from './envio_pallet.model';
-import {PalletParametro} from './pallet_parametro.model';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Envio} from './envio.model';
 
 @model({
   settings: {
     mysql: {
-      table: 'pallet'
+      table: 'envio_parada'
     }
   }
 })
-export class Pallet extends Entity {
+export class EnvioParada extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -24,79 +22,92 @@ export class Pallet extends Entity {
   })
   id?: number;
 
-  @belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresa_id'}})
-  empresaId: number;
+  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envio_id'}})
+  envioId: number;
 
   @property({
     type: 'string',
     length: 20,
     mysql: {
-      columnName: 'fecha_impresion',
+      columnName: 'fecha',
       dataType: 'varchar',
       dataLength: 20,
       nullable: 'Y'
     }
   })
-  fechaImpresion?: string;
+  fecha?: string;
 
   @property({
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'codigo',
+      columnName: 'lugar_parada',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
     }
   })
-  codigo?: string;
+  lugarParada?: string;
 
   @property({
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'alias',
+      columnName: 'lugar_parada_gps',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
     }
   })
-  alias?: string;
-
-  @property({
-    type: 'number',
-    mysql: {
-      columnName: 'periodo_envio_mail',
-      dataType: 'int',
-      dataLength: 4,
-      nullable: 'Y'
-    }
-  })
-  periodoEnvioMail?: number;
+  lugarParadaGps?: string;
 
   @property({
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'medidas',
+      columnName: 'direccion',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
     }
   })
-  medidas?: string;
+  direccion?: string;
 
   @property({
     type: 'string',
-    length: 50,
+    length: 100,
     mysql: {
-      columnName: 'modelo',
+      columnName: 'nombre_operario',
       dataType: 'varchar',
-      dataLength: 50,
+      dataLength: 100,
       nullable: 'Y'
     }
   })
-  modelo?: string;
+  nombreOperario?: string;
+
+  @property({
+    type: 'string',
+    length: 20,
+    mysql: {
+      columnName: 'telefono_operario',
+      dataType: 'varchar',
+      dataLength: 20,
+      nullable: 'Y'
+    }
+  })
+  telefonoOperario?: string;
+
+  @property({
+    type: 'string',
+    length: 100,
+    mysql: {
+      columnName: 'emeil_operario',
+      dataType: 'varchar',
+      dataLength: 100,
+      nullable: 'Y'
+    }
+  })
+  emailOperario?: string;
 
   @property({
     type: 'number',
@@ -141,21 +152,13 @@ export class Pallet extends Entity {
   })
   fechaModificacion?: string;
 
-  @hasMany(() => EnvioPallet, {keyTo: 'palletId'})
-  envioPallets: EnvioPallet[];
-
-  @hasMany(() => PalletParametro, {keyTo: 'palletId'})
-  palletParametros: PalletParametro[];
-
-  constructor(data?: Partial<Pallet>) {
+  constructor(data?: Partial<EnvioParada>) {
     super(data);
   }
 }
 
-export interface PalletRelations {
-  empresa?: Empresa;
-  envioPallets?: EnvioPallet[];
-  palletParametros?: PalletParametro[];
+export interface EnvioParadaRelations {
+  envio?: Envio;
 }
 
-export type PalletWithRelations = Pallet & PalletRelations;
+export type EnvioParadaWithRelations = EnvioParada & EnvioParadaRelations;

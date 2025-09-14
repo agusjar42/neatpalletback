@@ -17,45 +17,45 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {Pallet} from '../models';
-import {PalletRepository} from '../repositories';
+import {EnvioPallet} from '../models';
+import {EnvioPalletRepository} from '../repositories';
 
-export class PalletController {
+export class EnvioPalletController {
   constructor(
-    @repository(PalletRepository)
-    public palletRepository : PalletRepository,
+    @repository(EnvioPalletRepository)
+    public envioPalletRepository : EnvioPalletRepository,
   ) {}
 
-  @post('/pallet')
+  @post('/envio-pallets')
   @response(200, {
-    description: 'Pallet model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Pallet)}},
+    description: 'EnvioPallet model instance',
+    content: {'application/json': {schema: getModelSchemaRef(EnvioPallet)}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Pallet, {
-            title: 'NewPallet',
+          schema: getModelSchemaRef(EnvioPallet, {
+            title: 'NewEnvioPallet',
             exclude: ['id'],
           }),
         },
       },
     })
-    pallet: Omit<Pallet, 'id'>,
-  ): Promise<Pallet> {
-    return this.palletRepository.create(pallet);
+    envioPallet: Omit<EnvioPallet, 'id'>,
+  ): Promise<EnvioPallet> {
+    return this.envioPalletRepository.create(envioPallet);
   }
 
-  @get('/pallet/count')
+  @get('/envio-pallets/count')
   @response(200, {
-    description: 'Pallet model count',
+    description: 'EnvioPallet model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async count(
-    @param.where(Pallet) where?: Where<Pallet>,
+    @param.where(EnvioPallet) where?: Where<EnvioPallet>,
   ): Promise<Count> {
-    const dataSource = this.palletRepository.dataSource;
+    const dataSource = this.envioPalletRepository.dataSource;
     //Aplicamos filtros
     let filtros = '';
     //Obtiene los filtros
@@ -95,27 +95,27 @@ export class PalletController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM pallet${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM envio_pallet${filtros}`;
     const registros = await dataSource.execute(query, []);
     return registros;
   }
 
-  @get('/pallet')
+  @get('/envio-pallets')
   @response(200, {
-    description: 'Array of Pallet model instances',
+    description: 'Array of EnvioPallet model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Pallet, {includeRelations: true}),
+          items: getModelSchemaRef(EnvioPallet, {includeRelations: true}),
         },
       },
     },
   })
   async find(
-    @param.filter(Pallet) filter?: Filter<Pallet>,
-  ): Promise<Pallet[]> {
-    const dataSource = this.palletRepository.dataSource;
+    @param.filter(EnvioPallet) filter?: Filter<EnvioPallet>,
+  ): Promise<EnvioPallet[]> {
+    const dataSource = this.envioPalletRepository.dataSource;
     //Aplicamos filtros
     let filtros = '';
     //Obtiene los filtros
@@ -167,91 +167,56 @@ export class PalletController {
       filtros += ` OFFSET ${filter?.offset}`;
     }
     const query = `SELECT id,
-                          empresa_id as empresaId,
-                          fecha_impresion as fechaImpresion,
-                          codigo,
-                          alias,
-                          periodo_envio_mail as periodoEnvioMail,
-                          medidas,
-                          modelo,
+                          pallet_id as palletId,
+                          envio_id as envioId,
                           fecha_creacion as fechaCreacion,
                           fecha_modificacion as fechaModificacion,
                           usuario_creacion as usuarioCreacion,
                           usuario_modificacion as usuarioModificacion
-                     FROM pallet${filtros}`;
+                     FROM envio_pallet${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }
 
-  @patch('/pallet')
+  @get('/envio-pallets/{id}')
   @response(200, {
-    description: 'Pallet PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Pallet, {partial: true}),
-        },
-      },
-    })
-    pallet: Pallet,
-    @param.where(Pallet) where?: Where<Pallet>,
-  ): Promise<Count> {
-    return this.palletRepository.updateAll(pallet, where);
-  }
-
-  @get('/pallet/{id}')
-  @response(200, {
-    description: 'Pallet model instance',
+    description: 'EnvioPallet model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(Pallet, {includeRelations: true}),
+        schema: getModelSchemaRef(EnvioPallet, {includeRelations: true}),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Pallet, {exclude: 'where'}) filter?: FilterExcludingWhere<Pallet>
-  ): Promise<Pallet> {
-    return this.palletRepository.findById(id, filter);
+    @param.filter(EnvioPallet, {exclude: 'where'}) filter?: FilterExcludingWhere<EnvioPallet>
+  ): Promise<EnvioPallet> {
+    return this.envioPalletRepository.findById(id, filter);
   }
 
-  @patch('/pallet/{id}')
+  @patch('/envio-pallets/{id}')
   @response(204, {
-    description: 'Pallet PATCH success',
+    description: 'EnvioPallet PATCH success',
   })
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Pallet, {partial: true}),
+          schema: getModelSchemaRef(EnvioPallet, {partial: true}),
         },
       },
     })
-    pallet: Pallet,
+    envioPallet: EnvioPallet,
   ): Promise<void> {
-    await this.palletRepository.updateById(id, pallet);
+    await this.envioPalletRepository.updateById(id, envioPallet);
   }
 
-  @put('/pallet/{id}')
+  @del('/envio-pallets/{id}')
   @response(204, {
-    description: 'Pallet PUT success',
-  })
-  async replaceById(
-    @param.path.number('id') id: number,
-    @requestBody() pallet: Pallet,
-  ): Promise<void> {
-    await this.palletRepository.replaceById(id, pallet);
-  }
-
-  @del('/pallet/{id}')
-  @response(204, {
-    description: 'Pallet DELETE success',
+    description: 'EnvioPallet DELETE success',
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.palletRepository.deleteById(id);
+    await this.envioPalletRepository.deleteById(id);
   }
 }

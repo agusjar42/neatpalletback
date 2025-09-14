@@ -1,0 +1,97 @@
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {TipoSensor} from './tipo_sensor.model';
+import {Envio} from './envio.model';
+
+@model({
+  settings: {
+    mysql: {
+      table: 'envio_sensor'
+    }
+  }
+})
+export class EnvioSensor extends Entity {
+  @property({
+    type: 'number',
+    id: true,
+    generated: true,
+    mysql: {
+      columnName: 'id',
+      dataType: 'int',
+      dataLength: 11,
+      nullable: 'N'
+    }
+  })
+  id?: number;
+
+  @belongsTo(() => TipoSensor, {name: 'tipoSensor'}, {mysql: {columnName: 'tipo_sensor_id'}})
+  tipoSensorId: number;
+
+  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envio_id'}})
+  envioId: number;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mysql: {
+      columnName: 'valor',
+      dataType: 'varchar',
+      dataLength: 50,
+      nullable: 'Y'
+    }
+  })
+  valor?: string;
+
+  @property({
+    type: 'number',
+    mysql: {
+      columnName: 'usuario_creacion',
+      dataType: 'int',
+      dataLength: 11,
+      nullable: 'Y'
+    }
+  })
+  usuarioCreacion?: number;
+
+  @property({
+    type: 'date',
+    defaultFn: 'now',
+    mysql: {
+      columnName: 'fecha_creacion',
+      dataType: 'timestamp',
+      nullable: 'Y'
+    }
+  })
+  fechaCreacion?: string;
+
+  @property({
+    type: 'number',
+    mysql: {
+      columnName: 'usuario_modificacion',
+      dataType: 'int',
+      dataLength: 11,
+      nullable: 'Y'
+    }
+  })
+  usuarioModificacion?: number;
+
+  @property({
+    type: 'date',
+    mysql: {
+      columnName: 'fecha_modificacion',
+      dataType: 'timestamp',
+      nullable: 'Y'
+    }
+  })
+  fechaModificacion?: string;
+
+  constructor(data?: Partial<EnvioSensor>) {
+    super(data);
+  }
+}
+
+export interface EnvioSensorRelations {
+  tipoSensor?: TipoSensor;
+  envio?: Envio;
+}
+
+export type EnvioSensorWithRelations = EnvioSensor & EnvioSensorRelations;

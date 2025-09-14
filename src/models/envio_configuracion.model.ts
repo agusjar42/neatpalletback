@@ -1,14 +1,14 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
-import {Empresa} from './empresa.model';
+import {Envio} from './envio.model';
 
 @model({
   settings: {
     mysql: {
-      table: 'envio'
+      table: 'envio_configuracion'
     }
   }
 })
-export class Envio extends Entity {
+export class EnvioConfiguracion extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -22,91 +22,44 @@ export class Envio extends Entity {
   })
   id?: number;
 
-  @belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresa_id'}})
-  empresaId: number;
+  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envio_id'}})
+  envioId: number;
+
+  @property({
+    type: 'string',
+    length: 100,
+    mysql: {
+      columnName: 'nombre',
+      dataType: 'varchar',
+      dataLength: 100,
+      nullable: 'Y'
+    }
+  })
+  nombre?: string;
 
   @property({
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'origen_ruta',
+      columnName: 'valor',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
     }
   })
-  origenRuta?: string;
-
-  @property({
-    type: 'string',
-    length: 20,
-    mysql: {
-      columnName: 'fecha_llegada',
-      dataType: 'varchar',
-      dataLength: 20,
-      nullable: 'Y'
-    }
-  })
-  fechaLlegada?: string;
+  valor?: string;
 
   @property({
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'gps_ruta_origen',
+      columnName: 'unidad_medida',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
     }
   })
-  gpsRutaOrigen?: string;
-
-  @property({
-    type: 'string',
-    length: 50,
-    mysql: {
-      columnName: 'destino_ruta',
-      dataType: 'varchar',
-      dataLength: 50,
-      nullable: 'Y'
-    }
-  })
-  destinoRuta?: string;
-
-  @property({
-    type: 'string',
-    length: 50,
-    mysql: {
-      columnName: 'gps_ruta_destino',
-      dataType: 'varchar',
-      dataLength: 50,
-      nullable: 'Y'
-    }
-  })
-  gpsRutaDestino?: string;
-
-  @property({
-    type: 'string',
-    length: 20,
-    mysql: {
-      columnName: 'fecha_salida',
-      dataType: 'varchar',
-      dataLength: 20,
-      nullable: 'Y'
-    }
-  })
-  fechaSalida?: string;
-
-  @property({
-    type: 'number',
-    mysql: {
-      columnName: 'paradas_previstas',
-      dataType: 'int',
-      dataLength: 3,
-      nullable: 'Y'
-    }
-  })
-  paradasPrevistas?: number;
+  unidadMedida?: string;
 
   @property({
     type: 'number',
@@ -151,13 +104,13 @@ export class Envio extends Entity {
   })
   fechaModificacion?: string;
 
-  constructor(data?: Partial<Envio>) {
+  constructor(data?: Partial<EnvioConfiguracion>) {
     super(data);
   }
 }
 
-export interface EnvioRelations {
-  empresa?: Empresa;
+export interface EnvioConfiguracionRelations {
+  envio?: Envio;
 }
 
-export type EnvioWithRelations = Envio & EnvioRelations;
+export type EnvioConfiguracionWithRelations = EnvioConfiguracion & EnvioConfiguracionRelations;

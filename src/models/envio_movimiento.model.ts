@@ -1,16 +1,15 @@
-import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
-import {Empresa} from './empresa.model';
-import {EnvioPallet} from './envio_pallet.model';
-import {PalletParametro} from './pallet_parametro.model';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {TipoSensor} from './tipo_sensor.model';
+import {Envio} from './envio.model';
 
 @model({
   settings: {
     mysql: {
-      table: 'pallet'
+      table: 'envio_movimiento'
     }
   }
 })
-export class Pallet extends Entity {
+export class EnvioMovimiento extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -24,79 +23,59 @@ export class Pallet extends Entity {
   })
   id?: number;
 
-  @belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresa_id'}})
-  empresaId: number;
+  @belongsTo(() => TipoSensor, {name: 'tipoSensor'}, {mysql: {columnName: 'tipo_sensor_id'}})
+  tipoSensorId: number;
+
+  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envio_id'}})
+  envioId: number;
 
   @property({
     type: 'string',
     length: 20,
     mysql: {
-      columnName: 'fecha_impresion',
+      columnName: 'fecha',
       dataType: 'varchar',
       dataLength: 20,
       nullable: 'Y'
     }
   })
-  fechaImpresion?: string;
+  fecha?: string;
 
   @property({
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'codigo',
+      columnName: 'gps',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
     }
   })
-  codigo?: string;
+  gps?: string;
 
   @property({
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'alias',
+      columnName: 'imagen',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
     }
   })
-  alias?: string;
-
-  @property({
-    type: 'number',
-    mysql: {
-      columnName: 'periodo_envio_mail',
-      dataType: 'int',
-      dataLength: 4,
-      nullable: 'Y'
-    }
-  })
-  periodoEnvioMail?: number;
+  imagen?: string;
 
   @property({
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'medidas',
+      columnName: 'valor',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
     }
   })
-  medidas?: string;
-
-  @property({
-    type: 'string',
-    length: 50,
-    mysql: {
-      columnName: 'modelo',
-      dataType: 'varchar',
-      dataLength: 50,
-      nullable: 'Y'
-    }
-  })
-  modelo?: string;
+  valor?: string;
 
   @property({
     type: 'number',
@@ -141,21 +120,14 @@ export class Pallet extends Entity {
   })
   fechaModificacion?: string;
 
-  @hasMany(() => EnvioPallet, {keyTo: 'palletId'})
-  envioPallets: EnvioPallet[];
-
-  @hasMany(() => PalletParametro, {keyTo: 'palletId'})
-  palletParametros: PalletParametro[];
-
-  constructor(data?: Partial<Pallet>) {
+  constructor(data?: Partial<EnvioMovimiento>) {
     super(data);
   }
 }
 
-export interface PalletRelations {
-  empresa?: Empresa;
-  envioPallets?: EnvioPallet[];
-  palletParametros?: PalletParametro[];
+export interface EnvioMovimientoRelations {
+  tipoSensor?: TipoSensor;
+  envio?: Envio;
 }
 
-export type PalletWithRelations = Pallet & PalletRelations;
+export type EnvioMovimientoWithRelations = EnvioMovimiento & EnvioMovimientoRelations;
