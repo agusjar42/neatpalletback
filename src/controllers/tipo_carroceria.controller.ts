@@ -170,7 +170,8 @@ export class TipoCarroceriaController {
                           fecha_creacion as fechaCreacion,
                           fecha_modificacion as fechaModificacion,
                           usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion
+                          usuario_modificacion as usuarioModificacion,
+                          activo_sn as activoSn
                      FROM tipo_carroceria${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

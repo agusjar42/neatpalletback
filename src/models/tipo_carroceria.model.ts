@@ -76,6 +76,18 @@ export class TipoCarroceria extends Entity {
   })
   fechaModificacion?: string;
 
+  @property({
+    type: 'string',
+    length: 1,
+    mysql: {
+      columnName: 'activo_sn',
+      dataType: 'varchar',
+      dataLength: 1,
+      nullable: 'Y'
+    }
+  })
+  activoSn?: string;
+  
   constructor(data?: Partial<TipoCarroceria>) {
     super(data);
   }

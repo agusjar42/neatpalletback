@@ -89,6 +89,18 @@ export class Parametro extends Entity {
   })
   fechaModificacion?: string;
 
+  @property({
+    type: 'string',
+    length: 1,
+    mysql: {
+      columnName: 'activo_sn',
+      dataType: 'varchar',
+      dataLength: 1,
+      nullable: 'Y'
+    }
+  })
+  activoSn?: string;
+
   @hasMany(() => PalletParametro, {keyTo: 'parametroId'})
   palletParametros: PalletParametro[];
 

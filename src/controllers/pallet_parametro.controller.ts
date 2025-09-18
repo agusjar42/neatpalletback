@@ -95,7 +95,7 @@ export class PalletParametroController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM pallet_parametro${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM vista_pallet_parametro_parametro_pallet${filtros}`;
     const registros = await dataSource.execute(query, []);
     return registros;
   }
@@ -166,16 +166,7 @@ export class PalletParametroController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          pallet_id as palletId,
-                          parametro_id as parametroId,
-                          valor,
-                          texto_libre as textoLibre,
-                          fecha_creacion as fechaCreacion,
-                          fecha_modificacion as fechaModificacion,
-                          usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion
-                     FROM pallet_parametro${filtros}`;
+    const query = `SELECT * FROM vista_pallet_parametro_parametro_pallet${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }

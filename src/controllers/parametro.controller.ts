@@ -172,7 +172,8 @@ export class ParametroController {
                           fecha_creacion as fechaCreacion,
                           fecha_modificacion as fechaModificacion,
                           usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion
+                          usuario_modificacion as usuarioModificacion,
+                          activo_sn as activoSn
                      FROM parametro${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
