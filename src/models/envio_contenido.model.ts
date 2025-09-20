@@ -12,6 +12,7 @@ export class EnvioContenido extends Entity {
   @property({
     type: 'number',
     id: true,
+    generated: true,
     mysql: {
       columnName: 'id',
       dataType: 'int',
@@ -19,7 +20,7 @@ export class EnvioContenido extends Entity {
       nullable: 'N'
     }
   })
-  id: number;
+  id?: number;
 
   @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envio_id'}})
   envioId: number;
@@ -113,6 +114,57 @@ export class EnvioContenido extends Entity {
     }
   })
   fotoPallet?: string;
+
+  // ===== CAMPOS TEMPORALES PARA PROCESAR IMÁGENES =====
+  // Estos campos NO se mapean a la base de datos
+  @property({
+    type: 'string',
+    jsonSchema: {
+      maxLength: 10000000, // Límite para base64 (10MB aprox)
+    }
+  })
+  fotoProductoBase64?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {
+      maxLength: 255,
+    }
+  })
+  fotoProductoNombre?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {
+      maxLength: 50,
+    }
+  })
+  fotoProductoTipo?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {
+      maxLength: 10000000, // Límite para base64 (10MB aprox)
+    }
+  })
+  fotoPalletBase64?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {
+      maxLength: 255,
+    }
+  })
+  fotoPalletNombre?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {
+      maxLength: 50,
+    }
+  })
+  fotoPalletTipo?: string;
+  // ===== FIN CAMPOS TEMPORALES =====
 
   @property({
     type: 'number',

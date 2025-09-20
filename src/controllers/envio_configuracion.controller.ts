@@ -95,7 +95,7 @@ export class EnvioConfiguracionController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM envio_configuracion${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM vista_envio_configuracion_envio${filtros}`;
     const registros = await dataSource.execute(query, []);
     return registros;
   }
@@ -115,7 +115,7 @@ export class EnvioConfiguracionController {
   async find(
     @param.filter(EnvioConfiguracion) filter?: Filter<EnvioConfiguracion>,
   ): Promise<EnvioConfiguracion[]> {
-const dataSource = this.envioConfiguracionRepository.dataSource;
+    const dataSource = this.envioConfiguracionRepository.dataSource;
     //Aplicamos filtros
     let filtros = '';
     //Obtiene los filtros
@@ -167,15 +167,16 @@ const dataSource = this.envioConfiguracionRepository.dataSource;
       filtros += ` OFFSET ${filter?.offset}`;
     }
     const query = `SELECT id,
-                          envio_id as envioId,
+                          origenRuta,
+                          envioId,
                           nombre,
                           valor,
-                          unidad_medida as unidadMedida,
-                          fecha_creacion as fechaCreacion,
-                          fecha_modificacion as fechaModificacion,
-                          usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion
-                     FROM envio_configuracion${filtros}`;
+                          unidadMedida,
+                          fechaCreacion,
+                          fechaModificacion,
+                          usuarioCreacion,
+                          usuarioModificacion
+                     FROM vista_envio_configuracion_envio${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }

@@ -95,7 +95,7 @@ export class EnvioSensorController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM envio_sensor${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM vista_envio_sensor_envio_tipo_sensor${filtros}`;
     const registros = await dataSource.execute(query, []);
     return registros;
   }
@@ -167,14 +167,16 @@ export class EnvioSensorController {
       filtros += ` OFFSET ${filter?.offset}`;
     }
     const query = `SELECT id,
-                          envio_id as envioId,
-                          tipo_sensor_id as tipoSensorId,
+                          envioId,
+                          origenRuta,
+                          tipoSensorId,
+                          nombreSensor,
                           valor,
-                          fecha_creacion as fechaCreacion,
-                          fecha_modificacion as fechaModificacion,
-                          usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion
-                     FROM envio_sensor${filtros}`;
+                          fechaCreacion,
+                          fechaModificacion,
+                          usuarioCreacion,
+                          usuarioModificacion
+                     FROM vista_envio_sensor_envio_tipo_sensor${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }

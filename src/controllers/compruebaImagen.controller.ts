@@ -43,7 +43,7 @@ export class CompruebaImagenController {
       await fs.access(rutaImagen);
       return imagen;
     } catch (error) {
-      return '/multimedia/sistemaNLE/imagen-no-disponible.jpeg';
+      return '/multimedia/sistemaNP/imagen-no-disponible.jpeg';
     }
   }
 
@@ -61,11 +61,11 @@ export class CompruebaImagenController {
         //
         // Si no existía la imagen añadimos el campo imagenMiniatura pero con la ruta de imagen-no-disponible
         //
-        imagenMiniatura = '/multimedia/sistemaNLE/imagen-no-disponible.jpeg';
+        imagenMiniatura = '/multimedia/sistemaNP/imagen-no-disponible.jpeg';
       }
     } else {
-      imagen = '/multimedia/sistemaNLE/imagen-no-disponible.jpeg';
-      imagenMiniatura = '/multimedia/sistemaNLE/imagen-no-disponible.jpeg';
+      imagen = '/multimedia/sistemaNP/imagen-no-disponible.jpeg';
+      imagenMiniatura = '/multimedia/sistemaNP/imagen-no-disponible.jpeg';
     }
     return { imagen, imagenMiniatura };
   }

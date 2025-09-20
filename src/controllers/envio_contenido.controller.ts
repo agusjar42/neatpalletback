@@ -17,14 +17,39 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {service} from '@loopback/core';
 import {EnvioContenido} from '../models';
 import {EnvioContenidoRepository} from '../repositories';
+import {ImageService} from '../services/image.service';
+import { ImageProcessingService } from '../services/procesarImagenesBase64.service'
 
 export class EnvioContenidoController {
   constructor(
     @repository(EnvioContenidoRepository)
-    public enviocontenidoRepository : EnvioContenidoRepository,
+    public enviocontenidoRepository: EnvioContenidoRepository,
+    @service(ImageService) private imageService: ImageService,
+    @service(ImageProcessingService) private imageProcessingService: ImageProcessingService,
+
   ) {}
+  //
+  // Configuración de imágenes para este controlador
+  //
+  private readonly imageConfigs = [
+    {
+      base64Field: 'fotoProductoBase64',
+      typeField: 'fotoProductoTipo',
+      nameField: 'fotoProductoNombre',
+      outputField: 'fotoProducto',
+      folder: 'envio-contenido'
+    },
+    {
+      base64Field: 'fotoPalletBase64',
+      typeField: 'fotoPalletTipo',
+      nameField: 'fotoPalletNombre',
+      outputField: 'fotoPallet',
+      folder: 'envio-contenido'
+    }
+  ];
 
   @post('/enviocontenido')
   @response(200, {
@@ -44,7 +69,11 @@ export class EnvioContenidoController {
     })
     enviocontenido: Omit<EnvioContenido, 'id'>,
   ): Promise<EnvioContenido> {
-    return this.enviocontenidoRepository.create(enviocontenido);
+    //
+    // Procesa las imágenes y crea el registro
+    //
+    const dataProcesada = await this.imageProcessingService.procesarImagenesBase64(enviocontenido, this.imageConfigs);
+    return this.enviocontenidoRepository.create(dataProcesada);
   }
 
   @get('/enviocontenido/count')
@@ -95,9 +124,10 @@ export class EnvioContenidoController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM envio_contenido${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM vista_envio_contenido_envio${filtros}`;
     const registros = await dataSource.execute(query, []);
-    return registros;  }
+    return registros;
+  }
 
   @get('/enviocontenido')
   @response(200, {
@@ -166,21 +196,32 @@ export class EnvioContenidoController {
       filtros += ` OFFSET ${filter?.offset}`;
     }
     const query = `SELECT id,
-                          envio_id as envioId,
+                          envioId,
+                          origenRuta,
                           producto,
                           referencia,
-                          peso_kgs as pesoKgs,
-                          peso_total as pesoTotal,
+                          pesoKgs,
+                          pesoTotal,
                           medidas,
-                          foto_producto as fotoProducto,
-                          foto_pallet as fotoPallet,
-                          fecha_creacion as fechaCreacion,
-                          fecha_modificacion as fechaModificacion,
-                          usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion
-                     FROM envio_contenido${filtros}`;
+                          fotoProducto,
+                          fotoPallet,
+                          fechaCreacion,
+                          fechaModificacion,
+                          usuarioCreacion,
+                          usuarioModificacion
+                     FROM vista_envio_contenido_envio${filtros}`;
     const registros = await dataSource.execute(query);
-    return registros;
+    //
+    // Procesar URLs de imágenes en los resultados
+    //
+    const registrosProcesados = registros.map((registro: any) => {
+      return {
+        ...registro,
+        fotoProducto: this.imageService.procesarUrlImagen(registro.fotoProducto),
+        fotoPallet: this.imageService.procesarUrlImagen(registro.fotoPallet)
+      };
+    });    
+    return registrosProcesados;
   }
 
   @get('/enviocontenido/{id}')
@@ -196,7 +237,19 @@ export class EnvioContenidoController {
     @param.path.number('id') id: number,
     @param.filter(EnvioContenido, {exclude: 'where'}) filter?: FilterExcludingWhere<EnvioContenido>
   ): Promise<EnvioContenido> {
-    return this.enviocontenidoRepository.findById(id, filter);
+    const registro = await this.enviocontenidoRepository.findById(id, filter);
+    //
+    // Procesar URLs de imágenes para el registro individual
+    //
+    const registroProcesado = Object.assign(
+      new EnvioContenido(),
+      registro,
+      {
+        fotoProducto: this.imageService.procesarUrlImagen(registro.fotoProducto),
+        fotoPallet: this.imageService.procesarUrlImagen(registro.fotoPallet)
+      }
+    );    
+    return registroProcesado;
   }
 
   @patch('/enviocontenido/{id}')
@@ -214,7 +267,11 @@ export class EnvioContenidoController {
     })
     enviocontenido: EnvioContenido,
   ): Promise<void> {
-    await this.enviocontenidoRepository.updateById(id, enviocontenido);
+    //
+    // Procesa las imágenes y crea el registro
+    //
+    const dataProcesada = await this.imageProcessingService.procesarImagenesBase64(enviocontenido, this.imageConfigs);
+    await this.enviocontenidoRepository.updateById(id, dataProcesada);
   }
 
   @del('/enviocontenido/{id}')

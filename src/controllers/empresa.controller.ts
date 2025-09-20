@@ -292,7 +292,7 @@ export class EmpresaController {
       await fs.access(rutaLogo);
       return logo;
     } catch (error) {
-      return '/multimedia/sistemaNLE/imagen-no-disponible.jpeg';
+      return '/multimedia/sistemaNP/imagen-no-disponible.jpeg';
     }
   }
 
@@ -327,11 +327,11 @@ export class EmpresaController {
           //
           // Si no existía la imagen añadimos el campo logoMiniatura pero con la ruta de imagen-no-disponible
           //
-          registroConLogoMiniatura.logoMiniatura = '/multimedia/sistemaNLE/imagen-no-disponible.jpeg';
+          registroConLogoMiniatura.logoMiniatura = '/multimedia/sistemaNP/imagen-no-disponible.jpeg';
         }
       } else {
-        registroConLogoMiniatura.logo = '/multimedia/sistemaNLE/imagen-no-disponible.jpeg';
-        registroConLogoMiniatura.logoMiniatura = '/multimedia/sistemaNLE/imagen-no-disponible.jpeg';
+        registroConLogoMiniatura.logo = '/multimedia/sistemaNP/imagen-no-disponible.jpeg';
+        registroConLogoMiniatura.logoMiniatura = '/multimedia/sistemaNP/imagen-no-disponible.jpeg';
       }
       return registroConLogoMiniatura;
     }));

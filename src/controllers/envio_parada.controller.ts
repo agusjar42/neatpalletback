@@ -95,7 +95,7 @@ export class EnvioParadaController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM envio_parada${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM vista_envio_parada_envio${filtros}`;
     const registros = await dataSource.execute(query, []);
     return registros;  
   }
@@ -167,19 +167,21 @@ export class EnvioParadaController {
       filtros += ` OFFSET ${filter?.offset}`;
     }
     const query = `SELECT id,
-                          envio_id as envioId,
+                          envioId, 
+                          origenRuta,
                           fecha,
-                          lugar_parada as lugarParada,
-                          lugar_parada_gps as lugarParadaGps,
+                          DATE_FORMAT(fecha, '%d/%m/%Y') AS fechaEspanol,
+                          lugarParada,
+                          lugarParadaGps,
                           direccion,
-                          nombre_operario as nombreOperario,
-                          telefono_operario as telefonoOperario,
-                          email_operario as emailOperario,
-                          fecha_creacion as fechaCreacion,
-                          fecha_modificacion as fechaModificacion,
-                          usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion
-                     FROM envio_parada${filtros}`;
+                          nombreOperario,
+                          telefonoOperario,
+                          emailOperario,
+                          fechaCreacion,
+                          fechaModificacion,
+                          usuarioCreacion,
+                          usuarioModificacion
+                     FROM vista_envio_parada_envio${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }

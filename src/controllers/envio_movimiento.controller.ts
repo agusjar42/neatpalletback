@@ -19,12 +19,30 @@ import {
 } from '@loopback/rest';
 import {EnvioMovimiento} from '../models';
 import {EnvioMovimientoRepository} from '../repositories';
+import { ImageService } from '../services/image.service';
+import { ImageProcessingService } from '../services/procesarImagenesBase64.service';
+import { service } from '@loopback/core';
 
 export class EnvioMovimientoController {
   constructor(
     @repository(EnvioMovimientoRepository)
     public envioMovimientoRepository : EnvioMovimientoRepository,
+    @service(ImageService) private imageService: ImageService,
+    @service(ImageProcessingService) private imageProcessingService: ImageProcessingService,
   ) {}
+
+  //
+  // Configuración de imágenes para este controlador
+  //
+  private readonly imageConfigs = [
+    {
+      base64Field: 'imagenBase64',
+      typeField: 'imagenTipo',
+      nameField: 'imagenNombre',
+      outputField: 'imagen',
+      folder: 'envio-contenido'
+    }
+  ];
 
   @post('/envio-movimientos')
   @response(200, {
@@ -44,7 +62,11 @@ export class EnvioMovimientoController {
     })
     envioMovimiento: Omit<EnvioMovimiento, 'id'>,
   ): Promise<EnvioMovimiento> {
-    return this.envioMovimientoRepository.create(envioMovimiento);
+    //
+    // Procesa las imágenes y crea el registro
+    //
+    const dataProcesada = await this.imageProcessingService.procesarImagenesBase64(envioMovimiento, this.imageConfigs);
+    return this.envioMovimientoRepository.create(dataProcesada);
   }
 
   @get('/envio-movimientos/count')
@@ -95,7 +117,7 @@ export class EnvioMovimientoController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM envio_movimiento${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM vista_envio_movimiento_envio_tipo_sensor${filtros}`;
     const registros = await dataSource.execute(query, []);
     return registros;
   }
@@ -167,19 +189,31 @@ export class EnvioMovimientoController {
       filtros += ` OFFSET ${filter?.offset}`;
     }
     const query = `SELECT id,
-                          envio_id as envioId,
-                          tipo_sensor_id as tipoSensorId,
+                          origenRuta,
+                          envioId,
+                          tipoSensorId,
+                          nombreSensor,
                           fecha,
+                          DATE_FORMAT(fecha, '%d/%m/%Y') AS fechaEspanol,
                           gps,
                           imagen,
                           valor,
-                          fecha_creacion as fechaCreacion,
-                          fecha_modificacion as fechaModificacion,
-                          usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion
-                     FROM envio_movimiento${filtros}`;
+                          fechaCreacion,
+                          fechaModificacion,
+                          usuarioCreacion,
+                          usuarioModificacion
+                     FROM vista_envio_movimiento_envio_tipo_sensor${filtros}`;
     const registros = await dataSource.execute(query);
-    return registros;
+    //
+    // Procesar URLs de imágenes en los resultados
+    //
+    const registrosProcesados = registros.map((registro: any) => {
+      return {
+        ...registro,
+        imagen: this.imageService.procesarUrlImagen(registro.imagen)
+      };
+    });
+    return registrosProcesados;
   }
 
   @get('/envio-movimientos/{id}')
@@ -195,7 +229,19 @@ export class EnvioMovimientoController {
     @param.path.number('id') id: number,
     @param.filter(EnvioMovimiento, {exclude: 'where'}) filter?: FilterExcludingWhere<EnvioMovimiento>
   ): Promise<EnvioMovimiento> {
-    return this.envioMovimientoRepository.findById(id, filter);
+    const registro = await this.envioMovimientoRepository.findById(id, filter);
+    //
+    // Procesar URLs de imágenes para el registro individual
+    //
+    const registroProcesado = Object.assign(
+      new EnvioMovimiento(),
+      registro,
+      {
+        imaggen: this.imageService.procesarUrlImagen(registro.imagen)
+      }
+    );
+    return registroProcesado;
+
   }
 
   @patch('/envio-movimientos/{id}')
@@ -213,7 +259,11 @@ export class EnvioMovimientoController {
     })
     envioMovimiento: EnvioMovimiento,
   ): Promise<void> {
-    await this.envioMovimientoRepository.updateById(id, envioMovimiento);
+    //
+    // Procesa las imágenes y crea el registro
+    //
+    const dataProcesada = await this.imageProcessingService.procesarImagenesBase64(envioMovimiento, this.imageConfigs);
+    await this.envioMovimientoRepository.updateById(id, dataProcesada);
   }
 
   @del('/envio-movimientos/{id}')

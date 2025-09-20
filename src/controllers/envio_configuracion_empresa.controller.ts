@@ -175,7 +175,7 @@ const dataSource = this.envioConfiguracionEmpresaRepository.dataSource;
                           fecha_modificacion as fechaModificacion,
                           usuario_creacion as usuarioCreacion,
                           usuario_modificacion as usuarioModificacion
-                     FROM tipo_sensor${filtros}`;
+                     FROM envio_configuracion_empresa${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   } 

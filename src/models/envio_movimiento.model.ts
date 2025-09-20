@@ -55,11 +55,11 @@ export class EnvioMovimiento extends Entity {
 
   @property({
     type: 'string',
-    length: 50,
+    length: 250,
     mysql: {
       columnName: 'imagen',
       dataType: 'varchar',
-      dataLength: 50,
+      dataLength: 250,
       nullable: 'Y'
     }
   })
@@ -76,6 +76,34 @@ export class EnvioMovimiento extends Entity {
     }
   })
   valor?: string;
+
+  // ===== CAMPOS TEMPORALES PARA PROCESAR IMÁGENES =====
+  // Estos campos NO se mapean a la base de datos
+  @property({
+    type: 'string',
+    jsonSchema: {
+      maxLength: 10000000, // Límite para base64 (10MB aprox)
+    }
+  })
+  imagenBase64?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {
+      maxLength: 255,
+    }
+  })
+  imagenNombre?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {
+      maxLength: 50,
+    }
+  })
+  imagenTipo?: string;
+
+  // ===== FIN CAMPOS TEMPORALES =====
 
   @property({
     type: 'number',

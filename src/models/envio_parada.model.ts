@@ -101,7 +101,7 @@ export class EnvioParada extends Entity {
     type: 'string',
     length: 100,
     mysql: {
-      columnName: 'emeil_operario',
+      columnName: 'email_operario',
       dataType: 'varchar',
       dataLength: 100,
       nullable: 'Y'
