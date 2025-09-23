@@ -1,7 +1,9 @@
-import {  Count,  CountSchema,  Filter,  FilterExcludingWhere,  repository,  Where,} from '@loopback/repository';
+import {  Count,  CountSchema,  Filter,  FilterExcludingWhere,  repository,  Where} from '@loopback/repository';
 import {  post,  param,  get,  getModelSchemaRef,  patch,  put,  del,  requestBody,  response,  HttpErrors,} from '@loopback/rest';
 import { inject } from '@loopback/core';
 import { Usuario, UsuarioCredenciales } from '../models';
+import { UsuarioImagenes } from '../models/usuario-imagenes.model';
+import { UsuarioConImagenesDto } from '../models/usuario-con-imagenes.dto';
 import { Credentials, EmpresaRepository, PlantillaEmailRepository, UsuarioCredencialesRepository, UsuarioRepository, UsuarioRestablecerPasswordRepository } from '../repositories';
 import { UserRegisterData } from './specs/user-controller.specs';
 import { validateCredentials } from '../services/validator';
@@ -15,6 +17,9 @@ import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import path from 'path';
 import nodemailer from 'nodemailer';
 import { authorize } from '@loopback/authorization';
+import { ImageService } from '../services/image.service';
+import { ImageProcessingService } from '../services/procesarImagenesBase64.service';
+import { service } from '@loopback/core';
 
 export class UsuariosController {
   [x: string]: any;
@@ -39,7 +44,40 @@ export class UsuariosController {
     public refreshService: RefrescarTokenService,
     @repository(UsuarioRestablecerPasswordRepository)
     public usuarioRestablecerPasswordRepository: UsuarioRestablecerPasswordRepository,
+    @service(ImageService) private imageService: ImageService,
+    @service(ImageProcessingService) private imageProcessingService: ImageProcessingService,
   ) { }
+
+  //
+  // Configuración de imágenes para este controlador
+  //
+  private readonly imageConfigs = [
+    {
+      base64Field: 'avatarBase64',
+      typeField: 'avatarTipo',
+      nameField: 'avatarNombre',
+      outputField: 'avatar',
+      folder: 'usuario'
+    }
+  ];
+
+  /**
+   * Función helper para procesar imágenes y separar datos
+   */
+  private async procesarUsuarioConImagenes(usuarioDto: UsuarioConImagenesDto): Promise<Usuario> {
+    // Procesar imágenes si existen
+    const dataProcesada = await this.imageProcessingService.procesarImagenesBase64(usuarioDto, this.imageConfigs);
+    
+    // Extraer solo los datos del usuario (sin campos temporales)
+    const usuario = usuarioDto.toUsuario();
+    
+    // Agregar el avatar procesado
+    if (dataProcesada.avatar) {
+      usuario.avatar = dataProcesada.avatar;
+    }
+    
+    return usuario;
+  }
 
   @authenticate('jwt')
   @authorize({allowedRoles: ['API']})
@@ -53,15 +91,38 @@ export class UsuariosController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Usuario, {
+          schema: {
+            type: 'object',
             title: 'NewUsuario',
-            exclude: ['id'],
-          }),
+            properties: {
+              // Propiedades del Usuario (excluyendo id)
+              empresaId: {type: 'number'},
+              rolId: {type: 'number'},
+              idiomaId: {type: 'number'},
+              nombre: {type: 'string'},
+              mail: {type: 'string'},
+              activoSn: {type: 'string'},
+              telefono: {type: 'string'},
+              avatar: {type: 'string'},
+              fechaCreacion: {type: 'string'},
+              fechaModificacion: {type: 'string'},
+              usuCreacion: {type: 'number'},
+              usuModificacion: {type: 'number'},
+              fechaInactivo: {type: 'string'},
+              usuInactivo: {type: 'number'},
+              // Propiedades de UsuarioImagenes
+              avatarBase64: {type: 'string'},
+              avatarNombre: {type: 'string'},
+              avatarTipo: {type: 'string'},
+            },
+          },
         },
       },
     })
-    usuario: Omit<Usuario, 'id'>,
+    usuarioData: any,
   ): Promise<Usuario> {
+    const usuarioDto = new UsuarioConImagenesDto(usuarioData);
+    const usuario = await this.procesarUsuarioConImagenes(usuarioDto);
     return this.usuarioRepository.create(usuario);
   }
 
@@ -112,18 +173,22 @@ export class UsuariosController {
       token,
     );
 
-    // return {user, token}
+    // Procesar avatar URL para la respuesta del login
+    const userWithAvatar = {
+      ...user,
+      avatar: this.imageService.procesarUrlImagen(user.avatar)
+    };
+
     return {
       accessToken: tokens.accessToken,
       expiresIn: tokens.expiresIn ?? undefined,
       refreshToken: tokens.refreshToken ?? undefined,
-      userData: user
+      userData: userWithAvatar
     };
   }
 
   @authenticate('jwt')
   @authorize({allowedRoles: ['API']})
-
 
   @post('/usuarios/register')
   @response(200, {
@@ -233,7 +298,17 @@ export class UsuariosController {
   async find(
     @param.filter(Usuario) filter?: Filter<Usuario>,
   ): Promise<Usuario[]> {
-    return this.usuarioRepository.find(filter);
+    const registros = await this.usuarioRepository.find(filter);
+    //
+    // Procesar URLs de imágenes en los resultados
+    //
+    const registrosProcesados = registros.map((registro: any) => {
+      return {
+        ...registro,
+        avatar: this.imageService.procesarUrlImagen(registro.avatar)
+      };
+    });
+    return registrosProcesados;
   }
 
   @authenticate('jwt')
@@ -270,7 +345,7 @@ export class UsuariosController {
       const registros = await dataSource.execute(query);
 
       if (registros.length > 0) {
-        // Limpiamos los códigos de recuperacion anteriores de la BD\
+        // Limpiamos los códigos de recuperacion anteriores de la BD
         query = `DELETE FROM usuario_restablecer_password WHERE email = '${email}'`;
         await dataSource.execute(query);
 
@@ -393,13 +468,39 @@ export class UsuariosController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Usuario, { partial: true }),
+          schema: {
+            type: 'object',
+            title: 'UsuarioPartial',
+            properties: {
+              // Propiedades del Usuario (todas opcionales para update)
+              empresaId: {type: 'number'},
+              rolId: {type: 'number'},
+              idiomaId: {type: 'number'},
+              nombre: {type: 'string'},
+              mail: {type: 'string'},
+              activoSn: {type: 'string'},
+              telefono: {type: 'string'},
+              avatar: {type: 'string'},
+              fechaCreacion: {type: 'string'},
+              fechaModificacion: {type: 'string'},
+              usuCreacion: {type: 'number'},
+              usuModificacion: {type: 'number'},
+              fechaInactivo: {type: 'string'},
+              usuInactivo: {type: 'number'},
+              // Propiedades de UsuarioImagenes
+              avatarBase64: {type: 'string'},
+              avatarNombre: {type: 'string'},
+              avatarTipo: {type: 'string'},
+            },
+          },
         },
       },
     })
-    usuario: Usuario,
+    usuarioData: any,
     @param.where(Usuario) where?: Where<Usuario>,
   ): Promise<Count> {
+    const usuarioDto = new UsuarioConImagenesDto(usuarioData);
+    const usuario = await this.procesarUsuarioConImagenes(usuarioDto);
     return this.usuarioRepository.updateAll(usuario, where);
   }
 
@@ -419,7 +520,18 @@ export class UsuariosController {
     @param.path.number('id') id: number,
     @param.filter(Usuario, { exclude: 'where' }) filter?: FilterExcludingWhere<Usuario>
   ): Promise<Usuario> {
-    return this.usuarioRepository.findById(id, filter);
+    const registro = await this.usuarioRepository.findById(id, filter);
+    //
+    // Procesar URLs de imágenes para el registro individual
+    //
+    const registroProcesado = Object.assign(
+      new Usuario(),
+      registro,
+      {
+        avatar: this.imageService.procesarUrlImagen(registro.avatar)
+      }
+    );
+    return registroProcesado;
   }
 
   @authenticate('jwt')
@@ -461,12 +573,38 @@ export class UsuariosController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Usuario, { partial: true }),
+          schema: {
+            type: 'object',
+            title: 'UsuarioPartial',
+            properties: {
+              // Propiedades del Usuario (todas opcionales para update)
+              empresaId: {type: 'number'},
+              rolId: {type: 'number'},
+              idiomaId: {type: 'number'},
+              nombre: {type: 'string'},
+              mail: {type: 'string'},
+              activoSn: {type: 'string'},
+              telefono: {type: 'string'},
+              avatar: {type: 'string'},
+              fechaCreacion: {type: 'string'},
+              fechaModificacion: {type: 'string'},
+              usuCreacion: {type: 'number'},
+              usuModificacion: {type: 'number'},
+              fechaInactivo: {type: 'string'},
+              usuInactivo: {type: 'number'},
+              // Propiedades de UsuarioImagenes
+              avatarBase64: {type: 'string'},
+              avatarNombre: {type: 'string'},
+              avatarTipo: {type: 'string'},
+            },
+          },
         },
       },
     })
-    usuario: Usuario,
+    usuarioData: any,
   ): Promise<void> {
+    const usuarioDto = new UsuarioConImagenesDto(usuarioData);
+    const usuario = await this.procesarUsuarioConImagenes(usuarioDto);
     await this.usuarioRepository.updateById(id, usuario);
   }
 
@@ -479,8 +617,41 @@ export class UsuariosController {
   })
   async replaceById(
     @param.path.number('id') id: number,
-    @requestBody() usuario: Usuario,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            title: 'Usuario',
+            properties: {
+              // Propiedades del Usuario
+              empresaId: {type: 'number'},
+              rolId: {type: 'number'},
+              idiomaId: {type: 'number'},
+              nombre: {type: 'string'},
+              mail: {type: 'string'},
+              activoSn: {type: 'string'},
+              telefono: {type: 'string'},
+              avatar: {type: 'string'},
+              fechaCreacion: {type: 'string'},
+              fechaModificacion: {type: 'string'},
+              usuCreacion: {type: 'number'},
+              usuModificacion: {type: 'number'},
+              fechaInactivo: {type: 'string'},
+              usuInactivo: {type: 'number'},
+              // Propiedades de UsuarioImagenes
+              avatarBase64: {type: 'string'},
+              avatarNombre: {type: 'string'},
+              avatarTipo: {type: 'string'},
+            },
+          },
+        },
+      },
+    }) 
+    usuarioData: any,
   ): Promise<void> {
+    const usuarioDto = new UsuarioConImagenesDto(usuarioData);
+    const usuario = await this.procesarUsuarioConImagenes(usuarioDto);
     await this.usuarioRepository.replaceById(id, usuario);
   }
 
@@ -557,7 +728,16 @@ export class UsuariosController {
     }
     const query = `SELECT * FROM vista_empresa_rol_usuario${filtros}`;
     const registros = await dataSource.execute(query);
-    return registros;
+    //
+    // Procesar URLs de imágenes en los resultados
+    //
+    const registrosProcesados = registros.map((registro: any) => {
+      return {
+        ...registro,
+        avatar: this.imageService.procesarUrlImagen(registro.avatar)
+      };
+    });    
+    return registrosProcesados;
   };
 
   @authenticate('jwt')

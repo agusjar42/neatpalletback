@@ -94,15 +94,6 @@ export class Usuario extends Entity {
   })
   avatar?: string;
 
-  // @property({
-  //   type: 'string',
-  //   //jsonSchema: {nullable: true},
-  //   length: 50,
-  //   generated: false,
-  //   mysql: {columnName: 'password', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
-  // })
-  // password?: string;
-
   @property({
     type: 'date',
     //jsonSchema: {nullable: true},

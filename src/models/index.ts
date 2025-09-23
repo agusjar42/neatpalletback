@@ -30,3 +30,5 @@ export * from './parametro.model';
 export * from './tipo_carroceria.model';
 export * from './tipo_sensor.model';
 export * from './tipo_transporte.model';
+export * from './usuario-imagenes.model';
+export * from './usuario-con-imagenes.dto';
