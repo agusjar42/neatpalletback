@@ -55,7 +55,49 @@ export class EnvioController {
   async count(
     @param.where(Envio) where?: Where<Envio>,
   ): Promise<Count> {
-    return this.envioRepository.count(where);
+    const dataSource = this.envioRepository.dataSource;
+    //Aplicamos filtros
+    let filtros = '';
+    //Obtiene los filtros
+    filtros += ` WHERE 1=1`
+    if (where) {
+      for (const [key] of Object.entries(where)) {
+        if (key === 'and' || key === 'or') {
+          {
+            let first = true
+            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
+              if (subValue !== '' && subValue != null) {
+                if (!first) {
+                  if (key === 'and') {
+                    filtros += ` AND`;
+                  }
+                  else {
+                    filtros += ` OR`;
+                  }
+                }
+                else {
+                  filtros += ' AND ('
+                }
+                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
+                  filtros += ` ${subKey} = ${subValue}`;
+                }
+                else {
+                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
+                }
+                first = false
+              }
+            }
+            if (!first) {
+              filtros += `)`;
+            }
+          }
+        }
+
+      }
+    }
+    const query = `SELECT COUNT(*) AS count FROM vista_empresa_envio${filtros}`;
+    const registros = await dataSource.execute(query);
+    return registros;
   }
 
   @get('/envios')
@@ -73,7 +115,73 @@ export class EnvioController {
   async find(
     @param.filter(Envio) filter?: Filter<Envio>,
   ): Promise<Envio[]> {
-    return this.envioRepository.find(filter);
+    const dataSource = this.envioRepository.dataSource;
+    //Aplicamos filtros
+    let filtros = '';
+    //Obtiene los filtros
+    filtros += ` WHERE 1=1`
+    if (filter?.where) {
+      for (const [key] of Object.entries(filter?.where)) {
+        if (key === 'and' || key === 'or') {
+          {
+            let first = true
+            for (const [subKey, subValue] of Object.entries((filter?.where as any)[key])) {
+              if (subValue !== '' && subValue != null) {
+                if (!first) {
+                  if (key === 'and') {
+                    filtros += ` AND`;
+                  }
+                  else {
+                    filtros += ` OR`;
+                  }
+                }
+                else {
+                  filtros += ' AND ('
+                }
+                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
+                  filtros += ` ${subKey} = ${subValue}`;
+                }
+                else {
+                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
+                }
+                first = false
+              }
+            }
+            if (!first) {
+              filtros += `)`;
+            }
+          }
+        }
+
+      }
+    }
+    // Agregar ordenamiento
+    if (filter?.order) {
+      filtros += ` ORDER BY ${filter.order}`;
+    }
+    // Agregar paginación
+    if (filter?.limit) {
+      filtros += ` LIMIT ${filter?.limit}`;
+    }
+    if (filter?.offset) {
+      filtros += ` OFFSET ${filter?.offset}`;
+    }
+    const query = `SELECT id, 
+                          empresaId,
+                          origenRuta,
+                          fechaLlegada,
+                          DATE_FORMAT(fechaSalida, '%d/%m/%Y') AS fechaSalidaEspanol,
+                          gpsRutaOrigen,
+                          destinoRuta,
+                          gpsRutaDestino,
+                          fechaSalida,
+                          DATE_FORMAT(fechaLlegada, '%d/%m/%Y') AS fechaLlegadaEspanol,
+                          paradasPrevistas,
+                          codigoEmpresa, 
+                          nombreEmpresa
+                    FROM vista_empresa_envio${filtros}`;
+    const registros = await dataSource.execute(query);
+    return registros;
   }
 
   @patch('/envios')
