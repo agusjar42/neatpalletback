@@ -140,10 +140,7 @@ export class PlantillaEmailController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     try {
-      const dataSource = this.plantillaEmailRepository.dataSource;
-      // Borrar las imagenes de plantilla
-      let query = `DELETE FROM archivo WHERE id_tabla = ${id}`;
-      await dataSource.execute(query);
+
       //Borra la plantilla
       await this.plantillaEmailRepository.deleteById(id);
     } catch (e) {
@@ -208,11 +205,6 @@ export class PlantillaEmailController {
       const plantillaRegistro = await dataSource.execute(query);
       let htmlContent = plantillaRegistro[0]['cuerpo'];
 
-      // Obtengo los archivos de la plantilla
-      const dataSourceArchivo = this.plantillaEmailRepository.dataSource;
-      query = `SELECT * FROM archivo WHERE id_tabla=${plantillaRegistro[0]['id']};`;
-      const archivos = await dataSourceArchivo.execute(query);
-
       // Incluyo las imágenes insertadas en la plantilla
       const base64Images = htmlContent.match(/src="data:image\/[^;]+;base64[^"]+"/g) || [];
       const attachments = base64Images.map((img: { match: (arg0: RegExp) => any[]; }, index: any) => {
@@ -231,13 +223,7 @@ export class PlantillaEmailController {
       htmlContent = `<html><body>${htmlContent}</body></html>`;
 
       const publicPath = path.resolve(__dirname, '../../public');
-      // Incluyo los archivos adjuntados de la plantilla
-      for (let i = 0; i < archivos.length; i++) {
-        attachments.push({
-          filename: archivos[i]['url'].split('/').pop(),
-          path: path.join(publicPath, `/${archivos[i]['url']}`)
-        })
-      };
+
       // Opciones del email
       let parametrosMail = {
         from: empresaRegistro[0]['email'],

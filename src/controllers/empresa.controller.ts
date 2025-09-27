@@ -357,10 +357,6 @@ export class EmpresaController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     try {
-      const dataSource = this.empresaRepository.dataSource;
-      // Borrar las imagenes de empresa
-      let query = `DELETE FROM archivo WHERE id_tabla = ${id}`;
-      await dataSource.execute(query);
       //Borra la empresa
       await this.empresaRepository.deleteById(id);
     } catch (e) {

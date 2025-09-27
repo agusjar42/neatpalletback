@@ -384,11 +384,6 @@ export class UsuariosController {
           }
         });
 
-        // Obtengo los archivos de la plantilla
-        const dataSourceArchivo = this.plantillaEmailRepository.dataSource;
-        query = `SELECT * FROM archivo WHERE id_tabla=${plantillaRegistro[0]['id']};`;
-        const archivos = await dataSourceArchivo.execute(query);
-
         // Incluyo las imágenes insertadas en la plantilla
         const base64Images = htmlContent.match(/src="data:image\/[^;]+;base64[^"]+"/g) || [];
         const attachments = base64Images.map((img: { match: (arg0: RegExp) => any[]; }, index: any) => {
@@ -410,13 +405,7 @@ export class UsuariosController {
         htmlContent = htmlContent.replace('{{codigoRecuperacion}}', codigoRecuperacion);
 
         const publicPath = path.resolve(__dirname, '../../public');
-        // Incluyo los archivos adjuntados de la plantilla
-        for (let i = 0; i < archivos.length; i++) {
-          attachments.push({
-            filename: archivos[i]['url'].split('/').pop(),
-            path: path.join(publicPath, `/${archivos[i]['url']}`)
-          })
-        };
+
 
         if (empresaRegistro[0]['email'] && empresaRegistro[0]['email'].length > 0 &&
           empresaRegistro[0]['password'] && empresaRegistro[0]['password'].length) {
@@ -737,22 +726,6 @@ export class UsuariosController {
       };
     });    
     return registrosProcesados;
-  };
-
-  @authenticate('jwt')
-  @authorize({allowedRoles: ['API']})
-
-  @get('/obtenerUsuarioAvatar/{id}')
-  @response(200, {
-    description: 'Devuelve avatar del usuario',
-    content: { 'application/json': { schema: { type: 'object' } } },
-  })
-  async obtenerUsuarioAvatar(@param.path.number('id') id: number,): Promise<Object[]> {
-
-    const dataSource = this.usuarioRepository.dataSource;
-    const query = `SELECT url FROM archivo WHERE tabla = 'usuario' AND id_tabla = ${id}`;
-    const registros = await dataSource.execute(query);
-    return registros;
   };
 
   @authenticate('jwt')
