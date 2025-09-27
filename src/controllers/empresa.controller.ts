@@ -1,12 +1,15 @@
 import {  Count,  CountSchema,  Filter,  FilterExcludingWhere,  repository,  Where,} from '@loopback/repository';
 import {  post,  param,  get,  getModelSchemaRef,  patch,  put,  del,  requestBody,  response,  HttpErrors,} from '@loopback/rest';
 import { Empresa } from '../models';
+import { EmpresaConImagenesDto } from '../models/empresa-con-imagenes.dto';
 import { EmpresaRepository } from '../repositories';
 import { CompruebaImagenController } from './compruebaImagen.controller';
-import { inject } from '@loopback/core';
+import { inject, service } from '@loopback/core';
 import path, { join } from 'path';
 import { log } from 'console';
 import { promises as fs } from 'fs';
+import { ImageService } from '../services/image.service';
+import { ImageProcessingService } from '../services/procesarImagenesBase64.service';
 
 import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
@@ -27,7 +30,50 @@ export class EmpresaController {
   constructor(
     @repository(EmpresaRepository) public empresaRepository: EmpresaRepository,
     @inject('services.CompruebaImagenController') public compruebaImagenController: CompruebaImagenController,
+    @service(ImageService) private imageService: ImageService,
+    @service(ImageProcessingService) private imageProcessingService: ImageProcessingService,
   ) { }
+
+  //
+  // Configuración de imágenes para este controlador
+  //
+  private readonly imageConfigs = [
+    {
+      base64Field: 'imagenBase64',
+      typeField: 'imagenTipo',
+      nameField: 'imagenNombre',
+      outputField: 'imagen',
+      folder: 'empresa'
+    },
+    {
+      base64Field: 'logoBase64',
+      typeField: 'logoTipo',
+      nameField: 'logoNombre',
+      outputField: 'logo',
+      folder: 'empresa'
+    }
+  ];
+
+  /**
+   * Función helper para procesar imágenes y separar datos
+   */
+  private async procesarEmpresaConImagenes(empresaDto: EmpresaConImagenesDto): Promise<Empresa> {
+    // Procesar imágenes si existen
+    const dataProcesada = await this.imageProcessingService.procesarImagenesBase64(empresaDto, this.imageConfigs);
+    
+    // Extraer solo los datos de la empresa (sin campos temporales)
+    const empresa = empresaDto.toEmpresa();
+    
+    // Agregar las imágenes procesadas
+    if (dataProcesada.imagen) {
+      empresa.imagen = dataProcesada.imagen;
+    }
+    if (dataProcesada.logo) {
+      empresa.logo = dataProcesada.logo;
+    }
+    
+    return empresa;
+  }
 
   @post('/empresas')
   @response(200, {
@@ -38,15 +84,40 @@ export class EmpresaController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Empresa, {
+          schema: {
+            type: 'object',
             title: 'NewEmpresa',
-            exclude: ['id'],
-          }),
+            properties: {
+              // Propiedades de Empresa (excluyendo id)
+              codigo: {type: 'string'},
+              nombre: {type: 'string'},
+              descripcion: {type: 'string'},
+              email: {type: 'string'},
+              password: {type: 'string'},
+              servicio: {type: 'string'},
+              fechaCreacion: {type: 'string'},
+              fechaModificacion: {type: 'string'},
+              usuCreacion: {type: 'number'},
+              usuModificacion: {type: 'number'},
+              tiempoInactividad: {type: 'number'},
+              imagen: {type: 'string'},
+              logo: {type: 'string'},
+              // Propiedades temporales para imágenes
+              imagenBase64: {type: 'string'},
+              imagenNombre: {type: 'string'},
+              imagenTipo: {type: 'string'},
+              logoBase64: {type: 'string'},
+              logoNombre: {type: 'string'},
+              logoTipo: {type: 'string'},
+            },
+          },
         },
       },
     })
-    empresa: Omit<Empresa, 'id'>,
+    empresaData: any,
   ): Promise<Empresa> {
+    const empresaDto = new EmpresaConImagenesDto(empresaData);
+    const empresa = await this.procesarEmpresaConImagenes(empresaDto);
     return this.empresaRepository.create(empresa);
   }
 
@@ -175,13 +246,25 @@ export class EmpresaController {
                             nombre,
                             descripcion,
                             email,
+                            imagen,
+                            logo,
                             fecha_creacion as fechaCreacion,
                             fecha_modificacion as fechaModificacion,
                             usu_creacion as usuCreacion,
                             usu_modificacion as usuModificacion
                       FROM empresa${filtros}`;
       const registros = await dataSource.execute(query);
-      return registros;
+      //
+      // Procesar URLs de imágenes en los resultados
+      //
+      const registrosProcesados = registros.map((registro: any) => {
+        return {
+          ...registro,
+          imagen: this.imageService.procesarUrlImagen(registro.imagen),
+          logo: this.imageService.procesarUrlImagen(registro.logo)
+        };
+      });
+      return registrosProcesados;
   
     } catch (error) {
       console.error('Error al aplicar filtros:', error);
@@ -198,13 +281,41 @@ export class EmpresaController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Empresa, { partial: true }),
+          schema: {
+            type: 'object',
+            title: 'EmpresaPartial',
+            properties: {
+              // Propiedades de Empresa (todas opcionales para update)
+              codigo: {type: 'string'},
+              nombre: {type: 'string'},
+              descripcion: {type: 'string'},
+              email: {type: 'string'},
+              password: {type: 'string'},
+              servicio: {type: 'string'},
+              fechaCreacion: {type: 'string'},
+              fechaModificacion: {type: 'string'},
+              usuCreacion: {type: 'number'},
+              usuModificacion: {type: 'number'},
+              tiempoInactividad: {type: 'number'},
+              imagen: {type: 'string'},
+              logo: {type: 'string'},
+              // Propiedades temporales para imágenes
+              imagenBase64: {type: 'string'},
+              imagenNombre: {type: 'string'},
+              imagenTipo: {type: 'string'},
+              logoBase64: {type: 'string'},
+              logoNombre: {type: 'string'},
+              logoTipo: {type: 'string'},
+            },
+          },
         },
       },
     })
-    empresa: Empresa,
+    empresaData: any,
     @param.where(Empresa) where?: Where<Empresa>,
   ): Promise<Count> {
+    const empresaDto = new EmpresaConImagenesDto(empresaData);
+    const empresa = await this.procesarEmpresaConImagenes(empresaDto);
     return this.empresaRepository.updateAll(empresa, where);
   }
 
@@ -224,8 +335,19 @@ export class EmpresaController {
     //
     // Recuperamos el registro y llamamos a la función procesaRegistrosConImagenMiniatura que nos incluye las imagenMiniatura en la consulta
     //
-    const registroFind = await this.empresaRepository.findById(id, filter);
-    return registroFind;
+    const registro = await this.empresaRepository.findById(id, filter);
+    //
+    // Procesar URLs de imágenes para el registro individual
+    //
+    const registroProcesado = Object.assign(
+      new Empresa(),
+      registro,
+      {
+        imagen: this.imageService.procesarUrlImagen(registro.imagen),
+        logo: this.imageService.procesarUrlImagen(registro.logo)
+      }
+    );
+    return registroProcesado;
 
   }
 
@@ -259,12 +381,40 @@ export class EmpresaController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Empresa, { partial: true }),
+          schema: {
+            type: 'object',
+            title: 'EmpresaPartial',
+            properties: {
+              // Propiedades de Empresa (todas opcionales para update)
+              codigo: {type: 'string'},
+              nombre: {type: 'string'},
+              descripcion: {type: 'string'},
+              email: {type: 'string'},
+              password: {type: 'string'},
+              servicio: {type: 'string'},
+              fechaCreacion: {type: 'string'},
+              fechaModificacion: {type: 'string'},
+              usuCreacion: {type: 'number'},
+              usuModificacion: {type: 'number'},
+              tiempoInactividad: {type: 'number'},
+              imagen: {type: 'string'},
+              logo: {type: 'string'},
+              // Propiedades temporales para imágenes
+              imagenBase64: {type: 'string'},
+              imagenNombre: {type: 'string'},
+              imagenTipo: {type: 'string'},
+              logoBase64: {type: 'string'},
+              logoNombre: {type: 'string'},
+              logoTipo: {type: 'string'},
+            },
+          },
         },
       },
     })
-    empresa: Empresa,
+    empresaData: any,
   ): Promise<void> {
+    const empresaDto = new EmpresaConImagenesDto(empresaData);
+    const empresa = await this.procesarEmpresaConImagenes(empresaDto);
     await this.empresaRepository.updateById(id, empresa);
   }
 
@@ -274,8 +424,43 @@ export class EmpresaController {
   })
   async replaceById(
     @param.path.number('id') id: number,
-    @requestBody() empresa: Empresa,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            title: 'Empresa',
+            properties: {
+              // Propiedades de Empresa
+              codigo: {type: 'string'},
+              nombre: {type: 'string'},
+              descripcion: {type: 'string'},
+              email: {type: 'string'},
+              password: {type: 'string'},
+              servicio: {type: 'string'},
+              fechaCreacion: {type: 'string'},
+              fechaModificacion: {type: 'string'},
+              usuCreacion: {type: 'number'},
+              usuModificacion: {type: 'number'},
+              tiempoInactividad: {type: 'number'},
+              imagen: {type: 'string'},
+              logo: {type: 'string'},
+              // Propiedades temporales para imágenes
+              imagenBase64: {type: 'string'},
+              imagenNombre: {type: 'string'},
+              imagenTipo: {type: 'string'},
+              logoBase64: {type: 'string'},
+              logoNombre: {type: 'string'},
+              logoTipo: {type: 'string'},
+            },
+          },
+        },
+      },
+    })
+    empresaData: any,
   ): Promise<void> {
+    const empresaDto = new EmpresaConImagenesDto(empresaData);
+    const empresa = await this.procesarEmpresaConImagenes(empresaDto);
     await this.empresaRepository.replaceById(id, empresa);
   }
 

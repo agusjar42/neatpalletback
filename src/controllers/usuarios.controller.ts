@@ -2,7 +2,6 @@ import {  Count,  CountSchema,  Filter,  FilterExcludingWhere,  repository,  Whe
 import {  post,  param,  get,  getModelSchemaRef,  patch,  put,  del,  requestBody,  response,  HttpErrors,} from '@loopback/rest';
 import { inject } from '@loopback/core';
 import { Usuario, UsuarioCredenciales } from '../models';
-import { UsuarioImagenes } from '../models/usuario-imagenes.model';
 import { UsuarioConImagenesDto } from '../models/usuario-con-imagenes.dto';
 import { Credentials, EmpresaRepository, PlantillaEmailRepository, UsuarioCredencialesRepository, UsuarioRepository, UsuarioRestablecerPasswordRepository } from '../repositories';
 import { UserRegisterData } from './specs/user-controller.specs';

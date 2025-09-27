@@ -114,6 +114,25 @@ export class Empresa extends Entity {
   })
   tiempoInactividad: number;
 
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 500,
+    generated: false,
+    mysql: {columnName: 'imagen', dataType: 'varchar', dataLength: 500, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  imagen: string;
+
+  
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 500,
+    generated: false,
+    mysql: {columnName: 'logo', dataType: 'varchar', dataLength: 500, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  logo: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
