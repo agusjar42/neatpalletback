@@ -44,7 +44,68 @@ export class EnvioController {
     })
     envio: Omit<Envio, 'id'>,
   ): Promise<Envio> {
-    return this.envioRepository.create(envio);
+    //
+    //Inserto el envio
+    //
+    const resultado =  this.envioRepository.create(envio);
+    //
+    //Inserto las configuraciones por defecto de la empresa
+    //
+    await this.insertEnvioConfiguracion(envio);
+
+    return resultado;
+    }
+
+    /**
+     * Inserta en envio_configuracion los datos de envio_configuracion_empresa para la empresa indicada.
+     * @param envio El objeto Envio recién creado.
+     */
+    private async insertEnvioConfiguracion(envio: Omit<Envio, 'id'>): Promise<void> {
+    const dataSource = this.envioRepository.dataSource;
+    //
+    //Primero borramos las configuraciones anteriores por si acaso
+    //
+    const deleteQuery = `DELETE FROM envio_configuracion WHERE envio_id = ${envio.empresaId}`;
+    await dataSource.execute(deleteQuery);
+    //
+    //Luego insertamos las configuraciones por defecto de la empresa
+    //
+    const insert = `insert into envio_configuracion (envio_id, 
+                                                     nombre, 
+                                                     valor, 
+                                                     unidad_medida, 
+                                                     usuario_creacion) 
+                                              SELECT ${envio.empresaId} envio_id, 
+                                                     nombre, 
+                                                     valor, 
+                                                     unidad_medida, 
+                                                     ${envio.usuarioCreacion} usuario_creacion 
+                                                FROM envio_configuracion_empresa 
+                                               where empresa_id = ${envio.empresaId}`;
+    await dataSource.execute(insert);
+  }
+
+  @post('/crear-envio-configuracion-desde-empresa')
+  @response(204, {
+    description: 'Crear envío y configuración desde empresa',
+  })
+  async crearEnvioConfiguracionDesdeEmpresa(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Envio, {
+            title: 'NewEnvio',
+            exclude: ['id'],
+          }),
+        },
+      },
+    })
+    envio: Omit<Envio, 'id'>,
+  ): Promise<void> {
+    //
+    //Borro e inserto las configuraciones por defecto de la empresa
+    //
+    await this.insertEnvioConfiguracion(envio);
   }
 
   @get('/envios/count')

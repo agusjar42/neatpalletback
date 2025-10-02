@@ -45,6 +45,7 @@
     "!*/__tests__"
   ],
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.65.0",
     "@loopback/authentication": "^11.0.2",
     "@loopback/authentication-jwt": "^0.15.2",
     "@loopback/authorization": "^0.15.2",
