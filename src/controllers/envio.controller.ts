@@ -18,6 +18,7 @@ import {
   response,
 } from '@loopback/rest';
 import {Envio} from '../models';
+import {CrearEnvioConfiguracionDto} from '../models/crear-envio-configuracion.dto';
 import {EnvioRepository} from '../repositories';
 
 export class EnvioController {
@@ -47,41 +48,43 @@ export class EnvioController {
     //
     //Inserto el envio
     //
-    const resultado =  this.envioRepository.create(envio);
+    const resultado = await this.envioRepository.create(envio);
     //
     //Inserto las configuraciones por defecto de la empresa
     //
-    await this.insertEnvioConfiguracion(envio);
+    await this.insertEnvioConfiguracion(resultado.id!, envio.empresaId, envio.usuarioCreacion!);
 
     return resultado;
     }
 
     /**
      * Inserta en envio_configuracion los datos de envio_configuracion_empresa para la empresa indicada.
-     * @param envio El objeto Envio recién creado.
+     * @param envioId El ID del envío.
+     * @param empresaId El ID de la empresa.
+     * @param usuarioCreacion El ID del usuario que crea la configuración.
      */
-    private async insertEnvioConfiguracion(envio: Omit<Envio, 'id'>): Promise<void> {
+    private async insertEnvioConfiguracion(envioId: number, empresaId: number, usuarioCreacion: number): Promise<void> {
     const dataSource = this.envioRepository.dataSource;
     //
     //Primero borramos las configuraciones anteriores por si acaso
     //
-    const deleteQuery = `DELETE FROM envio_configuracion WHERE envio_id = ${envio.empresaId}`;
+    const deleteQuery = `DELETE FROM envio_configuracion WHERE envio_id = ${envioId}`;
     await dataSource.execute(deleteQuery);
     //
     //Luego insertamos las configuraciones por defecto de la empresa
     //
-    const insert = `insert into envio_configuracion (envio_id, 
-                                                     nombre, 
-                                                     valor, 
-                                                     unidad_medida, 
-                                                     usuario_creacion) 
-                                              SELECT ${envio.empresaId} envio_id, 
-                                                     nombre, 
-                                                     valor, 
-                                                     unidad_medida, 
-                                                     ${envio.usuarioCreacion} usuario_creacion 
-                                                FROM envio_configuracion_empresa 
-                                               where empresa_id = ${envio.empresaId}`;
+    const insert = `insert into envio_configuracion (envio_id,
+                                                     nombre,
+                                                     valor,
+                                                     unidad_medida,
+                                                     usuario_creacion)
+                                              SELECT ${envioId} envio_id,
+                                                     nombre,
+                                                     valor,
+                                                     unidad_medida,
+                                                     ${usuarioCreacion} usuario_creacion
+                                                FROM envio_configuracion_empresa
+                                               where empresa_id = ${empresaId}`;
     await dataSource.execute(insert);
   }
 
@@ -93,19 +96,18 @@ export class EnvioController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Envio, {
-            title: 'NewEnvio',
-            exclude: ['id'],
+          schema: getModelSchemaRef(CrearEnvioConfiguracionDto, {
+            title: 'CrearEnvioConfiguracionDto'
           }),
         },
       },
     })
-    envio: Omit<Envio, 'id'>,
+    dto: CrearEnvioConfiguracionDto,
   ): Promise<void> {
     //
     //Borro e inserto las configuraciones por defecto de la empresa
     //
-    await this.insertEnvioConfiguracion(envio);
+    await this.insertEnvioConfiguracion(dto.envioId, dto.empresaId, dto.usuarioCreacion);
   }
 
   @get('/envios/count')

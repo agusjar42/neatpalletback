@@ -1,0 +1,12 @@
+[
+  "REF", "PROD", "ART", "ITEM", "SKU", "EAN", "UPC", "CODE", "NUM", "ID",
+  "MAT", "MER", "LOT", "SER", "BAT", "BOX", "PKG", "UNT", "PCS", "SET",
+  "KIT", "MOD", "TYPE", "CAT", "GRP", "FAM", "LIN", "SYS", "COM", "PAR",
+  "ACC", "OPT", "VAR", "VER", "REV", "GEN", "STD", "SPE", "PRO", "BAS",
+  "ADV", "PRE", "DEL", "LUX", "ECO", "MED", "MAX", "MIN", "ORI", "NEW",
+  "OLD", "REC", "RET", "REM", "REB", "REP", "RES", "REU", "REV", "RNW",
+  "SAM", "SEC", "SEL", "SIM", "SIN", "SMA", "SOU", "STA", "SUB", "SUP",
+  "SUR", "TEC", "TEM", "TES", "TOT", "TRA", "TRI", "ULT", "UNI", "URB",
+  "USE", "VAL", "VEN", "VIP", "VIS", "VOL", "WEB", "WIN", "XL", "XXL",
+  "YEA", "ZON", "ACT", "BES", "CLA", "DES", "ELE", "FAV", "GIA", "HIG"
+]

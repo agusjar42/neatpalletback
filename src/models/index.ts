@@ -28,3 +28,4 @@ export * from './tipo_sensor.model';
 export * from './tipo_transporte.model';
 export * from './usuario-imagenes.model';
 export * from './usuario-con-imagenes.dto';
+export * from './crear-envio-configuracion.dto';
