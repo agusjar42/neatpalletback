@@ -97,6 +97,102 @@ export class LogUsuarioController {
     }
   }
 
+  @get('/log-usuarios/archivos-logs')
+  @response(200, {
+    description: 'Lista todos los archivos de logs de login incorrectos',
+    content: {'application/json': {schema: {type: 'object'}}},
+  })
+  async listarArchivosLogs(): Promise<{success: boolean; archivos: Array<{nombre: string; fecha: Date; tamaño: number}>}> {
+    try {
+      const logsDir = path.join(process.cwd(), 'logs');
+
+      // Verificar si el directorio existe
+      if (!fs.existsSync(logsDir)) {
+        return {success: true, archivos: []};
+      }
+
+      // Leer todos los archivos del directorio
+      const archivos = fs.readdirSync(logsDir)
+        .filter(file => file.startsWith('login_errors_') && file.endsWith('.txt'))
+        .map(file => {
+          const stats = fs.statSync(path.join(logsDir, file));
+          return {
+            nombre: file,
+            fecha: stats.mtime,
+            tamaño: stats.size,
+          };
+        })
+        .sort((a, b) => b.fecha.getTime() - a.fecha.getTime()); // Ordenar por fecha descendente
+
+      return {success: true, archivos};
+    } catch (error) {
+      console.error('Error al listar archivos de logs:', error);
+      return {success: false, archivos: []};
+    }
+  }
+
+  @get('/log-usuarios/descargar-log/{nombreArchivo}')
+  @response(200, {
+    description: 'Descarga un archivo de log específico',
+    content: {'text/plain': {schema: {type: 'string'}}},
+  })
+  async descargarArchivoLog(
+    @param.path.string('nombreArchivo') nombreArchivo: string,
+  ): Promise<string> {
+    try {
+      const logsDir = path.join(process.cwd(), 'logs');
+      const rutaArchivo = path.join(logsDir, nombreArchivo);
+
+      // Validar que el archivo existe y está dentro del directorio de logs
+      if (!fs.existsSync(rutaArchivo) || !rutaArchivo.startsWith(logsDir)) {
+        throw new Error('Archivo no encontrado o acceso no permitido');
+      }
+
+      // Leer y devolver el contenido del archivo
+      const contenido = fs.readFileSync(rutaArchivo, 'utf8');
+      return contenido;
+    } catch (error) {
+      console.error('Error al descargar archivo de log:', error);
+      throw error;
+    }
+  }
+
+  @del('/log-usuarios/borrar-log/{nombreArchivo}')
+  @response(200, {
+    description: 'Borra un archivo de log específico',
+    content: {'application/json': {schema: {type: 'object'}}},
+  })
+  async borrarArchivoLog(
+    @param.path.string('nombreArchivo') nombreArchivo: string,
+  ): Promise<{success: boolean; message: string}> {
+    try {
+      const logsDir = path.join(process.cwd(), 'logs');
+      const rutaArchivo = path.join(logsDir, nombreArchivo);
+
+      // Validar que el archivo existe y está dentro del directorio de logs
+      if (!fs.existsSync(rutaArchivo) || !rutaArchivo.startsWith(logsDir)) {
+        return {
+          success: false,
+          message: 'Archivo no encontrado o acceso no permitido',
+        };
+      }
+
+      // Borrar el archivo
+      fs.unlinkSync(rutaArchivo);
+
+      return {
+        success: true,
+        message: 'Archivo borrado correctamente',
+      };
+    } catch (error) {
+      console.error('Error al borrar archivo de log:', error);
+      return {
+        success: false,
+        message: `Error al borrar archivo: ${error}`,
+      };
+    }
+  }
+
   @get('/log-usuarios/count')
   @response(200, {
     description: 'LogUsuario model count',
