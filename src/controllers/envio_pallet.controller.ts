@@ -95,7 +95,7 @@ export class EnvioPalletController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM vista_envio_pallet_envio_pallet${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM vista_envio_pallet_contenido${filtros}`;
     const registros = await dataSource.execute(query, []);
     return registros;
   }
@@ -166,17 +166,8 @@ export class EnvioPalletController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          palletId,
-                          envioId,
-                          origenRuta,
-                          codigoPallet,
-                          aliasPallet,
-                          fechaCreacion,
-                          fechaModificacion,
-                          usuarioCreacion,
-                          usuarioModificacion
-                     FROM vista_envio_pallet_envio_pallet${filtros}`;
+    const query = `SELECT *
+                     FROM vista_envio_pallet_contenido${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }

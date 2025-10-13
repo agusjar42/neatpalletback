@@ -7,8 +7,8 @@ import {
   param,
   requestBody,
   response,
-  getModelSchemaRef,
 } from '@loopback/rest';
+import {service} from '@loopback/core';
 import {
   EnvioRepository,
   EnvioContenidoRepository,
@@ -19,6 +19,7 @@ import {
   PalletRepository,
   TipoSensorRepository,
   EnvioConfiguracionRepository,
+  EnvioContenidoPalletRepository,
 } from '../repositories';
 import {
   Envio,
@@ -28,8 +29,9 @@ import {
   EnvioParada,
   EnvioSensor,
   Pallet,
-  CrearEnvioConfiguracionDto,
+  EnvioContenidoPallet,
 } from '../models';
+import {EnvioConfiguracionService} from '../services/envio-configuracion.service';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -69,6 +71,10 @@ export class EnvioFakeDataController {
     public palletRepository: PalletRepository,
     @repository(TipoSensorRepository)
     public tipoSensorRepository: TipoSensorRepository,
+    @repository(EnvioContenidoPalletRepository)
+    public envioContenidoPalletRepository: EnvioContenidoPalletRepository,
+    @service(EnvioConfiguracionService)
+    public envioConfiguracionService: EnvioConfiguracionService,
   ) {}
 
   @post('/envios/generar-datos-fake')
@@ -147,70 +153,31 @@ export class EnvioFakeDataController {
     }
 
     // Crear configuraciones desde empresa
-    await this.insertEnvioConfiguracion(envio.id!, empresaId, usuarioCreacion);
+    await this.envioConfiguracionService.insertEnvioConfiguracion(envio.id!, empresaId, usuarioCreacion);
+
+    // Asociar pallets con contenidos (distribuir pallets entre contenidos)
+    const envioContenidoPallets = [];
+    for (const envioPallet of envioPallets) {
+      // Asignar cada pallet a un contenido aleatorio
+      const contenidoAleatorio = this.randomElement(contenidos);
+      const envioContenidoPallet = await this.crearEnvioContenidoPalletFake(
+        contenidoAleatorio.id!,
+        envioPallet.palletId!,
+        usuarioCreacion
+      );
+      envioContenidoPallets.push(envioContenidoPallet);
+    }
 
     return {
       mensaje: 'Datos fake generados exitosamente',
       envio,
       contenidos,
       envioPallets,
+      envioContenidoPallets,
       paradas,
       sensores,
       movimientos,
     };
-  }
-
-  @post('/crear-envio-configuracion-desde-empresa')
-  @response(204, {
-    description: 'Crear envío y configuración desde empresa',
-  })
-  async crearEnvioConfiguracionDesdeEmpresa(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(CrearEnvioConfiguracionDto, {
-            title: 'CrearEnvioConfiguracionDto'
-          }),
-        },
-      },
-    })
-    dto: CrearEnvioConfiguracionDto,
-  ): Promise<void> {
-    //
-    //Borro e inserto las configuraciones por defecto de la empresa
-    //
-    await this.insertEnvioConfiguracion(dto.envioId, dto.empresaId, dto.usuarioCreacion);
-  }
-
-  /**
-   * Inserta en envio_configuracion los datos de envio_configuracion_empresa para la empresa indicada.
-   * @param envioId El ID del envío.
-   * @param empresaId El ID de la empresa.
-   * @param usuarioCreacion El ID del usuario que crea la configuración.
-   */
-  private async insertEnvioConfiguracion(envioId: number, empresaId: number, usuarioCreacion: number): Promise<void> {
-    const dataSource = this.envioRepository.dataSource;
-    //
-    //Primero borramos las configuraciones anteriores por si acaso
-    //
-    const deleteQuery = `DELETE FROM envio_configuracion WHERE envio_id = ${envioId}`;
-    await dataSource.execute(deleteQuery);
-    //
-    //Luego insertamos las configuraciones por defecto de la empresa
-    //
-    const insert = `insert into envio_configuracion (envio_id,
-                                                     nombre,
-                                                     valor,
-                                                     unidad_medida,
-                                                     usuario_creacion)
-                                              SELECT ${envioId} envio_id,
-                                                     nombre,
-                                                     valor,
-                                                     unidad_medida,
-                                                     ${usuarioCreacion} usuario_creacion
-                                                FROM envio_configuracion_empresa
-                                               where empresa_id = ${empresaId}`;
-    await dataSource.execute(insert);
   }
 
   @del('/envios/{id}/borrar-cascada')
@@ -222,25 +189,28 @@ export class EnvioFakeDataController {
   ): Promise<void> {
     // Borrar en orden: primero las tablas hijas, luego la tabla padre
 
-    // 1. Borrar envio_contenido
+    // 1. Borrar envio_contenido_pallet usando el método del repositorio
+    await this.envioContenidoPalletRepository.deleteByEnvioId(id);
+
+    // 2. Borrar envio_contenido
     await this.envioContenidoRepository.deleteAll({envioId: id});
 
-    // 2. Borrar envio_movimiento
+    // 3. Borrar envio_movimiento
     await this.envioMovimientoRepository.deleteAll({envioId: id});
 
-    // 3. Borrar envio_pallet
+    // 4. Borrar envio_pallet
     await this.envioPalletRepository.deleteAll({envioId: id});
 
-    // 4. Borrar envio_parada
+    // 5. Borrar envio_parada
     await this.envioParadaRepository.deleteAll({envioId: id});
 
-    // 5. Borrar envio_sensor
+    // 6. Borrar envio_sensor
     await this.envioSensorRepository.deleteAll({envioId: id});
 
-    // 6 Borrar envio_configuracion
+    // 7. Borrar envio_configuracion
     await this.envioConfiguracionRepository.deleteAll({envioId: id});
 
-    // 7. Finalmente, borrar el envío
+    // 8. Finalmente, borrar el envío
     await this.envioRepository.deleteById(id);
   }
 
@@ -325,6 +295,16 @@ export class EnvioFakeDataController {
     };
 
     return this.envioSensorRepository.create(sensor);
+  }
+
+  private async crearEnvioContenidoPalletFake(envioContenidoId: number, palletId: number, usuarioCreacion: number): Promise<EnvioContenidoPallet> {
+    const envioContenidoPallet = {
+      envioContenidoId,
+      palletId,
+      usuarioCreacion,
+    };
+
+    return this.envioContenidoPalletRepository.create(envioContenidoPallet);
   }
 
   // Funciones auxiliares para generar datos aleatorios

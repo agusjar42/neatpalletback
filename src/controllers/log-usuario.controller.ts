@@ -4,9 +4,8 @@ import {LogUsuario} from '../models';
 import {LogUsuarioRepository} from '../repositories';
 import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
-
-@authenticate('jwt')
-@authorize({allowedRoles: ['API']})
+import * as fs from 'fs';
+import * as path from 'path';
 
 export class LogUsuarioController {
   constructor(
@@ -33,6 +32,69 @@ export class LogUsuarioController {
     logUsuario: Omit<LogUsuario, 'id'>,
   ): Promise<LogUsuario> {
     return this.logUsuarioRepository.create(logUsuario);
+  }
+
+  @post('/log-usuarios/guardar-archivo')
+  @response(200, {
+    description: 'Guarda log de login incorrecto en archivo de texto',
+    content: {'application/json': {schema: {type: 'object'}}},
+  })
+  async guardarLogEnArchivo(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              tipo: {type: 'string'},
+              usuario: {type: 'string'},
+              ip: {type: 'string'},
+              mensaje: {type: 'string'},
+            },
+          },
+        },
+      },
+    })
+    logData: {tipo: string; usuario: string; ip: string; mensaje: string},
+  ): Promise<{success: boolean; message: string; file?: string}> {
+    try {
+      const ahora = new Date();
+      const año = ahora.getFullYear();
+      const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+      const dia = String(ahora.getDate()).padStart(2, '0');
+      const hora = String(ahora.getHours()).padStart(2, '0');
+      const minuto = String(ahora.getMinutes()).padStart(2, '0');
+      const segundo = String(ahora.getSeconds()).padStart(2, '0');
+
+      const timestamp = `${año}-${mes}-${dia} ${hora}:${minuto}:${segundo}`;
+      const nombreArchivo = `login_errors_${año}_${mes}.txt`;
+
+      // Crear directorio de logs si no existe
+      const logsDir = path.join(process.cwd(), 'logs');
+      if (!fs.existsSync(logsDir)) {
+        fs.mkdirSync(logsDir, {recursive: true});
+      }
+
+      const rutaArchivo = path.join(logsDir, nombreArchivo);
+
+      // Formatear el mensaje del log
+      const lineaLog = `[${timestamp}] [IP: ${logData.ip}] ${logData.tipo.toUpperCase()} - Usuario: ${logData.usuario}${logData.mensaje ? `, Mensaje: ${logData.mensaje}` : ''}\n`;
+
+      // Añadir el log al archivo (append)
+      fs.appendFileSync(rutaArchivo, lineaLog, 'utf8');
+
+      return {
+        success: true,
+        message: 'Log guardado correctamente',
+        file: rutaArchivo,
+      };
+    } catch (error) {
+      console.error('Error al guardar log:', error);
+      return {
+        success: false,
+        message: `Error al guardar log: ${error}`,
+      };
+    }
   }
 
   @get('/log-usuarios/count')

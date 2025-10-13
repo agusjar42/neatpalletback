@@ -26,3 +26,4 @@ export * from './parametro.repository';
 export * from './tipo_carroceria.repository';
 export * from './tipo_sensor.repository';
 export * from './tipo_transporte.repository';
+export * from './envio-contenido-pallet.repository';export * from './envio-contenido-pallet.repository';
