@@ -102,7 +102,7 @@ export class LogUsuarioController {
     description: 'Lista todos los archivos de logs de login incorrectos',
     content: {'application/json': {schema: {type: 'object'}}},
   })
-  async listarArchivosLogs(): Promise<{success: boolean; archivos: Array<{nombre: string; fecha: Date; tamaño: number}>}> {
+  async listarArchivosLogs(): Promise<{success: boolean; archivos: Array<{nombre: string; fecha: Date; tamaño: number; tipo: string}>}> {
     try {
       const logsDir = path.join(process.cwd(), 'logs');
 
@@ -111,15 +111,21 @@ export class LogUsuarioController {
         return {success: true, archivos: []};
       }
 
-      // Leer todos los archivos del directorio
+      // Leer todos los archivos del directorio (login_errors y api_requests)
       const archivos = fs.readdirSync(logsDir)
-        .filter(file => file.startsWith('login_errors_') && file.endsWith('.txt'))
+        .filter(file =>
+          (file.startsWith('login_errors_') || file.startsWith('api_requests_')) &&
+          file.endsWith('.txt')
+        )
         .map(file => {
           const stats = fs.statSync(path.join(logsDir, file));
+          // Determinar el tipo de archivo
+          const tipo = file.startsWith('login_errors_') ? 'Login Fallidos' : 'API Requests';
           return {
             nombre: file,
             fecha: stats.mtime,
             tamaño: stats.size,
+            tipo,
           };
         })
         .sort((a, b) => b.fecha.getTime() - a.fecha.getTime()); // Ordenar por fecha descendente
