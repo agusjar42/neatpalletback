@@ -17,45 +17,45 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {EnvioConfiguracionEmpresa} from '../models';
-import {EnvioConfiguracionEmpresaRepository} from '../repositories';
+import {EnvioSensorEmpresa} from '../models';
+import {EnvioSensorEmpresaRepository} from '../repositories';
 
-export class EnvioConfiguracionEmpresaController {
+export class EnvioSensorEmpresaController {
   constructor(
-    @repository(EnvioConfiguracionEmpresaRepository)
-    public envioConfiguracionEmpresaRepository : EnvioConfiguracionEmpresaRepository,
+    @repository(EnvioSensorEmpresaRepository)
+    public envioSensorEmpresaRepository : EnvioSensorEmpresaRepository,
   ) {}
 
-  @post('/envio-configuracion-empresas')
+  @post('/envio-sensor-empresas')
   @response(200, {
-    description: 'EnvioConfiguracionEmpresa model instance',
-    content: {'application/json': {schema: getModelSchemaRef(EnvioConfiguracionEmpresa)}},
+    description: 'EnvioSensorEmpresa model instance',
+    content: {'application/json': {schema: getModelSchemaRef(EnvioSensorEmpresa)}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(EnvioConfiguracionEmpresa, {
-            title: 'NewEnvioConfiguracionEmpresa',
+          schema: getModelSchemaRef(EnvioSensorEmpresa, {
+            title: 'NewEnvioSensorEmpresa',
             exclude: ['id'],
           }),
         },
       },
     })
-    envioConfiguracionEmpresa: Omit<EnvioConfiguracionEmpresa, 'id'>,
-  ): Promise<EnvioConfiguracionEmpresa> {
-    return this.envioConfiguracionEmpresaRepository.create(envioConfiguracionEmpresa);
+    envioSensorEmpresa: Omit<EnvioSensorEmpresa, 'id'>,
+  ): Promise<EnvioSensorEmpresa> {
+    return this.envioSensorEmpresaRepository.create(envioSensorEmpresa);
   }
 
-  @get('/envio-configuracion-empresas/count')
+  @get('/envio-sensor-empresas/count')
   @response(200, {
-    description: 'EnvioConfiguracionEmpresa model count',
+    description: 'EnvioSensorEmpresa model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async count(
-    @param.where(EnvioConfiguracionEmpresa) where?: Where<EnvioConfiguracionEmpresa>,
+    @param.where(EnvioSensorEmpresa) where?: Where<EnvioSensorEmpresa>,
   ): Promise<Count> {
-    const dataSource = this.envioConfiguracionEmpresaRepository.dataSource;
+    const dataSource = this.envioSensorEmpresaRepository.dataSource;
     //Aplicamos filtros
     let filtros = '';
     //Obtiene los filtros
@@ -95,27 +95,27 @@ export class EnvioConfiguracionEmpresaController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM envio_configuracion_empresa${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM vista_envio_tipo_sensor_empresa${filtros}`;
     const registros = await dataSource.execute(query, []);
     return registros;
   }
 
-  @get('/envio-configuracion-empresas')
+  @get('/envio-sensor-empresas')
   @response(200, {
-    description: 'Array of EnvioConfiguracionEmpresa model instances',
+    description: 'Array of EnvioSensorEmpresa model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(EnvioConfiguracionEmpresa, {includeRelations: true}),
+          items: getModelSchemaRef(EnvioSensorEmpresa, {includeRelations: true}),
         },
       },
     },
   })
   async find(
-    @param.filter(EnvioConfiguracionEmpresa) filter?: Filter<EnvioConfiguracionEmpresa>,
-  ): Promise<EnvioConfiguracionEmpresa[]> {
-    const dataSource = this.envioConfiguracionEmpresaRepository.dataSource;
+    @param.filter(EnvioSensorEmpresa) filter?: Filter<EnvioSensorEmpresa>,
+  ): Promise<EnvioSensorEmpresa[]> {
+    const dataSource = this.envioSensorEmpresaRepository.dataSource;
     //Aplicamos filtros
     let filtros = '';
     //Obtiene los filtros
@@ -152,7 +152,6 @@ export class EnvioConfiguracionEmpresaController {
             }
           }
         }
-
       }
     }
     // Agregar ordenamiento
@@ -166,59 +165,80 @@ export class EnvioConfiguracionEmpresaController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          empresa_id as empresaId,
-                          nombre,
-                          valor,
-                          unidad_medida as unidadMedida,
-                          fecha_creacion as fechaCreacion,
-                          fecha_modificacion as fechaModificacion,
-                          usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion
-                     FROM envio_configuracion_empresa${filtros}`;
+    const query = `SELECT * FROM vista_envio_tipo_sensor_empresa${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
-  } 
+  }
 
-  @get('/envio-configuracion-empresas/{id}')
+  @patch('/envio-sensor-empresas')
   @response(200, {
-    description: 'EnvioConfiguracionEmpresa model instance',
+    description: 'EnvioSensorEmpresa PATCH success count',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async updateAll(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(EnvioSensorEmpresa, {partial: true}),
+        },
+      },
+    })
+    envioSensorEmpresa: EnvioSensorEmpresa,
+    @param.where(EnvioSensorEmpresa) where?: Where<EnvioSensorEmpresa>,
+  ): Promise<Count> {
+    return this.envioSensorEmpresaRepository.updateAll(envioSensorEmpresa, where);
+  }
+
+  @get('/envio-sensor-empresas/{id}')
+  @response(200, {
+    description: 'EnvioSensorEmpresa model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(EnvioConfiguracionEmpresa, {includeRelations: true}),
+        schema: getModelSchemaRef(EnvioSensorEmpresa, {includeRelations: true}),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(EnvioConfiguracionEmpresa, {exclude: 'where'}) filter?: FilterExcludingWhere<EnvioConfiguracionEmpresa>
-  ): Promise<EnvioConfiguracionEmpresa> {
-    return this.envioConfiguracionEmpresaRepository.findById(id, filter);
+    @param.filter(EnvioSensorEmpresa, {exclude: 'where'}) filter?: FilterExcludingWhere<EnvioSensorEmpresa>
+  ): Promise<EnvioSensorEmpresa> {
+    return this.envioSensorEmpresaRepository.findById(id, filter);
   }
 
-  @patch('/envio-configuracion-empresas/{id}')
+  @patch('/envio-sensor-empresas/{id}')
   @response(204, {
-    description: 'EnvioConfiguracionEmpresa PATCH success',
+    description: 'EnvioSensorEmpresa PATCH success',
   })
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(EnvioConfiguracionEmpresa, {partial: true}),
+          schema: getModelSchemaRef(EnvioSensorEmpresa, {partial: true}),
         },
       },
     })
-    envioConfiguracionEmpresa: EnvioConfiguracionEmpresa,
+    envioSensorEmpresa: EnvioSensorEmpresa,
   ): Promise<void> {
-    await this.envioConfiguracionEmpresaRepository.updateById(id, envioConfiguracionEmpresa);
+    await this.envioSensorEmpresaRepository.updateById(id, envioSensorEmpresa);
   }
 
-  @del('/envio-configuracion-empresas/{id}')
+  @put('/envio-sensor-empresas/{id}')
   @response(204, {
-    description: 'EnvioConfiguracionEmpresa DELETE success',
+    description: 'EnvioSensorEmpresa PUT success',
+  })
+  async replaceById(
+    @param.path.number('id') id: number,
+    @requestBody() envioSensorEmpresa: EnvioSensorEmpresa,
+  ): Promise<void> {
+    await this.envioSensorEmpresaRepository.replaceById(id, envioSensorEmpresa);
+  }
+
+  @del('/envio-sensor-empresas/{id}')
+  @response(204, {
+    description: 'EnvioSensorEmpresa DELETE success',
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.envioConfiguracionEmpresaRepository.deleteById(id);
+    await this.envioSensorEmpresaRepository.deleteById(id);
   }
 }
