@@ -20,8 +20,10 @@ import {
 import {service} from '@loopback/core';
 import {Envio} from '../models';
 import {CrearEnvioConfiguracionDto} from '../models/crear-envio-configuracion.dto';
+import {CrearEnvioSensorDto} from '../models/crear-envio-sensor.dto';
 import {EnvioRepository} from '../repositories';
 import {EnvioConfiguracionService} from '../services/envio-configuracion.service';
+import {EnvioSensorService} from '../services/envio-sensor.service';
 
 export class EnvioController {
   constructor(
@@ -29,6 +31,8 @@ export class EnvioController {
     public envioRepository : EnvioRepository,
     @service(EnvioConfiguracionService)
     public envioConfiguracionService: EnvioConfiguracionService,
+    @service(EnvioSensorService)
+    public envioSensorService: EnvioSensorService,
   ) {}
 
   @post('/envios')
@@ -81,6 +85,28 @@ export class EnvioController {
     //Borro e inserto las configuraciones por defecto de la empresa
     //
     await this.envioConfiguracionService.insertEnvioConfiguracion(dto.envioId, dto.empresaId, dto.usuarioCreacion);
+  }
+
+  @post('/crear-envio-sensor-desde-empresa')
+  @response(204, {
+    description: 'Crear envío y sensores desde empresa',
+  })
+  async crearEnvioSensorDesdeEmpresa(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(CrearEnvioSensorDto, {
+            title: 'CrearEnvioSensorDto'
+          }),
+        },
+      },
+    })
+    dto: CrearEnvioSensorDto,
+  ): Promise<void> {
+    //
+    //Borro e inserto los sensores por defecto de la empresa
+    //
+    await this.envioSensorService.insertEnvioSensor(dto.envioId, dto.empresaId, dto.usuarioCreacion);
   }
 
   @get('/envios/count')

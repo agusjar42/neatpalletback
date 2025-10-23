@@ -30,4 +30,5 @@ export * from './tipo_transporte.model';
 export * from './usuario-imagenes.model';
 export * from './usuario-con-imagenes.dto';
 export * from './crear-envio-configuracion.dto';
+export * from './crear-envio-sensor.dto';
 export * from './envio-contenido-pallet.model';
