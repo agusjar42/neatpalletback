@@ -36,7 +36,7 @@ export class TipoTransporte extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_creacion',
+      columnName: 'usuarioCreacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -48,7 +48,7 @@ export class TipoTransporte extends Entity {
     type: 'date',
     defaultFn: 'now',
     mysql: {
-      columnName: 'fecha_creacion',
+      columnName: 'fechaCreacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }
@@ -58,7 +58,7 @@ export class TipoTransporte extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_modificacion',
+      columnName: 'usuarioModificacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -69,7 +69,7 @@ export class TipoTransporte extends Entity {
   @property({
     type: 'date',
     mysql: {
-      columnName: 'fecha_modificacion',
+      columnName: 'fechaModificacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }
@@ -80,7 +80,7 @@ export class TipoTransporte extends Entity {
     type: 'string',
     length: 1,
     mysql: {
-      columnName: 'activo_sn',
+      columnName: 'activoSn',
       dataType: 'varchar',
       dataLength: 1,
       nullable: 'Y'

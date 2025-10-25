@@ -22,14 +22,14 @@ export class Envio extends Entity {
   })
   id?: number;
 
-  @belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresa_id'}})
+  @belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresaId'}})
   empresaId: number;
 
   @property({
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'origen_ruta',
+      columnName: 'origenRuta',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
@@ -41,7 +41,7 @@ export class Envio extends Entity {
     type: 'string',
     length: 20,
     mysql: {
-      columnName: 'fecha_llegada',
+      columnName: 'fechaLlegada',
       dataType: 'varchar',
       dataLength: 20,
       nullable: 'Y'
@@ -53,7 +53,7 @@ export class Envio extends Entity {
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'gps_ruta_origen',
+      columnName: 'gpsRutaOrigen',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
@@ -65,7 +65,7 @@ export class Envio extends Entity {
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'destino_ruta',
+      columnName: 'destinoRuta',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
@@ -77,7 +77,7 @@ export class Envio extends Entity {
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'gps_ruta_destino',
+      columnName: 'gpsRutaDestino',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
@@ -89,7 +89,7 @@ export class Envio extends Entity {
     type: 'string',
     length: 20,
     mysql: {
-      columnName: 'fecha_salida',
+      columnName: 'fechaSalida',
       dataType: 'varchar',
       dataLength: 20,
       nullable: 'Y'
@@ -100,7 +100,7 @@ export class Envio extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'paradas_previstas',
+      columnName: 'paradasPrevistas',
       dataType: 'int',
       dataLength: 3,
       nullable: 'Y'
@@ -111,7 +111,7 @@ export class Envio extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_creacion',
+      columnName: 'usuarioCreacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -123,7 +123,7 @@ export class Envio extends Entity {
     type: 'date',
     defaultFn: 'now',
     mysql: {
-      columnName: 'fecha_creacion',
+      columnName: 'fechaCreacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }
@@ -133,7 +133,7 @@ export class Envio extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_modificacion',
+      columnName: 'usuarioModificacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -144,7 +144,7 @@ export class Envio extends Entity {
   @property({
     type: 'date',
     mysql: {
-      columnName: 'fecha_modificacion',
+      columnName: 'fechaModificacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }

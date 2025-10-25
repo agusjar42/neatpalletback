@@ -23,16 +23,16 @@ export class EnvioContenidoPallet extends Entity {
   })
   id?: number;
 
-  @belongsTo(() => EnvioContenido, {name: 'envioContenido'}, {mysql: {columnName: 'envio_contenido_id'}})
+  @belongsTo(() => EnvioContenido, {name: 'envioContenido'}, {mysql: {columnName: 'envioContenidoId'}})
   envioContenidoId: number;
 
-  @belongsTo(() => Pallet, {name: 'pallet'}, {mysql: {columnName: 'pallet_id'}})
+  @belongsTo(() => Pallet, {name: 'pallet'}, {mysql: {columnName: 'palletId'}})
   palletId: number;
 
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_creacion',
+      columnName: 'usuarioCreacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -44,7 +44,7 @@ export class EnvioContenidoPallet extends Entity {
     type: 'date',
     defaultFn: 'now',
     mysql: {
-      columnName: 'fecha_creacion',
+      columnName: 'fechaCreacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }
@@ -54,7 +54,7 @@ export class EnvioContenidoPallet extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_modificacion',
+      columnName: 'usuarioModificacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -65,7 +65,7 @@ export class EnvioContenidoPallet extends Entity {
   @property({
     type: 'date',
     mysql: {
-      columnName: 'fecha_modificacion',
+      columnName: 'fechaModificacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }

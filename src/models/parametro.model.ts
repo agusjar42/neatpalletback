@@ -38,7 +38,7 @@ export class Parametro extends Entity {
     type: 'string',
     length: 500,
     mysql: {
-      columnName: 'valor_disponible',
+      columnName: 'valorDisponible',
       dataType: 'varchar',
       dataLength: 500,
       nullable: 'Y'
@@ -49,7 +49,7 @@ export class Parametro extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_creacion',
+      columnName: 'usuarioCreacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -61,7 +61,7 @@ export class Parametro extends Entity {
     type: 'date',
     defaultFn: 'now',
     mysql: {
-      columnName: 'fecha_creacion',
+      columnName: 'fechaCreacion',
       dataType: 'timestamp',
       nullable: 'N'
     }
@@ -71,7 +71,7 @@ export class Parametro extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_modificacion',
+      columnName: 'usuarioModificacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -82,7 +82,7 @@ export class Parametro extends Entity {
   @property({
     type: 'date',
     mysql: {
-      columnName: 'fecha_modificacion',
+      columnName: 'fechaModificacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }
@@ -93,7 +93,7 @@ export class Parametro extends Entity {
     type: 'string',
     length: 1,
     mysql: {
-      columnName: 'activo_sn',
+      columnName: 'activoSn',
       dataType: 'varchar',
       dataLength: 1,
       nullable: 'Y'

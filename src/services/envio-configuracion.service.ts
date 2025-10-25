@@ -20,23 +20,23 @@ export class EnvioConfiguracionService {
     //
     //Primero borramos las configuraciones anteriores por si acaso
     //
-    const deleteQuery = `DELETE FROM envio_configuracion WHERE envio_id = ${envioId}`;
+    const deleteQuery = `DELETE FROM envio_configuracion WHERE envioId = ${envioId}`;
     await dataSource.execute(deleteQuery);
     //
     //Luego insertamos las configuraciones por defecto de la empresa
     //
-    const insert = `insert into envio_configuracion (envio_id,
+    const insert = `insert into envio_configuracion (envioId,
                                                      nombre,
                                                      valor,
-                                                     unidad_medida,
-                                                     usuario_creacion)
-                                              SELECT ${envioId} envio_id,
+                                                     unidadMedida,
+                                                     usuarioCreacion)
+                                              SELECT ${envioId} envioId,
                                                      nombre,
                                                      valor,
-                                                     unidad_medida,
-                                                     ${usuarioCreacion} usuario_creacion
+                                                     unidadMedida,
+                                                     ${usuarioCreacion} usuarioCreacion
                                                 FROM envio_configuracion_empresa
-                                               where empresa_id = ${empresaId}`;
+                                               where empresaId = ${empresaId}`;
     await dataSource.execute(insert);
   }
 }

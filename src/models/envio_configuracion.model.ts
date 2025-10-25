@@ -22,7 +22,7 @@ export class EnvioConfiguracion extends Entity {
   })
   id?: number;
 
-  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envio_id'}})
+  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envioId'}})
   envioId: number;
 
   @property({
@@ -53,7 +53,7 @@ export class EnvioConfiguracion extends Entity {
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'unidad_medida',
+      columnName: 'unidadMedida',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
@@ -64,7 +64,7 @@ export class EnvioConfiguracion extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_creacion',
+      columnName: 'usuarioCreacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -76,7 +76,7 @@ export class EnvioConfiguracion extends Entity {
     type: 'date',
     defaultFn: 'now',
     mysql: {
-      columnName: 'fecha_creacion',
+      columnName: 'fechaCreacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }
@@ -86,7 +86,7 @@ export class EnvioConfiguracion extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_modificacion',
+      columnName: 'usuarioModificacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -97,7 +97,7 @@ export class EnvioConfiguracion extends Entity {
   @property({
     type: 'date',
     mysql: {
-      columnName: 'fecha_modificacion',
+      columnName: 'fechaModificacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }

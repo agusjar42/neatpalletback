@@ -168,12 +168,12 @@ export class ParametroController {
     }
     const query = `SELECT id,
                           nombre,
-                          valor_disponible as valorDisponible,
-                          fecha_creacion as fechaCreacion,
-                          fecha_modificacion as fechaModificacion,
-                          usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion,
-                          activo_sn as activoSn
+                          valorDisponible,
+                          fechaCreacion,
+                          fechaModificacion,
+                          usuarioCreacion,
+                          usuarioModificacion,
+                          activoSn
                      FROM parametro${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

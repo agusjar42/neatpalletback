@@ -22,7 +22,7 @@ export class EnvioContenido extends Entity {
   })
   id?: number;
 
-  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envio_id'}})
+  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envioId'}})
   envioId: number;
 
   @property({
@@ -54,7 +54,7 @@ export class EnvioContenido extends Entity {
     precision: 18,
     scale: 2,
     mysql: {
-      columnName: 'peso_kgs',
+      columnName: 'pesoKgs',
       dataType: 'decimal',
       dataLength: 18,
       dataPrecision: 18,
@@ -69,7 +69,7 @@ export class EnvioContenido extends Entity {
     precision: 18,
     scale: 2,
     mysql: {
-      columnName: 'peso_total',
+      columnName: 'pesoTotal',
       dataType: 'decimal',
       dataLength: 18,
       dataPrecision: 18,
@@ -95,7 +95,7 @@ export class EnvioContenido extends Entity {
     type: 'string',
     length: 250,
     mysql: {
-      columnName: 'foto_producto',
+      columnName: 'fotoProducto',
       dataType: 'varchar',
       dataLength: 250,
       nullable: 'Y'
@@ -107,7 +107,7 @@ export class EnvioContenido extends Entity {
     type: 'string',
     length: 250,
     mysql: {
-      columnName: 'foto_pallet',
+      columnName: 'fotoPallet',
       dataType: 'varchar',
       dataLength: 250,
       nullable: 'Y'
@@ -169,7 +169,7 @@ export class EnvioContenido extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_creacion',
+      columnName: 'usuarioCreacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -181,7 +181,7 @@ export class EnvioContenido extends Entity {
     type: 'date',
     defaultFn: 'now',
     mysql: {
-      columnName: 'fecha_creacion',
+      columnName: 'fechaCreacion',
       dataType: 'timestamp',
       nullable: 'N'
     }
@@ -191,7 +191,7 @@ export class EnvioContenido extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_modificacion',
+      columnName: 'usuarioModificacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -202,7 +202,7 @@ export class EnvioContenido extends Entity {
   @property({
     type: 'date',
     mysql: {
-      columnName: 'fecha_modificacion',
+      columnName: 'fechaModificacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }

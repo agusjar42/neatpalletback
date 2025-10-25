@@ -167,14 +167,14 @@ export class EnvioConfiguracionEmpresaController {
       filtros += ` OFFSET ${filter?.offset}`;
     }
     const query = `SELECT id,
-                          empresa_id as empresaId,
+                          empresaId,
                           nombre,
                           valor,
-                          unidad_medida as unidadMedida,
-                          fecha_creacion as fechaCreacion,
-                          fecha_modificacion as fechaModificacion,
-                          usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion
+                          unidadMedida,
+                          fechaCreacion,
+                          fechaModificacion,
+                          usuarioCreacion,
+                          usuarioModificacion
                      FROM envio_configuracion_empresa${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

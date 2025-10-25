@@ -248,10 +248,10 @@ export class EmpresaController {
                             email,
                             imagen,
                             logo,
-                            fecha_creacion as fechaCreacion,
-                            fecha_modificacion as fechaModificacion,
-                            usu_creacion as usuCreacion,
-                            usu_modificacion as usuModificacion
+                            fechaCreacion,
+                            fechaModificacion,
+                            usuCreacion,
+                            usuModificacion
                       FROM empresa${filtros}`;
       const registros = await dataSource.execute(query);
       //

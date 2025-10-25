@@ -24,14 +24,14 @@ export class Pallet extends Entity {
   })
   id?: number;
 
-  @belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresa_id'}})
+  @belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresaId'}})
   empresaId: number;
 
   @property({
     type: 'string',
     length: 20,
     mysql: {
-      columnName: 'fecha_impresion',
+      columnName: 'fechaImpresion',
       dataType: 'varchar',
       dataLength: 20,
       nullable: 'Y'
@@ -66,7 +66,7 @@ export class Pallet extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'periodo_envio_mail',
+      columnName: 'periodoEnvioMail',
       dataType: 'int',
       dataLength: 4,
       nullable: 'Y'
@@ -101,7 +101,7 @@ export class Pallet extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_creacion',
+      columnName: 'usuarioCreacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -113,7 +113,7 @@ export class Pallet extends Entity {
     type: 'date',
     defaultFn: 'now',
     mysql: {
-      columnName: 'fecha_creacion',
+      columnName: 'fechaCreacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }
@@ -123,7 +123,7 @@ export class Pallet extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_modificacion',
+      columnName: 'usuarioModificacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -134,7 +134,7 @@ export class Pallet extends Entity {
   @property({
     type: 'date',
     mysql: {
-      columnName: 'fecha_modificacion',
+      columnName: 'fechaModificacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }

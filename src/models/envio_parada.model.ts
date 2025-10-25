@@ -22,7 +22,7 @@ export class EnvioParada extends Entity {
   })
   id?: number;
 
-  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envio_id'}})
+  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envioId'}})
   envioId: number;
 
   @property({
@@ -41,7 +41,7 @@ export class EnvioParada extends Entity {
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'lugar_parada',
+      columnName: 'lugarParada',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
@@ -53,7 +53,7 @@ export class EnvioParada extends Entity {
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'lugar_parada_gps',
+      columnName: 'lugarParadaGps',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
@@ -77,7 +77,7 @@ export class EnvioParada extends Entity {
     type: 'string',
     length: 100,
     mysql: {
-      columnName: 'nombre_operario',
+      columnName: 'nombreOperario',
       dataType: 'varchar',
       dataLength: 100,
       nullable: 'Y'
@@ -89,7 +89,7 @@ export class EnvioParada extends Entity {
     type: 'string',
     length: 20,
     mysql: {
-      columnName: 'telefono_operario',
+      columnName: 'telefonoOperario',
       dataType: 'varchar',
       dataLength: 20,
       nullable: 'Y'
@@ -101,7 +101,7 @@ export class EnvioParada extends Entity {
     type: 'string',
     length: 100,
     mysql: {
-      columnName: 'email_operario',
+      columnName: 'emailOperario',
       dataType: 'varchar',
       dataLength: 100,
       nullable: 'Y'
@@ -112,7 +112,7 @@ export class EnvioParada extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_creacion',
+      columnName: 'usuarioCreacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -124,7 +124,7 @@ export class EnvioParada extends Entity {
     type: 'date',
     defaultFn: 'now',
     mysql: {
-      columnName: 'fecha_creacion',
+      columnName: 'fechaCreacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }
@@ -134,7 +134,7 @@ export class EnvioParada extends Entity {
   @property({
     type: 'number',
     mysql: {
-      columnName: 'usuario_modificacion',
+      columnName: 'usuarioModificacion',
       dataType: 'int',
       dataLength: 11,
       nullable: 'Y'
@@ -145,7 +145,7 @@ export class EnvioParada extends Entity {
   @property({
     type: 'date',
     mysql: {
-      columnName: 'fecha_modificacion',
+      columnName: 'fechaModificacion',
       dataType: 'timestamp',
       nullable: 'Y'
     }

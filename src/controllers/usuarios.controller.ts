@@ -219,8 +219,8 @@ export class UsuariosController {
               'mail',
               'password',
               'nombre',
-              'empresa_id',
-              'rol_id'
+              'empresaId',
+              'rolId'
             ],
             properties: {
               nombre: {
@@ -360,13 +360,13 @@ export class UsuariosController {
 
         // Obtengo la plantilla del correo
         const dataSourcePlantillaEmail = this.plantillaEmailRepository.dataSource;
-        query = `SELECT * FROM plantilla_email WHERE nombre_plantilla="${nombrePlantilla}";`;
+        query = `SELECT * FROM plantilla_email WHERE nombrePlantilla="${nombrePlantilla}";`;
         const plantillaRegistro = await dataSourcePlantillaEmail.execute(query);
         let htmlContent = plantillaRegistro[0]['cuerpo'];
 
         //Obtengo la empresa
         const dataSourceEmpresa = this.empresaRepository.dataSource;
-        query = `SELECT * FROM empresa WHERE id=${plantillaRegistro[0]['empresa_id']};`;
+        query = `SELECT * FROM empresa WHERE id=${plantillaRegistro[0]['empresaId']};`;
         const empresaRegistro = await dataSourceEmpresa.execute(query);
 
         // Preparo la configuración para enviar el correo
@@ -540,11 +540,11 @@ export class UsuariosController {
     @param.path.number('codigoRecuperacion') codigoRecuperacion: number,
   ): Promise<Number> {
     const dataSource = this.usuarioRestablecerPasswordRepository.dataSource;
-    let query = `SELECT usuario_id FROM usuario_restablecer_password WHERE codigoRecuperacion = '${codigoRecuperacion}'`;
+    let query = `SELECT usuarioId FROM usuario_restablecer_password WHERE codigoRecuperacion = '${codigoRecuperacion}'`;
     const registros = await dataSource.execute(query);
     //Si existe el registro, devolvemos el id del usuario
     if (registros.length > 0) {
-      return registros[0]['usuario_id'];
+      return registros[0]['usuarioId'];
     }
     return -1;
   }

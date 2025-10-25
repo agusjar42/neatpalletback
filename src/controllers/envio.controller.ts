@@ -61,6 +61,10 @@ export class EnvioController {
     //Inserto las configuraciones por defecto de la empresa
     //
     await this.envioConfiguracionService.insertEnvioConfiguracion(resultado.id!, envio.empresaId, envio.usuarioCreacion!);
+    //
+    //Inserto los sensores por defecto de la empresa
+    //
+    await this.envioSensorService.insertEnvioSensor(resultado.id!, envio.empresaId, envio.usuarioCreacion!);
 
     return resultado;
     }

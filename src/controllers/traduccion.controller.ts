@@ -189,10 +189,10 @@ export class TraduccionController {
       // Usa el nombre del idioma como alias de columna, reemplazando espacios con guiones bajos
       const columnName = idioma.nombre.replace(/\s+/g, '_').toLowerCase();
       // Agrega el valor de la traducción
-      selectColumns += `, MAX(CASE WHEN t.idioma_id = ${idioma.id} THEN t.valor END) as "${columnName}"`;
+      selectColumns += `, MAX(CASE WHEN t.idiomaId = ${idioma.id} THEN t.valor END) as "${columnName}"`;
       // Agrega el ID del registro de traducción
-      selectColumns += `, MAX(CASE WHEN t.idioma_id = ${idioma.id} THEN t.id END) as "${columnName}Id"`;
-      pivotColumns += ` LEFT JOIN traduccion t${idioma.id} ON t.clave = t${idioma.id}.clave AND t${idioma.id}.idioma_id = ${idioma.id}`;
+      selectColumns += `, MAX(CASE WHEN t.idiomaId = ${idioma.id} THEN t.id END) as "${columnName}Id"`;
+      pivotColumns += ` LEFT JOIN traduccion t${idioma.id} ON t.clave = t${idioma.id}.clave AND t${idioma.id}.idiomaId = ${idioma.id}`;
     }
 
     // Construye la consulta base con el orden correcto de las cláusulas

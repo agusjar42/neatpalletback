@@ -168,11 +168,11 @@ export class TipoTransporteController {
     }
     const query = `SELECT id,
                           nombre,
-                          fecha_creacion as fechaCreacion,
-                          fecha_modificacion as fechaModificacion,
-                          usuario_creacion as usuarioCreacion,
-                          usuario_modificacion as usuarioModificacion,
-                          activo_sn as activoSn
+                          fechaCreacion,
+                          fechaModificacion,
+                          usuarioCreacion,
+                          usuarioModificacion,
+                          activoSn
                      FROM tipo_transporte${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

@@ -157,11 +157,11 @@ export class PaisController {
     const query = `SELECT id,
                           iso,
                           nombre,
-                          activo_sn as activoSn,
-                          fecha_creacion as fechaCreacion,
-                          fecha_modificacion as fechaModificacion,
-                          usu_creacion as usuCreacion,
-                          usu_modificacion as usuModificacion
+                          activoSn,
+                          fechaCreacion,
+                          fechaModificacion,
+                          usuCreacion,
+                          usuModificacion
                      FROM pais${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

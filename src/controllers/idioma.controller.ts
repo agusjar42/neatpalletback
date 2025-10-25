@@ -70,13 +70,7 @@ export class IdiomaController {
                   filtros += ` ${subKey} = ${subValue}`;
                 }
                 else {
-                  //Corrije el nombre del campo
-                  if (subKey !== 'activoSn') {
-                    filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                  }
-                  else {
-                    filtros += ` activo_sn LIKE '%${subValue}%'`;
-                  }
+                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
                 }
                 first = false
               }
@@ -136,13 +130,7 @@ export class IdiomaController {
                   filtros += ` ${subKey} = ${subValue}`;
                 }
                 else {
-                  //Corrije el nombre del campo
-                  if (subKey !== 'activoSn') {
-                    filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                  }
-                  else {
-                    filtros += ` activo_sn LIKE '%${subValue}%'`;
-                  }
+                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
                 }
                 first = false
               }
@@ -166,7 +154,7 @@ export class IdiomaController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id, nombre, iso, activo_sn AS activoSn FROM idioma${filtros}`;
+    const query = `SELECT id, nombre, iso, activoSn FROM idioma${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }
