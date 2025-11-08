@@ -13,7 +13,7 @@ import {FileUploadHandler} from './types';
 
 export namespace TokenServiceConstants {
     export const TOKEN_SECRET_VALUE = 'myjwts3cr3t' //-> LLave secreta con que se encriptara nuestro token
-    export const TOKEN_EXPIRES_IN_VALUE = '600' //-> Duración en milisegundos
+    export const TOKEN_EXPIRES_IN_VALUE = '576000' //-> Duración en segundos (576000 segundos = 160 horas)
 }
 
 // Define el nombre de las variables que usamos para el token
