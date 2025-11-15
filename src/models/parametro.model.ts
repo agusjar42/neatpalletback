@@ -101,6 +101,17 @@ export class Parametro extends Entity {
   })
   activoSn?: string;
 
+  @property({
+    type: 'number',
+    mysql: {
+      columnName: 'orden',
+      dataType: 'int',
+      dataLength: 4,
+      nullable: 'Y'
+    }
+  })
+  orden?: number;
+
   @hasMany(() => PalletParametro, {keyTo: 'parametroId'})
   palletParametros: PalletParametro[];
 

@@ -166,15 +166,7 @@ export class EnvioConfiguracionEmpresaController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          empresaId,
-                          nombre,
-                          valor,
-                          unidadMedida,
-                          fechaCreacion,
-                          fechaModificacion,
-                          usuarioCreacion,
-                          usuarioModificacion
+    const query = `SELECT *
                      FROM envio_configuracion_empresa${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

@@ -154,14 +154,7 @@ export class PaisController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          iso,
-                          nombre,
-                          activoSn,
-                          fechaCreacion,
-                          fechaModificacion,
-                          usuCreacion,
-                          usuModificacion
+    const query = `SELECT *
                      FROM pais${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

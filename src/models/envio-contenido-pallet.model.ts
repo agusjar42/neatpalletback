@@ -72,6 +72,17 @@ export class EnvioContenidoPallet extends Entity {
   })
   fechaModificacion?: string;
 
+  @property({
+    type: 'number',
+    mysql: {
+      columnName: 'orden',
+      dataType: 'int',
+      dataLength: 4,
+      nullable: 'Y'
+    }
+  })
+  orden?: number;
+
   constructor(data?: Partial<EnvioContenidoPallet>) {
     super(data);
   }

@@ -241,17 +241,7 @@ export class EmpresaController {
       if (filter?.offset) {
         filtros += ` OFFSET ${filter?.offset}`;
       }
-      const query = `SELECT id,
-                            codigo,
-                            nombre,
-                            descripcion,
-                            email,
-                            imagen,
-                            logo,
-                            fechaCreacion,
-                            fechaModificacion,
-                            usuCreacion,
-                            usuModificacion
+      const query = `SELECT *
                       FROM empresa${filtros}`;
       const registros = await dataSource.execute(query);
       //

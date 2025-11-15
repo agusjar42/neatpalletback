@@ -133,6 +133,16 @@ export class Empresa extends Entity {
   })
   logo: string;
 
+  @property({
+    type: 'number',
+    jsonSchema: {nullable: true},
+    precision: 4,
+    scale: 0,
+    generated: false,
+    mysql: {columnName: 'orden', dataType: 'int', dataLength: 4, dataPrecision: 4, dataScale: 0, nullable: 'Y', generated: false},
+  })
+  orden?: number;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

@@ -165,14 +165,7 @@ export class TipoSensorController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          empresaId,
-                          nombre,
-                          activoSn,
-                          fechaCreacion,
-                          fechaModificacion,
-                          usuarioCreacion,
-                          usuarioModificacion
+    const query = `SELECT *
                      FROM tipo_sensor${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

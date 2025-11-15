@@ -166,13 +166,7 @@ export class TipoTransporteController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          nombre,
-                          fechaCreacion,
-                          fechaModificacion,
-                          usuarioCreacion,
-                          usuarioModificacion,
-                          activoSn
+    const query = `SELECT *
                      FROM tipo_transporte${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

@@ -195,20 +195,7 @@ export class EnvioContenidoController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          envioId,
-                          origenRuta,
-                          producto,
-                          referencia,
-                          pesoKgs,
-                          pesoTotal,
-                          medidas,
-                          fotoProducto,
-                          fotoPallet,
-                          fechaCreacion,
-                          fechaModificacion,
-                          usuarioCreacion,
-                          usuarioModificacion
+    const query = `SELECT *
                      FROM vista_envio_contenido_envio${filtros}`;
     const registros = await dataSource.execute(query);
     //

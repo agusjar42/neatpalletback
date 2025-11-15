@@ -188,20 +188,8 @@ export class EnvioMovimientoController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          origenRuta,
-                          envioId,
-                          tipoSensorId,
-                          nombreSensor,
-                          fecha,
-                          DATE_FORMAT(fecha, '%d/%m/%Y') AS fechaEspanol,
-                          gps,
-                          imagen,
-                          valor,
-                          fechaCreacion,
-                          fechaModificacion,
-                          usuarioCreacion,
-                          usuarioModificacion
+    const query = `SELECT *, 
+                          DATE_FORMAT(fecha, '%d/%m/%Y') AS fechaEspanol
                      FROM vista_envio_movimiento_envio_tipo_sensor${filtros}`;
     const registros = await dataSource.execute(query);
     //

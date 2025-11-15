@@ -166,16 +166,7 @@ export class EnvioSensorController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          envioId,
-                          origenRuta,
-                          tipoSensorId,
-                          nombreSensor,
-                          valor,
-                          fechaCreacion,
-                          fechaModificacion,
-                          usuarioCreacion,
-                          usuarioModificacion
+    const query = `SELECT *
                      FROM vista_envio_sensor_envio_tipo_sensor${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

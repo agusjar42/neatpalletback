@@ -232,19 +232,9 @@ export class EnvioController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id, 
-                          empresaId,
-                          origenRuta,
-                          fechaLlegada,
+    const query = `SELECT *,
                           DATE_FORMAT(fechaSalida, '%d/%m/%Y') AS fechaSalidaEspanol,
-                          gpsRutaOrigen,
-                          destinoRuta,
-                          gpsRutaDestino,
-                          fechaSalida,
-                          DATE_FORMAT(fechaLlegada, '%d/%m/%Y') AS fechaLlegadaEspanol,
-                          paradasPrevistas,
-                          codigoEmpresa, 
-                          nombreEmpresa
+                          DATE_FORMAT(fechaLlegada, '%d/%m/%Y') AS fechaLlegadaEspanol
                     FROM vista_empresa_envio${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

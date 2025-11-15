@@ -166,14 +166,7 @@ export class ParametroController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          nombre,
-                          valorDisponible,
-                          fechaCreacion,
-                          fechaModificacion,
-                          usuarioCreacion,
-                          usuarioModificacion,
-                          activoSn
+    const query = `SELECT *
                      FROM parametro${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

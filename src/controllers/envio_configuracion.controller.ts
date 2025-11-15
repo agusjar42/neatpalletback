@@ -166,16 +166,7 @@ export class EnvioConfiguracionController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          origenRuta,
-                          envioId,
-                          nombre,
-                          valor,
-                          unidadMedida,
-                          fechaCreacion,
-                          fechaModificacion,
-                          usuarioCreacion,
-                          usuarioModificacion
+    const query = `SELECT *
                      FROM vista_envio_configuracion_envio${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;

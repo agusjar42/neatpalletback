@@ -87,6 +87,17 @@ export class TipoCarroceria extends Entity {
     }
   })
   activoSn?: string;
+
+  @property({
+    type: 'number',
+    mysql: {
+      columnName: 'orden',
+      dataType: 'int',
+      dataLength: 4,
+      nullable: 'Y'
+    }
+  })
+  orden?: number;
   
   constructor(data?: Partial<TipoCarroceria>) {
     super(data);

@@ -154,7 +154,7 @@ export class IdiomaController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id, nombre, iso, activoSn FROM idioma${filtros}`;
+    const query = `SELECT * FROM idioma${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }
