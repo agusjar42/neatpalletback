@@ -166,18 +166,8 @@ export class PalletController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT id,
-                          empresaId,
-                          fechaImpresion,
-                          codigo,
-                          alias,
-                          periodoEnvioMail,
-                          medidas,
-                          modelo,
-                          fechaCreacion,
-                          fechaModificacion,
-                          usuarioCreacion,
-                          usuarioModificacion
+    const query = `SELECT *, 
+                          DATE_FORMAT(fechaImpresion, '%d/%m/%Y') AS fechaImpresionEspanol
                      FROM pallet${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
