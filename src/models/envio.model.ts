@@ -29,6 +29,18 @@ export class Envio extends Entity {
     type: 'string',
     length: 50,
     mysql: {
+      columnName: 'numero',
+      dataType: 'varchar',
+      dataLength: 50,
+      nullable: 'N'
+    }
+  })
+  numero?: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mysql: {
       columnName: 'origenRuta',
       dataType: 'varchar',
       dataLength: 50,

@@ -166,6 +166,26 @@ export class EnvioController {
     return registros;
   }
 
+  @get('/resumen-envio/count')
+  @response(200, {
+    description: 'Resumen de envío count',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async resumenEnvioCount(): Promise<Count> {
+    // Datos fijos de ejemplo - más adelante se implementará la funcionalidad real
+    return {count: 25};
+  }
+
+  @get('/resumen-envio-pallet/count')
+  @response(200, {
+    description: 'Resumen de envío pallet count',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async resumenEnvioPalletCount(): Promise<Count> {
+    // Datos fijos de ejemplo - más adelante se implementará la funcionalidad real
+    return {count: 18};
+  }
+
   @get('/envios')
   @response(200, {
     description: 'Array of Envio model instances',
@@ -233,8 +253,8 @@ export class EnvioController {
       filtros += ` OFFSET ${filter?.offset}`;
     }
     const query = `SELECT *,
-                          DATE_FORMAT(fechaSalida, '%d/%m/%Y') AS fechaSalidaEspanol,
-                          DATE_FORMAT(fechaLlegada, '%d/%m/%Y') AS fechaLlegadaEspanol
+                          DATE_FORMAT(fechaSalida, '%d/%m/%Y %H:%i') AS fechaSalidaEspanol,
+                          DATE_FORMAT(fechaLlegada, '%d/%m/%Y %H:%i') AS fechaLlegadaEspanol
                     FROM vista_empresa_envio${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
@@ -310,5 +330,91 @@ export class EnvioController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.envioRepository.deleteById(id);
+  }
+
+  @get('/resumen-envio/{id}')
+  @response(200, {
+    description: 'Resumen de envío con eventos y alarmas',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              eventosGuardados: {type: 'number'},
+              eventosEnviados: {type: 'number'},
+              totalAlarmas: {type: 'number'},
+              bateriaActual: {type: 'number'}
+            }
+          }
+        }
+      }
+    }
+  })
+  async resumenEnvio(
+    @param.path.number('id') id: number,
+  ): Promise<{eventosGuardados: number, eventosEnviados: number, totalAlarmas: number, bateriaActual: number}[]> {
+    // Datos fijos de ejemplo - más adelante se implementará la funcionalidad real
+    return [
+      {
+        eventosGuardados: 1250,
+        eventosEnviados: 1180,
+        totalAlarmas: 5,
+        bateriaActual: 85
+      },
+      {
+        eventosGuardados: 980,
+        eventosEnviados: 920,
+        totalAlarmas: 2,
+        bateriaActual: 67
+      },
+      {
+        eventosGuardados: 1450,
+        eventosEnviados: 1380,
+        totalAlarmas: 8,
+        bateriaActual: 92
+      }
+    ];
+  }
+
+  @get('/resumen-envio-pallet/{id}')
+  @response(200, {
+    description: 'Resumen de envío pallet con eventos y alarmas',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              eventosGuardados: {type: 'number'},
+              eventosEnviados: {type: 'number'},
+              totalAlarmas: {type: 'number'},
+              bateriaActual: {type: 'number'}
+            }
+          }
+        }
+      }
+    }
+  })
+  async resumenEnvioPallet(
+    @param.path.number('id') id: number,
+  ): Promise<{eventosGuardados: number, eventosEnviados: number, totalAlarmas: number, bateriaActual: number}[]> {
+    // Datos fijos de ejemplo - más adelante se implementará la funcionalidad real
+    return [
+      {
+        eventosGuardados: 950,
+        eventosEnviados: 890,
+        totalAlarmas: 3,
+        bateriaActual: 72
+      },
+      {
+        eventosGuardados: 750,
+        eventosEnviados: 710,
+        totalAlarmas: 1,
+        bateriaActual: 58
+      }
+    ];
   }
 }

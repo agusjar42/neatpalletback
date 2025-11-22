@@ -220,6 +220,17 @@ export class EnvioContenido extends Entity {
   })
   orden?: number;
 
+  @property({
+    type: 'number',
+    mysql: {
+      columnName: 'cantidad',
+      dataType: 'int',
+      dataLength: 11,
+      nullable: 'Y'
+    }
+  })
+  cantidad?: number;
+
   constructor(data?: Partial<EnvioContenido>) {
     super(data);
   }
