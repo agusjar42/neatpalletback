@@ -4,6 +4,7 @@ import {LogUsuario} from '../models';
 import {LogUsuarioRepository} from '../repositories';
 import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -207,7 +208,8 @@ export class LogUsuarioController {
   async count(
     @param.where(LogUsuario) where?: Where<LogUsuario>,
   ): Promise<Count> {
-    return this.logUsuarioRepository.count(where);
+    const dataSource = this.logUsuarioRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'log_usuario', where);
   }
 
   @get('/log-usuarios')
@@ -225,7 +227,8 @@ export class LogUsuarioController {
   async find(
     @param.filter(LogUsuario) filter?: Filter<LogUsuario>,
   ): Promise<LogUsuario[]> {
-    return this.logUsuarioRepository.find(filter);
+    const dataSource = this.logUsuarioRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'log_usuario', filter, '*');
   }
 
   @patch('/log-usuarios')

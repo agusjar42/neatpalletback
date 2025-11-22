@@ -4,6 +4,7 @@ import {Traduccion} from '../models';
 import {TraduccionRepository} from '../repositories';
 import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class TraduccionController {
   constructor(
@@ -43,7 +44,8 @@ export class TraduccionController {
   async count(
     @param.where(Traduccion) where?: Where<Traduccion>,
   ): Promise<Count> {
-    return this.traduccionRepository.count(where);
+    const dataSource = this.traduccionRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'traduccion', where);
   }
 
   @get('/traducciones')
@@ -61,7 +63,9 @@ export class TraduccionController {
   async find(
     @param.filter(Traduccion) filter?: Filter<Traduccion>,
   ): Promise<Traduccion[]> {
-    return this.traduccionRepository.find(filter);
+    const dataSource = this.traduccionRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'traduccion', filter, camposSelect);
   }
 
   @authenticate('jwt')

@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {Parametro} from '../models';
 import {ParametroRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class ParametroController {
   constructor(

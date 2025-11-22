@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {PalletParametro} from '../models';
 import {PalletParametroRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class PalletParametroController {
   constructor(

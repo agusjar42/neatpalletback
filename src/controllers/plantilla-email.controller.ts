@@ -7,6 +7,7 @@ import path from 'path';
 import QRCode, { QRCodeErrorCorrectionLevel } from 'qrcode';
 import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 @authenticate('jwt')
 @authorize({allowedRoles: ['API']})
@@ -49,7 +50,8 @@ export class PlantillaEmailController {
   async count(
     @param.where(PlantillaEmail) where?: Where<PlantillaEmail>,
   ): Promise<Count> {
-    return this.plantillaEmailRepository.count(where);
+    const dataSource = this.plantillaEmailRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'plantilla_email', where);
   }
 
   @get('/plantilla-emails')
@@ -67,7 +69,8 @@ export class PlantillaEmailController {
   async find(
     @param.filter(PlantillaEmail) filter?: Filter<PlantillaEmail>,
   ): Promise<PlantillaEmail[]> {
-    return this.plantillaEmailRepository.find(filter);
+    const dataSource = this.plantillaEmailRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'plantilla_email', filter, '*');
   }
 
   @patch('/plantilla-emails')

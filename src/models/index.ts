@@ -24,6 +24,7 @@ export * from './envio.model';
 export * from './pallet_parametro.model';
 export * from './pallet.model';
 export * from './parametro.model';
+export * from './producto.model';
 export * from './tipo_carroceria.model';
 export * from './tipo_sensor.model';
 export * from './tipo_transporte.model';

@@ -4,6 +4,7 @@ import { Rol } from '../models';
 import { RolRepository } from '../repositories';
 import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 @authenticate('jwt')
 @authorize({allowedRoles: ['API']})
@@ -43,7 +44,8 @@ export class RolController {
   async count(
     @param.where(Rol) where?: Where<Rol>,
   ): Promise<Count> {
-    return this.rolRepository.count(where);
+    const dataSource = this.rolRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'rol', where);
   }
 
   @get('/roles')
@@ -61,7 +63,9 @@ export class RolController {
   async find(
     @param.filter(Rol) filter?: Filter<Rol>,
   ): Promise<Rol[]> {
-    return this.rolRepository.find(filter);
+    const dataSource = this.rolRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'rol', filter, camposSelect);
   }
 
   @patch('/roles')

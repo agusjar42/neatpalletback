@@ -4,6 +4,7 @@ import {Permiso} from '../models';
 import {PermisoRepository} from '../repositories';
 import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 @authenticate('jwt')
 @authorize({allowedRoles: ['API']})
@@ -43,7 +44,8 @@ export class PermisoController {
   async count(
     @param.where(Permiso) where?: Where<Permiso>,
   ): Promise<Count> {
-    return this.permisoRepository.count(where);
+    const dataSource = this.permisoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'permiso', where);
   }
 
   @get('/permisos')
@@ -61,7 +63,9 @@ export class PermisoController {
   async find(
     @param.filter(Permiso) filter?: Filter<Permiso>,
   ): Promise<Permiso[]> {
-    return this.permisoRepository.find(filter);
+    const dataSource = this.permisoRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'permiso', filter, camposSelect);
   }
 
   @patch('/permisos')

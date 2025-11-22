@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {EnvioContenidoPallet} from '../models';
 import {EnvioContenidoPalletRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class EnvioContenidoPalletController {
   constructor(
@@ -55,7 +56,8 @@ export class EnvioContenidoPalletController {
   async count(
     @param.where(EnvioContenidoPallet) where?: Where<EnvioContenidoPallet>,
   ): Promise<Count> {
-    return this.envioContenidoPalletRepository.count(where);
+    const dataSource = this.envioContenidoPalletRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'envio_contenido_pallet', where);
   }
 
   @get('/envio-contenido-pallets')
@@ -73,7 +75,9 @@ export class EnvioContenidoPalletController {
   async find(
     @param.filter(EnvioContenidoPallet) filter?: Filter<EnvioContenidoPallet>,
   ): Promise<EnvioContenidoPallet[]> {
-    return this.envioContenidoPalletRepository.find(filter);
+    const dataSource = this.envioContenidoPalletRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'envio_contenido_pallet', filter, camposSelect);
   }
 
   @patch('/envio-contenido-pallets')

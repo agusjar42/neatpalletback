@@ -19,6 +19,7 @@ import { authorize } from '@loopback/authorization';
 import { ImageService } from '../services/image.service';
 import { ImageProcessingService } from '../services/procesarImagenesBase64.service';
 import { service } from '@loopback/core';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class UsuariosController {
   [x: string]: any;
@@ -276,7 +277,8 @@ export class UsuariosController {
   async count(
     @param.where(Usuario) where?: Where<Usuario>,
   ): Promise<Count> {
-    return this.usuarioRepository.count(where);
+    const dataSource = this.usuarioRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'usuario', where);
   }
 
   @authenticate('jwt')
@@ -297,7 +299,9 @@ export class UsuariosController {
   async find(
     @param.filter(Usuario) filter?: Filter<Usuario>,
   ): Promise<Usuario[]> {
-    const registros = await this.usuarioRepository.find(filter);
+    const dataSource = this.usuarioRepository.dataSource;
+    const camposSelect = "*"
+    const registros = await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'usuario', filter, camposSelect);
     //
     // Procesar URLs de imágenes en los resultados
     //

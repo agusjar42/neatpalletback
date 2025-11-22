@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {Pallet} from '../models';
 import {PalletRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class PalletController {
   constructor(
