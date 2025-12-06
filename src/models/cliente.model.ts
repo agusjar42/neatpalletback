@@ -1,8 +1,8 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
-import {Cliente} from './cliente.model';
+import {Empresa} from './empresa.model';
 
-@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'producto'}}})
-export class Producto extends Entity {
+@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'cliente'}}})
+export class Cliente extends Entity {
   @property({
     type: 'number',
     jsonSchema: {nullable: false},
@@ -20,9 +20,9 @@ export class Producto extends Entity {
     precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'clienteId', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
+    mysql: {columnName: 'empresaId', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
   })
-  clienteId: number;
+  empresaId: number;
 
   @property({
     type: 'string',
@@ -32,6 +32,24 @@ export class Producto extends Entity {
     mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   nombre?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 50,
+    generated: false,
+    mysql: {columnName: 'telefono', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  telefono?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 50,
+    generated: false,
+    mysql: {columnName: 'mail', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  mail?: string;
 
   @property({
     type: 'date',
@@ -69,16 +87,16 @@ export class Producto extends Entity {
   })
   usuModificacion?: number;
 
-  @belongsTo(() => Cliente)
-  cliente?: Cliente;
+  @belongsTo(() => Empresa)
+  empresa?: Empresa;
 
-  constructor(data?: Partial<Producto>) {
+  constructor(data?: Partial<Cliente>) {
     super(data);
   }
 }
 
-export interface ProductoRelations {
-  cliente?: Cliente;
+export interface ClienteRelations {
+  empresa?: Empresa;
 }
 
-export type ProductoWithRelations = Producto & ProductoRelations;
+export type ClienteWithRelations = Cliente & ClienteRelations;

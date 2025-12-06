@@ -29,3 +29,6 @@ export * from './tipo_sensor.repository';
 export * from './tipo_transporte.repository';
 export * from './envio-contenido-pallet.repository';export * from './envio-contenido-pallet.repository';
 export * from './producto.repository';
+export * from './cliente.repository';
+export * from './lugar-parada.repository';
+export * from './operario.repository';

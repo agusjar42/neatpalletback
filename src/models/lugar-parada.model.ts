@@ -1,8 +1,8 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {Cliente} from './cliente.model';
 
-@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'producto'}}})
-export class Producto extends Entity {
+@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'lugar_parada'}}})
+export class LugarParada extends Entity {
   @property({
     type: 'number',
     jsonSchema: {nullable: false},
@@ -27,11 +27,29 @@ export class Producto extends Entity {
   @property({
     type: 'string',
     jsonSchema: {nullable: true},
-    length: 50,
+    length: 500,
     generated: false,
-    mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'direccion', dataType: 'varchar', dataLength: 500, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  direccion?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 250,
+    generated: false,
+    mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   nombre?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 250,
+    generated: false,
+    mysql: {columnName: 'direccionGps', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  direccionGps?: string;
 
   @property({
     type: 'date',
@@ -72,13 +90,13 @@ export class Producto extends Entity {
   @belongsTo(() => Cliente)
   cliente?: Cliente;
 
-  constructor(data?: Partial<Producto>) {
+  constructor(data?: Partial<LugarParada>) {
     super(data);
   }
 }
 
-export interface ProductoRelations {
+export interface LugarParadaRelations {
   cliente?: Cliente;
 }
 
-export type ProductoWithRelations = Producto & ProductoRelations;
+export type LugarParadaWithRelations = LugarParada & LugarParadaRelations;

@@ -33,3 +33,6 @@ export * from './usuario-con-imagenes.dto';
 export * from './crear-envio-configuracion.dto';
 export * from './crear-envio-sensor.dto';
 export * from './envio-contenido-pallet.model';
+export * from './cliente.model';
+export * from './operario.model';
+export * from './lugar-parada.model';

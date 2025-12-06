@@ -1,8 +1,8 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {Cliente} from './cliente.model';
 
-@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'producto'}}})
-export class Producto extends Entity {
+@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'operario'}}})
+export class Operario extends Entity {
   @property({
     type: 'number',
     jsonSchema: {nullable: false},
@@ -16,13 +16,13 @@ export class Producto extends Entity {
 
   @property({
     type: 'number',
-    jsonSchema: {nullable: false},
+    jsonSchema: {nullable: true},
     precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'clienteId', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
+    mysql: {columnName: 'clienteId', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
   })
-  clienteId: number;
+  clienteId?: number;
 
   @property({
     type: 'string',
@@ -32,6 +32,24 @@ export class Producto extends Entity {
     mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   nombre?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 50,
+    generated: false,
+    mysql: {columnName: 'telefono', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  telefono?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 250,
+    generated: false,
+    mysql: {columnName: 'email', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  email?: string;
 
   @property({
     type: 'date',
@@ -72,13 +90,13 @@ export class Producto extends Entity {
   @belongsTo(() => Cliente)
   cliente?: Cliente;
 
-  constructor(data?: Partial<Producto>) {
+  constructor(data?: Partial<Operario>) {
     super(data);
   }
 }
 
-export interface ProductoRelations {
+export interface OperarioRelations {
   cliente?: Cliente;
 }
 
-export type ProductoWithRelations = Producto & ProductoRelations;
+export type OperarioWithRelations = Operario & OperarioRelations;

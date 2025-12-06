@@ -29,3 +29,6 @@ export * from './tipo_transporte.controller';
 export * from './envio-fake-data.controller';export * from './envio-contenido-pallet.controller';
 export * from './envio-sensor-empresa.controller';
 export * from './producto.controller';
+export * from './cliente.controller';
+export * from './lugar-parada.controller';
+export * from './operario.controller';
