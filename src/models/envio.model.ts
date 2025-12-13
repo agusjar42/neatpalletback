@@ -1,5 +1,6 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {Empresa} from './empresa.model';
+import {Cliente} from './cliente.model';
 
 @model({
   settings: {
@@ -24,6 +25,9 @@ export class Envio extends Entity {
 
   @belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresaId'}})
   empresaId: number;
+
+  @belongsTo(() => Cliente, {name: 'cliente'}, {mysql: {columnName: 'clienteId'}})
+  clienteId: number;
 
   @property({
     type: 'string',
@@ -181,6 +185,7 @@ export class Envio extends Entity {
 
 export interface EnvioRelations {
   empresa?: Empresa;
+  cliente?: Cliente;
 }
 
 export type EnvioWithRelations = Envio & EnvioRelations;

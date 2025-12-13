@@ -123,7 +123,7 @@ export class EnvioController {
     @param.where(Envio) where?: Where<Envio>,
   ): Promise<Count> {
     const dataSource = this.envioRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'vista_empresa_envio', where);
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'vista_empresa_envio_cliente', where);
   }
 
   @get('/resumen-envio/count')
@@ -163,7 +163,7 @@ export class EnvioController {
   ): Promise<Envio[]> {
     const dataSource = this.envioRepository.dataSource;
     const camposSelect = "*,\n                          DATE_FORMAT(fechaSalida, '%d/%m/%Y %H:%i') AS fechaSalidaEspanol,\n                          DATE_FORMAT(fechaLlegada, '%d/%m/%Y %H:%i') AS fechaLlegadaEspanol"
-    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_empresa_envio', filter, camposSelect);
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_empresa_envio_cliente', filter, camposSelect);
   }
 
   @patch('/envios')
