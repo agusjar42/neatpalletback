@@ -1,5 +1,6 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {Envio} from './envio.model';
+import {LugarParada} from './lugar-parada.model';
 
 @model({
   settings: {
@@ -37,17 +38,8 @@ export class EnvioParada extends Entity {
   })
   fecha?: string;
 
-  @property({
-    type: 'string',
-    length: 50,
-    mysql: {
-      columnName: 'lugarParada',
-      dataType: 'varchar',
-      dataLength: 50,
-      nullable: 'Y'
-    }
-  })
-  lugarParada?: string;
+  @belongsTo(() => LugarParada, {name: 'lugarParada'}, {mysql: {columnName: 'lugarParadaId'}})
+  lugarParadaId?: number;
 
   @property({
     type: 'string',
@@ -170,6 +162,7 @@ export class EnvioParada extends Entity {
 
 export interface EnvioParadaRelations {
   envio?: Envio;
+  lugarParada?: LugarParada;
 }
 
 export type EnvioParadaWithRelations = EnvioParada & EnvioParadaRelations;

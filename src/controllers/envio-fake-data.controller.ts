@@ -20,6 +20,7 @@ import {
   TipoSensorRepository,
   EnvioConfiguracionRepository,
   EnvioContenidoPalletRepository,
+  LugarParadaRepository,
 } from '../repositories';
 import {
   Envio,
@@ -73,6 +74,8 @@ export class EnvioFakeDataController {
     public tipoSensorRepository: TipoSensorRepository,
     @repository(EnvioContenidoPalletRepository)
     public envioContenidoPalletRepository: EnvioContenidoPalletRepository,
+    @repository(LugarParadaRepository)
+    public lugarParadaRepository: LugarParadaRepository,
     @service(EnvioConfiguracionService)
     public envioConfiguracionService: EnvioConfiguracionService,
   ) {}
@@ -271,10 +274,14 @@ export class EnvioFakeDataController {
   }
 
   private async crearEnvioParadaFake(envioId: number, usuarioCreacion: number): Promise<EnvioParada> {
+    // Obtener un lugar de parada aleatorio de la base de datos
+    const lugaresParada = await this.lugarParadaRepository.find();
+    const lugarParadaId = lugaresParada.length > 0 ? lugaresParada[this.randomInt(0, lugaresParada.length - 1)].id : undefined;
+    
     const parada = {
       envioId,
       fecha: this.formatearFecha(this.generarFechaAleatoria()),
-      lugarParada: this.randomElement(ciudadesParada),
+      lugarParadaId,
       lugarParadaGps: this.generarCoordenadas(),
       direccion: `${this.randomElement(calles)}, ${this.randomInt(1, 999)}`,
       nombreOperario: this.randomElement(nombresOperarios),
