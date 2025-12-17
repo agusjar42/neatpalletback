@@ -1,5 +1,7 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {Envio} from './envio.model';
+import {Producto} from './producto.model';
+import {Pallet} from './pallet.model';
 
 @model({
   settings: {
@@ -25,17 +27,11 @@ export class EnvioContenido extends Entity {
   @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envioId'}})
   envioId: number;
 
-  @property({
-    type: 'string',
-    length: 50,
-    mysql: {
-      columnName: 'producto',
-      dataType: 'varchar',
-      dataLength: 50,
-      nullable: 'Y'
-    }
-  })
-  producto?: string;
+  @belongsTo(() => Producto, {name: 'producto'}, {mysql: {columnName: 'productoId'}})
+  productoId?: number;
+
+  @belongsTo(() => Pallet, {name: 'pallet'}, {mysql: {columnName: 'palletId'}})
+  palletId: number;
 
   @property({
     type: 'string',
@@ -238,6 +234,8 @@ export class EnvioContenido extends Entity {
 
 export interface EnvioContenidoRelations {
   envio?: Envio;
+  producto?: Producto;
+  pallet?: Pallet;
 }
 
 export type EnvioContenidoWithRelations = EnvioContenido & EnvioContenidoRelations;
