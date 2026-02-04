@@ -69,6 +69,15 @@ export class Producto extends Entity {
   })
   usuModificacion?: number;
 
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 1,
+    generated: false,
+    mysql: {columnName: 'activoSN', dataType: 'varchar', dataLength: 1, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  activoSN?: string;
+
   @belongsTo(() => Cliente)
   cliente?: Cliente;
 

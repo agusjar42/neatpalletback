@@ -37,12 +37,12 @@ export class EnvioParadaRepository extends DefaultCrudRepository<
   /**
    * Encuentra paradas por operario
    */
-  async findByOperario(nombreOperario: string): Promise<EnvioParada[]> {
+  async findByOperario(operarioId: number): Promise<EnvioParada[]> {
     return this.find({
       where: {
-        nombreOperario: {like: `%${nombreOperario}%`}
+        operarioId: operarioId
       },
-      include: ['envio']
+      include: ['envio', 'operario']
     });
   }
 

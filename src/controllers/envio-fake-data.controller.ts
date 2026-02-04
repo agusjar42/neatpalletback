@@ -21,6 +21,7 @@ import {
   EnvioConfiguracionRepository,
   EnvioContenidoPalletRepository,
   LugarParadaRepository,
+  OperarioRepository,
 } from '../repositories';
 import {
   Envio,
@@ -76,6 +77,8 @@ export class EnvioFakeDataController {
     public envioContenidoPalletRepository: EnvioContenidoPalletRepository,
     @repository(LugarParadaRepository)
     public lugarParadaRepository: LugarParadaRepository,
+    @repository(OperarioRepository)
+    public operarioRepository: OperarioRepository,
     @service(EnvioConfiguracionService)
     public envioConfiguracionService: EnvioConfiguracionService,
   ) {}
@@ -278,13 +281,17 @@ export class EnvioFakeDataController {
     const lugaresParada = await this.lugarParadaRepository.find();
     const lugarParadaId = lugaresParada.length > 0 ? lugaresParada[this.randomInt(0, lugaresParada.length - 1)].id : undefined;
     
+    // Obtener un operario aleatorio de la base de datos
+    const operarios = await this.operarioRepository.find();
+    const operarioId = operarios.length > 0 ? operarios[this.randomInt(0, operarios.length - 1)].id! : 1; // Fallback a ID 1 si no hay operarios
+    
     const parada = {
       envioId,
       fecha: this.formatearFecha(this.generarFechaAleatoria()),
       lugarParadaId,
+      operarioId,
       lugarParadaGps: this.generarCoordenadas(),
       direccion: `${this.randomElement(calles)}, ${this.randomInt(1, 999)}`,
-      nombreOperario: this.randomElement(nombresOperarios),
       telefonoOperario: `+34 ${this.randomInt(600, 799)} ${this.randomInt(100, 999)} ${this.randomInt(100, 999)}`,
       emailOperario: this.generarEmail(this.randomElement(nombresOperarios)),
       usuarioCreacion,
