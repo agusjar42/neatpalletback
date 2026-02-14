@@ -19,6 +19,11 @@ import {
 } from '@loopback/rest';
 import {TipoTransporte} from '../models';
 import {TipoTransporteRepository} from '../repositories';
+import { authorize } from '@loopback/authorization';
+import { authenticate } from '@loopback/authentication';
+
+@authenticate('jwt')
+@authorize({allowedRoles: ['API']})
 
 export class TipoTransporteController {
   constructor(

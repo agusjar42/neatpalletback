@@ -8,6 +8,9 @@ import { SqlFilterUtil } from '../utils/sql-filter.util';
 import * as fs from 'fs';
 import * as path from 'path';
 
+@authenticate('jwt')
+@authorize({allowedRoles: ['API']})
+
 export class LogUsuarioController {
   constructor(
     @repository(LogUsuarioRepository)

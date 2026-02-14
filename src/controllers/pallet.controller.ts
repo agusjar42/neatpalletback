@@ -20,6 +20,11 @@ import {
 import {Pallet} from '../models';
 import {PalletRepository} from '../repositories';
 import { SqlFilterUtil } from '../utils/sql-filter.util';
+import { authorize } from '@loopback/authorization';
+import { authenticate } from '@loopback/authentication';
+
+@authenticate('jwt')
+@authorize({allowedRoles: ['API']})
 
 export class PalletController {
   constructor(

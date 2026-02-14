@@ -6,14 +6,15 @@ import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
 import { SqlFilterUtil } from '../utils/sql-filter.util';
 
+@authenticate('jwt')
+@authorize({allowedRoles: ['API']})
+
 export class TraduccionController {
   constructor(
     @repository(TraduccionRepository)
     public traduccionRepository : TraduccionRepository,
   ) {}
 
-  @authenticate('jwt')
-  @authorize({allowedRoles: ['API']})
 
   @post('/traducciones')
   @response(200, {

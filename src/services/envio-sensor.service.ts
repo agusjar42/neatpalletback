@@ -25,11 +25,13 @@ export class EnvioSensorService {
     //
     //Luego insertamos los sensores por defecto de la empresa
     //
-    const insert = `insert into envio_sensor (envioId,
+    const insert = `insert into envio_sensor (orden, 
+                                              envioId,
                                               tipoSensorId,
                                               valor,
                                               usuarioCreacion)
-                                       SELECT ${envioId} envioId,
+                                       SELECT orden, 
+                                              ${envioId} envioId,
                                               tipoSensorId,
                                               valor,
                                               ${usuarioCreacion} usuarioCreacion

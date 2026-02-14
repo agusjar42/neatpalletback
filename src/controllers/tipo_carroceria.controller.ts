@@ -19,6 +19,11 @@ import {
 } from '@loopback/rest';
 import {TipoCarroceria} from '../models';
 import {TipoCarroceriaRepository} from '../repositories';
+import { authorize } from '@loopback/authorization';
+import { authenticate } from '@loopback/authentication';
+
+@authenticate('jwt')
+@authorize({allowedRoles: ['API']})
 
 export class TipoCarroceriaController {
   constructor(

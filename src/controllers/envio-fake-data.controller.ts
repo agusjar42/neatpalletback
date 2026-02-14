@@ -36,6 +36,9 @@ import {
 import {EnvioConfiguracionService} from '../services/envio-configuracion.service';
 import * as path from 'path';
 import * as fs from 'fs';
+import { authorize } from '@loopback/authorization';
+import { authenticate } from '@loopback/authentication';
+
 
 // Cargar datos desde archivos JSON
 const DATA_PATH = path.join(process.cwd(), 'src/data');
@@ -52,6 +55,8 @@ interface FakeDataRequest {
   usuarioCreacion: number;
   empresaId: number;
 }
+@authenticate('jwt')
+@authorize({allowedRoles: ['API']})
 
 export class EnvioFakeDataController {
   constructor(

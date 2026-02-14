@@ -20,6 +20,10 @@ import {
 import {EnvioParada} from '../models';
 import {EnvioParadaRepository} from '../repositories';
 import { SqlFilterUtil } from '../utils/sql-filter.util';
+import { authorize } from '@loopback/authorization';
+import { authenticate } from '@loopback/authentication';
+@authenticate('jwt')
+@authorize({allowedRoles: ['API']})
 
 export class EnvioParadaController {
   constructor(

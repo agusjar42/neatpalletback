@@ -25,12 +25,14 @@ export class EnvioConfiguracionService {
     //
     //Luego insertamos las configuraciones por defecto de la empresa
     //
-    const insert = `insert into envio_configuracion (envioId,
+    const insert = `insert into envio_configuracion (orden, 
+                                                     envioId,
                                                      nombre,
                                                      valor,
                                                      unidadMedida,
                                                      usuarioCreacion)
-                                              SELECT ${envioId} envioId,
+                                              SELECT orden, 
+                                                     ${envioId} envioId,
                                                      nombre,
                                                      valor,
                                                      unidadMedida,

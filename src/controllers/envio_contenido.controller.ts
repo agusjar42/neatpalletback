@@ -23,6 +23,11 @@ import {EnvioContenidoRepository} from '../repositories';
 import {ImageService} from '../services/image.service';
 import { ImageProcessingService } from '../services/procesarImagenesBase64.service'
 import { SqlFilterUtil } from '../utils/sql-filter.util';
+import { authorize } from '@loopback/authorization';
+import { authenticate } from '@loopback/authentication';
+
+@authenticate('jwt')
+@authorize({allowedRoles: ['API']})
 
 export class EnvioContenidoController {
   constructor(

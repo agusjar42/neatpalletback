@@ -20,6 +20,11 @@ import {
 import {EnvioConfiguracion} from '../models';
 import {EnvioConfiguracionRepository} from '../repositories';
 import { SqlFilterUtil } from '../utils/sql-filter.util';
+import { authorize } from '@loopback/authorization';
+import { authenticate } from '@loopback/authentication';
+
+@authenticate('jwt')
+@authorize({allowedRoles: ['API']})
 
 export class EnvioConfiguracionController {
   constructor(

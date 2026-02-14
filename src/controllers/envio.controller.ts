@@ -25,6 +25,11 @@ import {EnvioRepository} from '../repositories';
 import {EnvioConfiguracionService} from '../services/envio-configuracion.service';
 import {EnvioSensorService} from '../services/envio-sensor.service';
 import { SqlFilterUtil } from '../utils/sql-filter.util';
+import { authorize } from '@loopback/authorization';
+import { authenticate } from '@loopback/authentication';
+
+@authenticate('jwt')
+@authorize({allowedRoles: ['API']})
 
 export class EnvioController {
   constructor(

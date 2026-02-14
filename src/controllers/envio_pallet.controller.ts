@@ -20,6 +20,10 @@ import {
 import {EnvioPallet} from '../models';
 import {EnvioPalletRepository} from '../repositories';
 import { SqlFilterUtil } from '../utils/sql-filter.util';
+import { authorize } from '@loopback/authorization';
+import { authenticate } from '@loopback/authentication';
+@authenticate('jwt')
+@authorize({allowedRoles: ['API']})
 
 export class EnvioPalletController {
   constructor(

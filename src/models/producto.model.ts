@@ -78,6 +78,14 @@ export class Producto extends Entity {
   })
   activoSN?: string;
 
+  @property({
+    type: 'number',
+    precision: 18,
+    scale: 2,
+    mysql: {columnName: 'pesoKgs', dataType: 'decimal', dataLength: 18, dataPrecision: 18, dataScale: 2, nullable: 'Y'}
+  })
+  pesoKgs?: number;
+
   @belongsTo(() => Cliente)
   cliente?: Cliente;
 
