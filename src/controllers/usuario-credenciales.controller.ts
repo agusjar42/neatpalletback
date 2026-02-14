@@ -6,14 +6,14 @@ import { UsuarioCredencialesRepository } from '../repositories';
 import { authorize } from '@loopback/authorization';
 import { SqlFilterUtil } from '../utils/sql-filter.util';
 
-@authenticate('jwt')
-@authorize({allowedRoles: ['API']})
-
 export class UsuarioCredencialesController {
   constructor(
     @repository(UsuarioCredencialesRepository)
     public usuarioCredencialesRepository: UsuarioCredencialesRepository,
   ) { }
+
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
 
   @post('/usuario-credenciales')
   @response(200, {
@@ -35,7 +35,9 @@ export class UsuarioCredencialesController {
   ): Promise<UsuarioCredenciales> {
     return this.usuarioCredencialesRepository.create(usuarioCredenciales);
   }
-
+  
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
   @get('/usuario-credenciales/count')
   @response(200, {
     description: 'UsuarioCredenciales model count',
@@ -48,6 +50,8 @@ export class UsuarioCredencialesController {
     return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'usuario_credenciales', where);
   }
 
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
   @get('/usuario-credenciales')
   @response(200, {
     description: 'Array of UsuarioCredenciales model instances',
@@ -68,6 +72,8 @@ export class UsuarioCredencialesController {
     return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'usuario_credenciales', filter, camposSelect);
   }
 
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
   @patch('/usuario-credenciales')
   @response(200, {
     description: 'UsuarioCredenciales PATCH success count',
@@ -87,6 +93,8 @@ export class UsuarioCredencialesController {
     return this.usuarioCredencialesRepository.updateAll(usuarioCredenciales, where);
   }
 
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
   @get('/usuario-credenciales/{id}')
   @response(200, {
     description: 'UsuarioCredenciales model instance',
@@ -103,6 +111,8 @@ export class UsuarioCredencialesController {
     return this.usuarioCredencialesRepository.findById(id, filter);
   }
 
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
   @patch('/usuario-credenciales/{id}')
   @response(204, {
     description: 'UsuarioCredenciales PATCH success',
@@ -121,6 +131,8 @@ export class UsuarioCredencialesController {
     await this.usuarioCredencialesRepository.updateById(id, usuarioCredenciales);
   }
 
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
   @put('/usuario-credenciales/{id}')
   @response(204, {
     description: 'UsuarioCredenciales PUT success',
@@ -132,6 +144,8 @@ export class UsuarioCredencialesController {
     await this.usuarioCredencialesRepository.replaceById(id, usuarioCredenciales);
   }
 
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
   @del('/usuario-credenciales/{id}')
   @response(204, {
     description: 'UsuarioCredenciales DELETE success',

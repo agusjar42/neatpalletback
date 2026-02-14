@@ -6,15 +6,13 @@ import { authorize } from '@loopback/authorization';
 import { authenticate } from '@loopback/authentication';
 import { SqlFilterUtil } from '../utils/sql-filter.util';
 
-@authenticate('jwt')
-@authorize({allowedRoles: ['API']})
-
 export class UsuarioPasswordHistoricoController {
   constructor(
     @repository(UsuarioPasswordHistoricoRepository)
     public usuarioPasswordHistoricoRepository : UsuarioPasswordHistoricoRepository,
   ) {}
 
+  @authenticate.skip()
   @post('/usuario-password-historicos')
   @response(200, {
     description: 'UsuarioPasswordHistorico model instance',
@@ -36,6 +34,9 @@ export class UsuarioPasswordHistoricoController {
     return this.usuarioPasswordHistoricoRepository.create(usuarioPasswordHistorico);
   }
 
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
+
   @get('/usuario-password-historicos/count')
   @response(200, {
     description: 'UsuarioPasswordHistorico model count',
@@ -48,6 +49,7 @@ export class UsuarioPasswordHistoricoController {
     return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'usuario_password_historico', where);
   }
 
+  @authenticate.skip()  
   @get('/usuario-password-historicos')
   @response(200, {
     description: 'Array of UsuarioPasswordHistorico model instances',
@@ -67,6 +69,9 @@ export class UsuarioPasswordHistoricoController {
     const camposSelect = "*"
     return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'usuario_password_historico', filter, camposSelect);
   }
+  
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
 
   @patch('/usuario-password-historicos')
   @response(200, {
@@ -87,6 +92,9 @@ export class UsuarioPasswordHistoricoController {
     return this.usuarioPasswordHistoricoRepository.updateAll(usuarioPasswordHistorico, where);
   }
 
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
+
   @get('/usuario-password-historicos/{id}')
   @response(200, {
     description: 'UsuarioPasswordHistorico model instance',
@@ -102,6 +110,9 @@ export class UsuarioPasswordHistoricoController {
   ): Promise<UsuarioPasswordHistorico> {
     return this.usuarioPasswordHistoricoRepository.findById(id, filter);
   }
+
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
 
   @patch('/usuario-password-historicos/{id}')
   @response(204, {
@@ -120,6 +131,9 @@ export class UsuarioPasswordHistoricoController {
   ): Promise<void> {
     await this.usuarioPasswordHistoricoRepository.updateById(id, usuarioPasswordHistorico);
   }
+  
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
 
   @put('/usuario-password-historicos/{id}')
   @response(204, {
@@ -131,6 +145,9 @@ export class UsuarioPasswordHistoricoController {
   ): Promise<void> {
     await this.usuarioPasswordHistoricoRepository.replaceById(id, usuarioPasswordHistorico);
   }
+  
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['API']})
 
   @del('/usuario-password-historicos/{id}')
   @response(204, {

@@ -281,8 +281,7 @@ export class UsuariosController {
     return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'usuario', where);
   }
 
-  @authenticate('jwt')
-  @authorize({allowedRoles: ['API']})
+  @authenticate.skip()
 
   @get('/usuarios')
   @response(200, {
@@ -314,9 +313,7 @@ export class UsuariosController {
     return registrosProcesados;
   }
 
-  @authenticate('jwt')
-  @authorize({allowedRoles: ['API']})
-
+  @authenticate.skip()
   @post('/usuarios/recuperarPassword')
   async recuperarPassword(
     @requestBody({
@@ -344,11 +341,12 @@ export class UsuariosController {
 
       //Comprueba si el email existe
       const dataSource = this.usuarioRestablecerPasswordRepository.dataSource;
+
       let query = `SELECT * FROM usuario WHERE mail = '${email}'`;
       const registros = await dataSource.execute(query);
 
       if (registros.length > 0) {
-        // Limpiamos los códigos de recuperacion anteriores de la BD
+        // Limpiamos los códigos de recuperacion anteriores de la BD\
         query = `DELETE FROM usuario_restablecer_password WHERE email = '${email}'`;
         await dataSource.execute(query);
 
@@ -366,27 +364,25 @@ export class UsuariosController {
         const dataSourcePlantillaEmail = this.plantillaEmailRepository.dataSource;
         query = `SELECT * FROM plantilla_email WHERE nombrePlantilla="${nombrePlantilla}";`;
         const plantillaRegistro = await dataSourcePlantillaEmail.execute(query);
-        let htmlContent = plantillaRegistro[0]['cuerpo'];
+        let htmlContent = plantillaRegistro[0]['cuerpo'] ? plantillaRegistro[0]['cuerpo'].toString('utf8') : '';
 
         //Obtengo la empresa
         const dataSourceEmpresa = this.empresaRepository.dataSource;
         query = `SELECT * FROM empresa WHERE id=${plantillaRegistro[0]['empresaId']};`;
         const empresaRegistro = await dataSourceEmpresa.execute(query);
 
-        // Preparo la configuración para enviar el correo
+        // Preparo la configuración para enviar el correo usando Virtualmin/Postfix local
         const transporter = nodemailer.createTransport({
-          host: empresaRegistro[0]['servicio'],// Servidor SMTP de Outlook
-          port: 587,                 // Puerto estándar para conexiones seguras con STARTTLS
+          host: 'localhost',         // Servidor SMTP local de Virtualmin
+          port: 587,                 // Puerto estándar para SMTP
           secure: false,             // false para STARTTLS
-          requireTLS: true,
-          auth: {
-            user: empresaRegistro[0]['email'], // Dirección de correo de Outlook
-            pass: empresaRegistro[0]['password'], // Contraseña
-          },
-          tls: {
-            rejectUnauthorized: false
-          }
+          requireTLS: false          // No requerimos TLS para localhost
         });
+
+        // Obtengo los archivos de la plantilla
+        /*const dataSourceArchivo = this.plantillaEmailRepository.dataSource;
+        query = `SELECT a.* FROM archivo a INNER JOIN tipo_archivo ta ON a.tipoArchivoId = ta.id INNER JOIN seccion s ON ta.seccionId = s.id WHERE s.nombre = 'Correo plantilla' AND a.tabla = 'correo plantilla' AND a.idTabla = ${plantillaRegistro[0]['id']} AND a.empresaId = ${plantillaRegistro[0]['empresaId']};`;
+        const archivos = await dataSourceArchivo.execute(query);
 
         // Incluyo las imágenes insertadas en la plantilla
         const base64Images = htmlContent.match(/src="data:image\/[^;]+;base64[^"]+"/g) || [];
@@ -400,7 +396,7 @@ export class UsuariosController {
             encoding: 'base64',
             cid: cid
           };
-        });
+        });*/
 
         // Encapsula el string de htmlContent dentro de las etiquetas html <html> y <body> para que servicios de correo acepten el contenido
         htmlContent = `<html><body>${htmlContent}</body></html>`;
@@ -408,18 +404,24 @@ export class UsuariosController {
         // Reemplaza el marcador de posición {{codigoRecuperacion}} con el código de recuperación real
         htmlContent = htmlContent.replace('{{codigoRecuperacion}}', codigoRecuperacion);
 
-        const publicPath = path.resolve(__dirname, '../../public');
-
+        /*const publicPath = path.resolve(__dirname, '../../public');
+        // Incluyo los archivos adjuntados de la plantilla
+        for (let i = 0; i < archivos.length; i++) {
+          attachments.push({
+            filename: archivos[i]['url'].split('/').pop(),
+            path: path.join(publicPath, `/${archivos[i]['url']}`)
+          })
+        };*/
 
         if (empresaRegistro[0]['email'] && empresaRegistro[0]['email'].length > 0 &&
-          empresaRegistro[0]['password'] && empresaRegistro[0]['password'].length) {
+          empresaRegistro[0]['password']?.length) {
           // Opciones del email
-          let parametrosMail = {
+          const parametrosMail = {
             from: empresaRegistro[0]['email'],
             to: email,
             subject: plantillaRegistro[0]['titulo'],
-            html: htmlContent,
-            attachments: attachments
+            html: htmlContent/*,
+            attachments: attachments*/
           };
 
           // Envio el correo
@@ -786,9 +788,7 @@ export class UsuariosController {
     return registros;
   }
 
-  @authenticate('jwt')
-  @authorize({allowedRoles: ['API']})
-
+  @authenticate.skip()
   @patch('/usuarioCredenciales/{idUsuario}')
   @response(204, {
     description: 'UsuarioCredenciales PATCH success',

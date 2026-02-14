@@ -187,19 +187,12 @@ export class PlantillaEmailController {
       const empresaRegistro = await dataSourceEmpresa.execute(query);
 
 
-      // Preparo la configuración para enviar el correo
+      // Preparo la configuración para enviar el correo usando Virtualmin/Postfix local
       const transporter = nodemailer.createTransport({
-        host: empresaRegistro[0]['servicio'],// Servidor SMTP de Outlook
-        port: 587,                 // Puerto estándar para conexiones seguras con STARTTLS
+        host: 'localhost',         // Servidor SMTP local de Virtualmin
+        port: 587,                 // Puerto estándar para SMTP
         secure: false,             // false para STARTTLS
-        requireTLS: true,
-        auth: {
-          user: empresaRegistro[0]['email'], // Dirección de correo de Outlook
-          pass: empresaRegistro[0]['password'], // Contraseña
-        },
-        tls: {
-          rejectUnauthorized: false
-        }
+        requireTLS: false          // No requerimos TLS para localhost
       });
 
       // Obtengo la plantilla del correo
@@ -286,19 +279,12 @@ export class PlantillaEmailController {
       const empresaRegistro = await dataSourceEmpresa.execute(query);
 
 
-      // Preparo la configuración para enviar el correo
+      // Preparo la configuración para enviar el correo usando Virtualmin/Postfix local
       const transporter = nodemailer.createTransport({
-        host: empresaRegistro[0]['servicio'],// Servidor SMTP de Outlook
-        port: 587,                 // Puerto estándar para conexiones seguras con STARTTLS
+        host: 'localhost',         // Servidor SMTP local de Virtualmin
+        port: 587,                 // Puerto estándar para SMTP
         secure: false,             // false para STARTTLS
-        requireTLS: true,
-        auth: {
-          user: empresaRegistro[0]['email'], // Dirección de correo de Outlook
-          pass: empresaRegistro[0]['password'], // Contraseña
-        },
-        tls: {
-          rejectUnauthorized: false
-        }
+        requireTLS: false          // No requerimos TLS para localhost
       });
 
       //Preparamos el codigo QR
