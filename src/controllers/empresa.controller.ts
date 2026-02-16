@@ -1,8 +1,8 @@
-import {  Count,  CountSchema,  Filter,  FilterExcludingWhere,  repository,  Where,} from '@loopback/repository';
+import {  Count,  CountSchema,  Filter,  FilterExcludingWhere,  IsolationLevel,  repository,  Where,} from '@loopback/repository';
 import {  post,  param,  get,  getModelSchemaRef,  patch,  put,  del,  requestBody,  response,  HttpErrors,} from '@loopback/rest';
-import { Empresa } from '../models';
+import { Empresa, Permiso, Rol, Usuario } from '../models';
 import { EmpresaConImagenesDto } from '../models/empresa-con-imagenes.dto';
-import { EmpresaRepository } from '../repositories';
+import { EmpresaRepository, PermisoRepository, RolRepository, UsuarioRepository } from '../repositories';
 import { CompruebaImagenController } from './compruebaImagen.controller';
 import { inject, service } from '@loopback/core';
 import path, { join } from 'path';
@@ -14,6 +14,8 @@ import { ImageProcessingService } from '../services/procesarImagenesBase64.servi
 import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
 import { SqlFilterUtil } from '../utils/sql-filter.util';
+import { PasswordHasherBindings } from '../keys';
+import { PasswordHasher } from '../services/hash.password.bcryptjs';
 //
 //Cambiamos el modelo por defecto de la bbdd para añadir el campo calculado AlergiaConMiniatura
 //
@@ -30,9 +32,13 @@ interface EmpresaConLogoMiniatura extends EmpresaConImagenMiniatura {
 export class EmpresaController {
   constructor(
     @repository(EmpresaRepository) public empresaRepository: EmpresaRepository,
+    @repository(PermisoRepository) public permisoRepository: PermisoRepository,
+    @repository(RolRepository) public rolRepository: RolRepository,
+    @repository(UsuarioRepository) public usuarioRepository: UsuarioRepository,
     @inject('services.CompruebaImagenController') public compruebaImagenController: CompruebaImagenController,
     @service(ImageService) private imageService: ImageService,
     @service(ImageProcessingService) private imageProcessingService: ImageProcessingService,
+    @inject(PasswordHasherBindings.PASSWORD_HASHER) public passwordHasher: PasswordHasher,
   ) { }
 
   //
@@ -110,17 +116,95 @@ export class EmpresaController {
               logoBase64: {type: 'string'},
               logoNombre: {type: 'string'},
               logoTipo: {type: 'string'},
+              // Datos opcionales para usuario por defecto
+              usuarioNombre: {type: 'string'},
+              usuarioMail: {type: 'string'},
+              usuarioPassword: {type: 'string'},
+              usuarioIdiomaId: {type: 'number'},
             },
           },
         },
       },
-    })
-    empresaData: any,
-  ): Promise<Empresa> {
-    const empresaDto = new EmpresaConImagenesDto(empresaData);
-    const empresa = await this.procesarEmpresaConImagenes(empresaDto);
-    return this.empresaRepository.create(empresa);
-  }
+	    })
+	    empresaData: any,
+	  ): Promise<Empresa> {
+	    const {usuarioNombre, usuarioMail, usuarioPassword, usuarioIdiomaId, ...empresaPayload} = empresaData ?? {};
+	    const empresaDto = new EmpresaConImagenesDto(empresaPayload);
+	    const empresa = await this.procesarEmpresaConImagenes(empresaDto);
+
+	    const mail = usuarioMail ?? empresaPayload?.email;
+	    const idiomaId = Number.isFinite(usuarioIdiomaId) ? Number(usuarioIdiomaId) : 1;
+	    const nombre = usuarioNombre ?? 'Administrador';
+
+	    const tx = await this.empresaRepository.dataSource.beginTransaction(IsolationLevel.READ_COMMITTED);
+	    try {
+	      const empresaCreada = await this.empresaRepository.create(empresa, {transaction: tx});
+
+        const existingUser = await this.usuarioRepository.findOne({where: {mail}}, {transaction: tx});
+        if (existingUser) {
+          throw new HttpErrors.UnprocessableEntity(`Ya existe una cuenta de usuario vinculada a este mail: ${mail}`);
+        }
+
+        let rolAdmin = await this.rolRepository.findOne(
+          {where: {empresaId: empresaCreada.id as number, nombre: 'Administrador'}},
+          {transaction: tx},
+        );
+
+	        if (!rolAdmin) {
+	          rolAdmin = await this.rolRepository.create(
+	            {
+	              empresaId: empresaCreada.id as number,
+	              nombre: 'Administrador',
+	              activoSn: 'S',
+	              muestraEmpresa: 'S',
+	              usuCreacion: empresaCreada.usuCreacion,
+                dashboardUrl: '/usuarios/',
+                orden: 1,
+	            } as Rol,
+	            {transaction: tx},
+	          );
+	        }
+
+	        const permisosDestino = await this.permisoRepository.count({rolId: rolAdmin.id as number}, {transaction: tx});
+	        if (permisosDestino.count === 0) {
+	          const permisosOrigen = await this.permisoRepository.find({where: {rolId: 1}}, {transaction: tx});
+	          const permisosClonados = permisosOrigen.map((p) => {
+	            const {id, rolId, ...rest} = p;
+	            return {
+	              ...rest,
+	              rolId: rolAdmin!.id as number,
+	              usuCreacion: (rest as any).usuCreacion ?? empresaCreada.usuCreacion,
+	            } as Omit<Permiso, 'id'>;
+	          });
+	          if (permisosClonados.length > 0) {
+	            await this.permisoRepository.createAll(permisosClonados, {transaction: tx});
+	          }
+	        }
+
+	        const usuarioCreado = await this.usuarioRepository.create(
+	          {
+	            empresaId: empresaCreada.id as number,
+	            rolId: rolAdmin.id as number,
+            idiomaId,
+            nombre,
+            mail,
+            activoSn: 'S',
+          } as Usuario,
+          {transaction: tx},
+        );
+
+      const hashedPassword = await this.passwordHasher.hashPassword('123456');
+        await this.usuarioRepository
+          .userCredentials(usuarioCreado.id as number)
+          .create({password: hashedPassword}, {transaction: tx});
+
+	      await tx.commit();
+	      return empresaCreada;
+	    } catch (err) {
+	      await tx.rollback();
+	      throw err;
+	    }
+	  }
 
   @get('/empresas/count')
   @response(200, {

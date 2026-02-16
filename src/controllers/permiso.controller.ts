@@ -1,6 +1,6 @@
 import {  Count,  CountSchema,  Filter,  FilterExcludingWhere,  repository,  Where,} from '@loopback/repository';
-import {  post,  param,  get,  getModelSchemaRef,  patch,  put,  del,  requestBody,  response,} from '@loopback/rest';
-import {Permiso} from '../models';
+import {  post,  param,  get,  getModelSchemaRef,  patch,  put,  del,  requestBody,  response,  HttpErrors,} from '@loopback/rest';
+import {Permiso, Rol} from '../models';
 import {PermisoRepository} from '../repositories';
 import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
@@ -237,4 +237,32 @@ export class PermisoController {
       throw new Error('Error finding roles');
     }
   }
+
+  @get('/findPermisosPorRoles')
+  @response(200, {
+    description: 'Devuelve los permisos asociados a los roles recibidos',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Permiso, { includeRelations: true }),
+        },
+      },
+    },
+  })
+  async findPermisosPorRoles(
+    @param.query.string('roles', {
+      description: 'IDs de roles separados por coma (ej: "1,2,3") o como JSON array (ej: "[1,2,3]")',
+    })
+    roles?: string,
+    @param.filter(Permiso) filter?: Filter<Permiso>,
+  ): Promise<Permiso[]> {
+    const dataSource = this.permisoRepository.dataSource;
+
+    
+    const query = `SELECT * FROM permiso WHERE rolId IN (${roles})`;
+
+    return await dataSource.execute(query);
+  }
+
 }

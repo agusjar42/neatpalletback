@@ -72,8 +72,7 @@ export class UsuarioCredencialesController {
     return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'usuario_credenciales', filter, camposSelect);
   }
 
-  @authenticate('jwt')
-  @authorize({allowedRoles: ['API']})
+  @authenticate.skip()
   @patch('/usuario-credenciales')
   @response(200, {
     description: 'UsuarioCredenciales PATCH success count',
@@ -111,8 +110,7 @@ export class UsuarioCredencialesController {
     return this.usuarioCredencialesRepository.findById(id, filter);
   }
 
-  @authenticate('jwt')
-  @authorize({allowedRoles: ['API']})
+  @authenticate.skip()
   @patch('/usuario-credenciales/{id}')
   @response(204, {
     description: 'UsuarioCredenciales PATCH success',

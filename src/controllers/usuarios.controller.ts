@@ -126,6 +126,7 @@ export class UsuariosController {
     return this.usuarioRepository.create(usuario);
   }
 
+  @authenticate.skip()
   @post('/usuarios/login')
   @response(200, {
     description: 'Login de usuario con JWT',
@@ -806,8 +807,16 @@ export class UsuariosController {
   ): Promise<{ status: string; message: string }> {
     if (usuarioCredenciales.password) {
       const dataSource = this.usuarioCredencialesRepository.dataSource;
-      const query = `UPDATE usuario_credenciales SET password='${usuarioCredenciales.password}' WHERE id=${idUsuario}`;
-      await dataSource.execute(query);
+      //
+      //Borrameos las credenciales del usuario 
+      //
+      const queryDelete = `DELETE FROM usuario_credenciales WHERE usuarioId=${idUsuario}`;
+      await dataSource.execute(queryDelete);
+      //
+      //Actualizamos 
+      //
+      const queryUpdate = `insert into usuario_credenciales (password, usuarioId) values ('${usuarioCredenciales.password}', ${idUsuario})`;
+      await dataSource.execute(queryUpdate);
 
       return { status: 'OK', message: 'Correo enviado con éxito.' };
     }
