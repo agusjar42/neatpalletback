@@ -22,7 +22,7 @@ export class Traduccion extends Entity {
     precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'idioma_id', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
+    mysql: {columnName: 'idiomaId', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
   })
   idiomaId: number;
 
