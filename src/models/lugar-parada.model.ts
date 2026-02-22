@@ -96,9 +96,6 @@ export class LugarParada extends Entity {
   })
   activoSN?: string;
 
-  @belongsTo(() => Cliente)
-  cliente?: Cliente;
-
   constructor(data?: Partial<LugarParada>) {
     super(data);
   }

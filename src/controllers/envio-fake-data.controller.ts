@@ -7,6 +7,7 @@ import {
   param,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
 import {service} from '@loopback/core';
 import {
@@ -22,6 +23,8 @@ import {
   EnvioContenidoPalletRepository,
   LugarParadaRepository,
   OperarioRepository,
+  ClienteRepository,
+  ProductoRepository,
 } from '../repositories';
 import {
   Envio,
@@ -44,7 +47,6 @@ import { authenticate } from '@loopback/authentication';
 const DATA_PATH = path.join(process.cwd(), 'src/data');
 const ciudadesOrigen: string[] = JSON.parse(fs.readFileSync(path.join(DATA_PATH, 'ciudades-origen.json'), 'utf-8'));
 const ciudadesDestino: string[] = JSON.parse(fs.readFileSync(path.join(DATA_PATH, 'ciudades-destino.json'), 'utf-8'));
-const productos: string[] = JSON.parse(fs.readFileSync(path.join(DATA_PATH, 'productos.json'), 'utf-8'));
 const prefijosRef: string[] = JSON.parse(fs.readFileSync(path.join(DATA_PATH, 'prefijos-referencia.json'), 'utf-8'));
 const ciudadesParada: string[] = JSON.parse(fs.readFileSync(path.join(DATA_PATH, 'ciudades-parada.json'), 'utf-8'));
 const nombresOperarios: string[] = JSON.parse(fs.readFileSync(path.join(DATA_PATH, 'nombres-operarios.json'), 'utf-8'));
@@ -84,6 +86,10 @@ export class EnvioFakeDataController {
     public lugarParadaRepository: LugarParadaRepository,
     @repository(OperarioRepository)
     public operarioRepository: OperarioRepository,
+    @repository(ClienteRepository)
+    public clienteRepository: ClienteRepository,
+    @repository(ProductoRepository)
+    public productoRepository: ProductoRepository,
     @service(EnvioConfiguracionService)
     public envioConfiguracionService: EnvioConfiguracionService,
   ) {}
@@ -115,16 +121,29 @@ export class EnvioFakeDataController {
     // Crear envío fake
     const envio = await this.crearEnvioFake(empresaId, usuarioCreacion);
 
+    const palletsDisponibles = await this.palletRepository.find({where: {empresaId}});
+    if (palletsDisponibles.length === 0) {
+      throw new HttpErrors.UnprocessableEntity(`No hay pallets para empresaId=${empresaId}`);
+    }
+
+    const productosCliente = await this.productoRepository.find({where: {clienteId: envio.clienteId}});
+    const productosDb = productosCliente.length > 0 ? productosCliente : await this.productoRepository.find();
+    if (productosDb.length === 0) {
+      throw new HttpErrors.UnprocessableEntity(`No hay productos para clienteId=${envio.clienteId}`);
+    }
+
     // Crear contenidos fake (2-4 contenidos por envío)
     const numContenidos = this.randomInt(2, 4);
     const contenidos = [];
     for (let i = 0; i < numContenidos; i++) {
-      const contenido = await this.crearEnvioContenidoFake(envio.id!, usuarioCreacion);
+      const producto = this.randomElement(productosDb);
+      const pallet = this.randomElement(palletsDisponibles);
+      const contenido = await this.crearEnvioContenidoFake(envio.id!, producto.id!, pallet.id!, usuarioCreacion);
       contenidos.push(contenido);
     }
 
     // Obtener pallets disponibles para la empresa
-    const pallets = await this.palletRepository.find({where: {empresaId}});
+    const pallets = palletsDisponibles;
 
     // Crear envío_pallet fake (10-30 pallets por envío)
     const numPallets = Math.min(this.randomInt(10, 30), pallets.length);
@@ -229,14 +248,23 @@ export class EnvioFakeDataController {
     const fechaSalida = this.generarFechaAleatoria();
     const fechaLlegada = this.generarFechaAleatoria(fechaSalida);
 
+    //
+    //Hacemos una select a los clientes de esta empresa para asignar un clienteId válido
+    //
+    const clientes = await this.clienteRepository.find({where: {empresaId: empresaId}});
+    const clienteId = clientes.length > 0 ? this.randomElement(clientes).id! : undefined;
+
     const envio = {
       empresaId,
+      clienteId,
+      orden: this.randomInt(1, 100),
+      numero: `ENV-${this.randomInt(1000, 9999)}`,
       origenRuta: this.randomElement(ciudadesOrigen),
-      fechaLlegada: this.formatearFecha(fechaLlegada),
+      fechaLlegada: this.formatearFechaHora(fechaLlegada),
       gpsRutaOrigen: this.generarCoordenadas(),
       destinoRuta: this.randomElement(ciudadesDestino),
       gpsRutaDestino: this.generarCoordenadas(),
-      fechaSalida: this.formatearFecha(fechaSalida),
+      fechaSalida: this.formatearFechaHora(fechaSalida),
       paradasPrevistas: this.randomInt(1, 5),
       usuarioCreacion,
     };
@@ -244,10 +272,12 @@ export class EnvioFakeDataController {
     return this.envioRepository.create(envio);
   }
 
-  private async crearEnvioContenidoFake(envioId: number, usuarioCreacion: number): Promise<EnvioContenido> {
+  private async crearEnvioContenidoFake(envioId: number, productoId: number, palletId: number, usuarioCreacion: number): Promise<EnvioContenido> {
     const contenido = {
       envioId,
-      producto: this.randomElement(productos),
+      productoId,
+      palletId,
+      orden: this.randomInt(1, 100),
       referencia: `${this.randomElement(prefijosRef)}-${this.randomInt(1000, 9999)}`,
       pesoKgs: this.randomDecimal(10, 500),
       pesoTotal: this.randomDecimal(100, 2000),
@@ -292,6 +322,7 @@ export class EnvioFakeDataController {
     
     const parada = {
       envioId,
+      orden: this.randomInt(1, 100),
       fecha: this.formatearFecha(this.generarFechaAleatoria()),
       lugarParadaId,
       operarioId,
@@ -309,6 +340,7 @@ export class EnvioFakeDataController {
     const sensor = {
       envioId,
       tipoSensorId,
+      orden: this.randomInt(1, 100),
       valor: this.generarValorSensor(tipoSensorId),
       usuarioCreacion,
     };
@@ -353,6 +385,15 @@ export class EnvioFakeDataController {
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const año = fecha.getFullYear();
     return `${año}-${mes}-${dia}`;
+  }
+
+  private formatearFechaHora(fecha: Date): string {
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const año = fecha.getFullYear();
+    const hora = String(fecha.getHours()).padStart(2, '0');
+    const minuto = String(fecha.getMinutes()).padStart(2, '0');
+    return `${año}-${mes}-${dia}T${hora}:${minuto}`;
   }
 
   private generarCoordenadas(): string {

@@ -14,14 +14,7 @@ export class Producto extends Entity {
   })
   id?: number;
 
-  @property({
-    type: 'number',
-    jsonSchema: {nullable: false},
-    precision: 11,
-    scale: 0,
-    generated: false,
-    mysql: {columnName: 'clienteId', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
-  })
+  @belongsTo(() => Cliente, {name: 'cliente'}, {mysql: {columnName: 'clienteId'}})
   clienteId: number;
 
   @property({
@@ -85,9 +78,6 @@ export class Producto extends Entity {
     mysql: {columnName: 'pesoKgs', dataType: 'decimal', dataLength: 18, dataPrecision: 18, dataScale: 2, nullable: 'Y'}
   })
   pesoKgs?: number;
-
-  @belongsTo(() => Cliente)
-  cliente?: Cliente;
 
   constructor(data?: Partial<Producto>) {
     super(data);

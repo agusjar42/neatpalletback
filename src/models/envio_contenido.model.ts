@@ -28,7 +28,7 @@ export class EnvioContenido extends Entity {
   envioId: number;
 
   @belongsTo(() => Producto, {name: 'producto'}, {mysql: {columnName: 'productoId'}})
-  productoId?: number;
+  productoId: number;
 
   @belongsTo(() => Pallet, {name: 'pallet'}, {mysql: {columnName: 'palletId'}})
   palletId: number;

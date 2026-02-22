@@ -14,14 +14,18 @@ export class Cliente extends Entity {
   })
   id?: number;
 
-  @property({
-    type: 'number',
-    jsonSchema: {nullable: false},
-    precision: 11,
-    scale: 0,
-    generated: false,
-    mysql: {columnName: 'empresaId', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
-  })
+  @belongsTo(
+    () => Empresa,
+    {name: 'empresa'},
+    {
+      type: 'number',
+      jsonSchema: {nullable: false},
+      precision: 11,
+      scale: 0,
+      generated: false,
+      mysql: {columnName: 'empresaId', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
+    },
+  )
   empresaId: number;
 
   @property({
@@ -86,9 +90,6 @@ export class Cliente extends Entity {
     mysql: {columnName: 'usuModificacion', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
   })
   usuModificacion?: number;
-
-  @belongsTo(() => Empresa)
-  empresa?: Empresa;
 
   constructor(data?: Partial<Cliente>) {
     super(data);

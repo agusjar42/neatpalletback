@@ -148,6 +148,15 @@ export class Usuario extends Entity {
   })
   usuInactivo?: number;
 
+  @property({
+    type: 'string',
+    //jsonSchema: {nullable: true},
+    length: 1,
+    generated: false,
+    mysql: {columnName: 'usuarioAdmin', dataType: 'varchar', dataLength: 1, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  usuarioAdmin?: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

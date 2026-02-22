@@ -96,9 +96,6 @@ export class Operario extends Entity {
   })
   activoSN?: string;
 
-  @belongsTo(() => Cliente)
-  cliente?: Cliente;
-
   constructor(data?: Partial<Operario>) {
     super(data);
   }
