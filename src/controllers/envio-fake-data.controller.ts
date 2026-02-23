@@ -13,7 +13,7 @@ import {service} from '@loopback/core';
 import {
   EnvioRepository,
   EnvioContenidoRepository,
-  EnvioMovimientoRepository,
+  EnvioPalletMovimientoRepository,
   EnvioPalletRepository,
   EnvioParadaRepository,
   EnvioSensorRepository,
@@ -29,7 +29,7 @@ import {
 import {
   Envio,
   EnvioContenido,
-  EnvioMovimiento,
+  EnvioPalletMovimiento,
   EnvioPallet,
   EnvioParada,
   EnvioSensor,
@@ -66,8 +66,8 @@ export class EnvioFakeDataController {
     public envioRepository: EnvioRepository,
     @repository(EnvioContenidoRepository)
     public envioContenidoRepository: EnvioContenidoRepository,
-    @repository(EnvioMovimientoRepository)
-    public envioMovimientoRepository: EnvioMovimientoRepository,
+    @repository(EnvioPalletMovimientoRepository)
+    public envioPalletMovimientoRepository: EnvioPalletMovimientoRepository,
     @repository(EnvioPalletRepository)
     public envioPalletRepository: EnvioPalletRepository,
     @repository(EnvioParadaRepository)
@@ -178,7 +178,8 @@ export class EnvioFakeDataController {
     for (let i = 0; i < numMovimientos; i++) {
       // Seleccionar un tipo de sensor aleatorio (pueden repetirse)
       const tipoSensorAleatorio = this.randomElement(tiposSensores);
-      const movimiento = await this.crearEnvioMovimientoFake(envio.id!, tipoSensorAleatorio.id!, usuarioCreacion);
+      const envioPalletAleatorio = this.randomElement(envioPallets);
+      const movimiento = await this.crearEnvioPalletMovimientoFake(envioPalletAleatorio.id!, tipoSensorAleatorio.id!, usuarioCreacion);
       movimientos.push(movimiento);
     }
 
@@ -225,8 +226,14 @@ export class EnvioFakeDataController {
     // 2. Borrar envio_contenido
     await this.envioContenidoRepository.deleteAll({envioId: id});
 
-    // 3. Borrar envio_movimiento
-    await this.envioMovimientoRepository.deleteAll({envioId: id});
+    // 3. Borrar envio_pallet_movimiento
+    const envioPalletIds = (await this.envioPalletRepository.find({
+      where: {envioId: id},
+      fields: {id: true},
+    })).map(ep => ep.id!).filter(Boolean);
+    if (envioPalletIds.length > 0) {
+      await this.envioPalletMovimientoRepository.deleteAll({envioPalletId: {inq: envioPalletIds}});
+    }
 
     // 4. Borrar envio_pallet
     await this.envioPalletRepository.deleteAll({envioId: id});
@@ -278,6 +285,7 @@ export class EnvioFakeDataController {
       productoId,
       palletId,
       orden: this.randomInt(1, 100),
+      cantidad: this.randomInt(1, 100),
       referencia: `${this.randomElement(prefijosRef)}-${this.randomInt(1000, 9999)}`,
       pesoKgs: this.randomDecimal(10, 500),
       pesoTotal: this.randomDecimal(100, 2000),
@@ -288,17 +296,18 @@ export class EnvioFakeDataController {
     return this.envioContenidoRepository.create(contenido);
   }
 
-  private async crearEnvioMovimientoFake(envioId: number, tipoSensorId: number, usuarioCreacion: number): Promise<EnvioMovimiento> {
+  private async crearEnvioPalletMovimientoFake(envioPalletId: number, tipoSensorId: number, usuarioCreacion: number): Promise<EnvioPalletMovimiento> {
     const movimiento = {
-      envioId,
+      orden: this.randomInt(1, 100),
+      envioPalletId,
       tipoSensorId,
-      fecha: this.formatearFecha(this.generarFechaAleatoria()),
+      fecha: this.formatearFechaHora(this.generarFechaAleatoria()),
       gps: this.generarCoordenadas(),
       valor: this.generarValorSensor(tipoSensorId),
       usuarioCreacion,
     };
 
-    return this.envioMovimientoRepository.create(movimiento);
+    return this.envioPalletMovimientoRepository.create(movimiento);
   }
 
   private async crearEnvioPalletFake(envioId: number, palletId: number, usuarioCreacion: number): Promise<EnvioPallet> {

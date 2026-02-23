@@ -265,22 +265,22 @@ export class EnvioController {
   })
   async resumenEnvio(
     @param.path.number('id') id: number,
-  ): Promise<{eventosGuardados: number, eventosEnviados: number, totalAlarmas: number, bateriaActual: number}[]> {
+  ): Promise<{pallet: string, eventosGuardados: number, eventosEnviados: number, totalAlarmas: number, bateriaActual: number}[]> {
     // Datos fijos de ejemplo - más adelante se implementará la funcionalidad real
     return [
-      {
+      { pallet: 'Pallet 1',
         eventosGuardados: 1250,
         eventosEnviados: 1180,
         totalAlarmas: 5,
         bateriaActual: 85
       },
-      {
+      { pallet: 'Pallet 2',
         eventosGuardados: 980,
         eventosEnviados: 920,
         totalAlarmas: 2,
         bateriaActual: 67
       },
-      {
+      { pallet: 'Pallet 3',
         eventosGuardados: 1450,
         eventosEnviados: 1380,
         totalAlarmas: 8,

@@ -15,7 +15,7 @@ export * from './lista-permisos.model';
 export * from './envio_contenido.model';
 export * from './envio_configuracion_empresa.model';
 export * from './envio_configuracion.model';
-export * from './envio_movimiento.model';
+export * from './envio_pallet_movimiento.model';
 export * from './envio_pallet.model';
 export * from './envio_parada.model';
 export * from './envio_sensor.model';

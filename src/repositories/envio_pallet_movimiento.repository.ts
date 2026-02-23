@@ -1,74 +1,74 @@
 import {inject, Getter} from '@loopback/core';
 import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
 import {NeatpalletmysqlDataSource} from '../datasources';
-import {EnvioMovimiento, EnvioMovimientoRelations, TipoSensor, Envio} from '../models';
+import {EnvioPalletMovimiento, EnvioPalletMovimientoRelations, TipoSensor, EnvioPallet} from '../models';
 import {TipoSensorRepository} from './tipo_sensor.repository';
-import {EnvioRepository} from './envio.repository';
+import {EnvioPalletRepository} from './envio_pallet.repository';
 
-export class EnvioMovimientoRepository extends DefaultCrudRepository<
-  EnvioMovimiento,
-  typeof EnvioMovimiento.prototype.id,
-  EnvioMovimientoRelations
+export class EnvioPalletMovimientoRepository extends DefaultCrudRepository<
+  EnvioPalletMovimiento,
+  typeof EnvioPalletMovimiento.prototype.id,
+  EnvioPalletMovimientoRelations
 > {
 
-  public readonly tipoSensor: BelongsToAccessor<TipoSensor, typeof EnvioMovimiento.prototype.id>;
-  public readonly envio: BelongsToAccessor<Envio, typeof EnvioMovimiento.prototype.id>;
+  public readonly tipoSensor: BelongsToAccessor<TipoSensor, typeof EnvioPalletMovimiento.prototype.id>;
+  public readonly envioPallet: BelongsToAccessor<EnvioPallet, typeof EnvioPalletMovimiento.prototype.id>;
 
   constructor(
     @inject('datasources.neatpalletmysql') dataSource: NeatpalletmysqlDataSource,
     @repository.getter('TipoSensorRepository') protected tipoSensorRepositoryGetter: Getter<TipoSensorRepository>,
-    @repository.getter('EnvioRepository') protected envioRepositoryGetter: Getter<EnvioRepository>,
+    @repository.getter('EnvioPalletRepository') protected envioPalletRepositoryGetter: Getter<EnvioPalletRepository>,
   ) {
-    super(EnvioMovimiento, dataSource);
-    this.envio = this.createBelongsToAccessorFor('envio', envioRepositoryGetter,);
+    super(EnvioPalletMovimiento, dataSource);
+    this.envioPallet = this.createBelongsToAccessorFor('envioPallet', envioPalletRepositoryGetter,);
     this.tipoSensor = this.createBelongsToAccessorFor('tipoSensor', tipoSensorRepositoryGetter,);
-    this.registerInclusionResolver('envio', this.envio.inclusionResolver);
+    this.registerInclusionResolver('envioPallet', this.envioPallet.inclusionResolver);
     this.registerInclusionResolver('tipoSensor', this.tipoSensor.inclusionResolver);
   }
 
   /**
    * Encuentra movimientos por envío
    */
-  async findByEnvio(envioId: number): Promise<EnvioMovimiento[]> {
+  async findByEnvioPallet(envioPalletId: number): Promise<EnvioPalletMovimiento[]> {
     return this.find({
       where: {
-        envioId: envioId
+        envioPalletId: envioPalletId
       },
       order: ['fecha DESC'],
-      include: ['tipoSensor', 'envio']
+      include: ['tipoSensor', 'envioPallet']
     });
   }
 
   /**
    * Encuentra movimientos por tipo de sensor
    */
-  async findByTipoSensor(tipoSensorId: number): Promise<EnvioMovimiento[]> {
+  async findByTipoSensor(tipoSensorId: number): Promise<EnvioPalletMovimiento[]> {
     return this.find({
       where: {
         tipoSensorId: tipoSensorId
       },
       order: ['fecha DESC'],
-      include: ['tipoSensor', 'envio']
+      include: ['tipoSensor', 'envioPallet']
     });
   }
 
   /**
    * Encuentra movimientos por fecha
    */
-  async findByFecha(fecha: string): Promise<EnvioMovimiento[]> {
+  async findByFecha(fecha: string): Promise<EnvioPalletMovimiento[]> {
     return this.find({
       where: {
         fecha: fecha
       },
       order: ['fechaCreacion DESC'],
-      include: ['tipoSensor', 'envio']
+      include: ['tipoSensor', 'envioPallet']
     });
   }
 
   /**
    * Encuentra movimientos por rango de fechas
    */
-  async findByFechaRange(fechaInicio: string, fechaFin: string): Promise<EnvioMovimiento[]> {
+  async findByFechaRange(fechaInicio: string, fechaFin: string): Promise<EnvioPalletMovimiento[]> {
     return this.find({
       where: {
         fecha: {
@@ -76,17 +76,17 @@ export class EnvioMovimientoRepository extends DefaultCrudRepository<
         }
       },
       order: ['fecha DESC'],
-      include: ['tipoSensor', 'envio']
+      include: ['tipoSensor', 'envioPallet']
     });
   }
 
   /**
    * Obtiene último movimiento de un envío
    */
-  async getLatestByEnvio(envioId: number): Promise<EnvioMovimiento | null> {
+  async getLatestByEnvioPallet(envioPalletId: number): Promise<EnvioPalletMovimiento | null> {
     return this.findOne({
       where: {
-        envioId: envioId
+        envioPalletId: envioPalletId
       },
       order: ['fecha DESC', 'fechaCreacion DESC'],
       include: ['tipoSensor']
@@ -96,11 +96,11 @@ export class EnvioMovimientoRepository extends DefaultCrudRepository<
   /**
    * Obtiene último movimiento por tipo de sensor
    */
-  async getLatestByEnvioAndTipoSensor(envioId: number, tipoSensorId: number): Promise<EnvioMovimiento | null> {
+  async getLatestByEnvioPalletAndTipoSensor(envioPalletId: number, tipoSensorId: number): Promise<EnvioPalletMovimiento | null> {
     return this.findOne({
       where: {
         and: [
-          {envioId: envioId},
+          {envioPalletId: envioPalletId},
           {tipoSensorId: tipoSensorId}
         ]
       },
@@ -112,9 +112,9 @@ export class EnvioMovimientoRepository extends DefaultCrudRepository<
   /**
    * Cuenta movimientos por envío
    */
-  async countByEnvio(envioId: number): Promise<number> {
+  async countByEnvioPallet(envioPalletId: number): Promise<number> {
     const result = await this.count({
-      envioId: envioId
+      envioPalletId: envioPalletId
     });
     return result.count;
   }
@@ -123,15 +123,15 @@ export class EnvioMovimientoRepository extends DefaultCrudRepository<
    * Registra un nuevo movimiento
    */
   async registrarMovimiento(
-    envioId: number, 
+    envioPalletId: number, 
     tipoSensorId: number, 
     valor: string, 
     gps?: string, 
     imagen?: string,
     usuarioCreacion?: number
-  ): Promise<EnvioMovimiento> {
+  ): Promise<EnvioPalletMovimiento> {
     return this.create({
-      envioId: envioId,
+      envioPalletId: envioPalletId,
       tipoSensorId: tipoSensorId,
       fecha: new Date().toISOString(),
       valor: valor,
