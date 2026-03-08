@@ -68,6 +68,32 @@ npm run lint:fix
 - `npm run migrate`: Migrar esquemas de bases de datos para modelos
 - `npm run openapi-spec`: Generar especificaciones OpenAPI en un archivo
 
+## Password reset (Forgot/Reset)
+
+Endpoints (públicos):
+- `POST /auth/password/forgot` body: `{ "email": "user@example.com" }` (siempre responde 200 con mensaje neutro)
+- `POST /auth/password/reset` body: `{ "token": "<rawToken>", "newPassword": "NewPassword123" }`
+
+Variables de entorno:
+- `FRONTEND_BASE_URL` (obligatoria): se usa para construir el link `.../reset-password?token=...`
+- `RESET_TOKEN_TTL_MINUTES` (default `30`)
+- `RESET_TOKEN_PEPPER` (opcional, recomendado)
+- `RESET_FORGOT_MAX_PER_HOUR` (default `5`, limita por IP y por email)
+- Password policy:
+  - `RESET_PASSWORD_MIN_LENGTH` (default `10`)
+  - `RESET_PASSWORD_REQUIRE_LETTER` (default `true`)
+  - `RESET_PASSWORD_REQUIRE_NUMBER` (default `true`)
+- SMTP (si no está configurado, el backend imprime el link en consola para desarrollo):
+  - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` (opcional), `SMTP_SECURE` (opcional)
+
+Pasos para probar en local:
+1) Crear/migrar tablas (elige una opción):
+   - `npm run migrate` (LoopBack `migrateSchema`)
+   - o ejecutar los SQL en `database_migrations/` (incluye `password_reset_token` y `usuario.passwordChangedAt`)
+2) Exporta `FRONTEND_BASE_URL` (ej: `http://localhost:5173`)
+3) Llama a `POST /auth/password/forgot` con tu email; si no hay SMTP, verás el link en consola
+4) Copia el `token` del link y llama a `POST /auth/password/reset`
+
 ## EJEMPLO (NEATPALLET) -> CREAR BACKEND API - NODEJS - LOOPBACK 4
 
 - Importar el modelo de la base de datos en Workbench

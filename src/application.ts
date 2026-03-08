@@ -17,12 +17,15 @@ import { ServiceMixin } from '@loopback/service-proxy';
 import { BcryptHasher } from './services/hash.password.bcryptjs';
 import path from 'path';
 import { MySequence } from './sequence';
-import { PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, RefreshTokenServiceBindings, RefreshTokenConstants, UserServiceBindings } from './keys';
+import { PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, RefreshTokenServiceBindings, RefreshTokenConstants, UserServiceBindings, PasswordResetBindings } from './keys';
 import { RefrescarTokenService } from './services/refresh-token.service';
 import { JWTService } from './services/jwt-services';
 import { JWTAuthenticationStrategy } from './strategy/jwt-strategy';
 import { MyUserService } from './services/user-service';
 import { CompruebaImagenController } from './controllers/compruebaImagen.controller';
+import {NodemailerEmailService} from './services/email.service';
+import {InMemoryPasswordResetThrottleService} from './services/password-reset-throttle.service';
+import {PasswordResetService} from './services/password-reset.service';
 
 export { ApplicationConfig };
 
@@ -91,6 +94,33 @@ export class NeatpalletBackApplication extends BootMixin(
     this.bind(RefreshTokenServiceBindings.REFRESH_ISSUER).to(RefreshTokenConstants.REFRESH_ISSUER_VALUE);
 
     this.bind(PasswordHasherBindings.ROUNDS).to(10);
+
+    // Password reset flow configuration + pluggable services
+    this.bind(PasswordResetBindings.FRONTEND_BASE_URL).to(
+      process.env.FRONTEND_BASE_URL ?? '',
+    );
+    this.bind(PasswordResetBindings.TOKEN_TTL_MINUTES).to(
+      Number(process.env.RESET_TOKEN_TTL_MINUTES ?? '30') || 30,
+    );
+    this.bind(PasswordResetBindings.TOKEN_PEPPER).to(
+      process.env.RESET_TOKEN_PEPPER ?? '',
+    );
+    this.bind(PasswordResetBindings.PASSWORD_MIN_LENGTH).to(
+      Number(process.env.RESET_PASSWORD_MIN_LENGTH ?? '10') || 10,
+    );
+    this.bind(PasswordResetBindings.PASSWORD_REQUIRE_LETTER).to(
+      String(process.env.RESET_PASSWORD_REQUIRE_LETTER ?? 'true').toLowerCase() !==
+        'false',
+    );
+    this.bind(PasswordResetBindings.PASSWORD_REQUIRE_NUMBER).to(
+      String(process.env.RESET_PASSWORD_REQUIRE_NUMBER ?? 'true').toLowerCase() !==
+        'false',
+    );
+    this.bind(PasswordResetBindings.EMAIL_SERVICE).toClass(NodemailerEmailService);
+    this.bind(PasswordResetBindings.THROTTLE_SERVICE).toClass(
+      InMemoryPasswordResetThrottleService,
+    );
+    this.bind('services.PasswordResetService').toClass(PasswordResetService);
     this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher); //-> Encriptación del password de usuario
     this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService); // Servicio que usamos para validar el usuario
   }

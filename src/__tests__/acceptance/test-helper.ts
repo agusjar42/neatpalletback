@@ -18,7 +18,14 @@ export async function setupApplication(): Promise<AppWithClient> {
     rest: restConfig,
   });
 
+  // Use an in-memory datasource for acceptance tests to avoid requiring MySQL.
+  app.bind('datasources.config.neatpalletmysql').to({
+    name: 'neatpalletmysql',
+    connector: 'memory',
+  } as any);
+
   await app.boot();
+  await app.migrateSchema({existingSchema: 'drop'});
   await app.start();
 
   const client = createRestAppClient(app);

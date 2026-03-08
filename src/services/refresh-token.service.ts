@@ -53,6 +53,8 @@ export class RefrescarTokenService {
     await this.RefrescarTokenRepository.create({
       usuarioId:  Number(userProfile[securityId]),
       refreshToken: result.refreshToken,
+      tipoToken: 'refresh',
+      usuarioCreacion: Number(userProfile[securityId]),
     });
     return result;
   }

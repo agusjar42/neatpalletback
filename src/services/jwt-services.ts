@@ -4,6 +4,8 @@ import {HttpErrors} from '@loopback/rest';
 import {securityId, UserProfile} from '@loopback/security';
 import {promisify} from 'util';
 import { TokenServiceBindings } from '../keys';
+import {repository} from '@loopback/repository';
+import {UsuarioRepository} from '../repositories';
 
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
@@ -14,7 +16,9 @@ export class JWTService implements TokenService {
       @inject(TokenServiceBindings.TOKEN_SECRET)
       private jwtSecret: string,
       @inject(TokenServiceBindings.TOKEN_EXPIRES_IN)
-      private jwtExpiresIn: string
+      private jwtExpiresIn: string,
+      @repository(UsuarioRepository)
+      private usuarioRepository: UsuarioRepository,
     ) {}
   
     async verifyToken(token: string): Promise<UserProfile> {
@@ -29,6 +33,20 @@ export class JWTService implements TokenService {
       try {
         // decodificar el perfil de usuario del token
         const decodedToken = await verifyAsync(token, this.jwtSecret);
+
+        // Invalidate access tokens issued before the last user modification
+        const tokenIatSeconds = Number(decodedToken?.iat ?? 0);
+        const tokenUserId = Number(decodedToken?.id);
+        if (tokenIatSeconds && tokenUserId) {
+          const user = await this.usuarioRepository.findById(tokenUserId);
+          if (user?.fechaModificacion) {
+            const fechaModificacionMs = new Date(user.fechaModificacion).getTime();
+            const tokenIatMs = tokenIatSeconds * 1000;
+            if (Number.isFinite(fechaModificacionMs) && tokenIatMs < fechaModificacionMs) {
+              throw new HttpErrors.Unauthorized(`Sesión inválida`);
+            }
+          }
+        }
         // no copiar los campos de token 'iat' y 'exp', ni 'email' al perfil de usuario
         userProfile = Object.assign(
           {[securityId]: '', nombre: ''},

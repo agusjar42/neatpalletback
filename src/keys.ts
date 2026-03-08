@@ -10,6 +10,8 @@ import { Usuario } from './models';
 import { Credentials } from './repositories';
 import { ExpressRequestHandler } from '@loopback/rest';
 import {FileUploadHandler} from './types';
+import {EmailService} from './services/email.service';
+import {PasswordResetThrottleService} from './services/password-reset-throttle.service';
 
 export namespace TokenServiceConstants {
     export const TOKEN_SECRET_VALUE = 'myjwts3cr3t' //-> LLave secreta con que se encriptara nuestro token
@@ -95,4 +97,29 @@ export namespace PasswordHasherBindings {
         'services.hasher'
     );
     export const ROUNDS = BindingKey.create<number>('services.hasher.round');
+}
+
+export namespace PasswordResetBindings {
+  export const FRONTEND_BASE_URL = BindingKey.create<string>(
+    'passwordreset.frontendBaseUrl',
+  );
+  export const TOKEN_TTL_MINUTES = BindingKey.create<number>(
+    'passwordreset.tokenTtlMinutes',
+  );
+  export const TOKEN_PEPPER = BindingKey.create<string>('passwordreset.tokenPepper');
+
+  export const PASSWORD_MIN_LENGTH = BindingKey.create<number>(
+    'passwordreset.password.minLength',
+  );
+  export const PASSWORD_REQUIRE_LETTER = BindingKey.create<boolean>(
+    'passwordreset.password.requireLetter',
+  );
+  export const PASSWORD_REQUIRE_NUMBER = BindingKey.create<boolean>(
+    'passwordreset.password.requireNumber',
+  );
+
+  export const EMAIL_SERVICE = BindingKey.create<EmailService>('services.email');
+  export const THROTTLE_SERVICE = BindingKey.create<PasswordResetThrottleService>(
+    'services.passwordResetThrottle',
+  );
 }
