@@ -36,3 +36,4 @@ export * from './envio-contenido-pallet.model';
 export * from './cliente.model';
 export * from './operario.model';
 export * from './lugar-parada.model';
+export * from './mqtt-message-log.model';

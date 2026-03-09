@@ -23,6 +23,7 @@ import { JWTService } from './services/jwt-services';
 import { JWTAuthenticationStrategy } from './strategy/jwt-strategy';
 import { MyUserService } from './services/user-service';
 import { CompruebaImagenController } from './controllers/compruebaImagen.controller';
+import {MqttSubscriberService} from './services/mqtt-subscriber.service';
 
 export { ApplicationConfig };
 
@@ -61,6 +62,7 @@ export class NeatpalletBackApplication extends BootMixin(
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
     this.bind('services.CompruebaImagenController').toClass(CompruebaImagenController);
+    this.lifeCycleObserver(MqttSubscriberService);
     // Customize @loopback/rest-explorer configuration here
     this.configure(RestExplorerBindings.COMPONENT).to({
       path: '/explorer',

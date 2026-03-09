@@ -32,3 +32,4 @@ export * from './producto.repository';
 export * from './cliente.repository';
 export * from './lugar-parada.repository';
 export * from './operario.repository';
+export * from './mqtt-message-log.repository';
