@@ -26,6 +26,7 @@ import { CompruebaImagenController } from './controllers/compruebaImagen.control
 import {NodemailerEmailService} from './services/email.service';
 import {InMemoryPasswordResetThrottleService} from './services/password-reset-throttle.service';
 import {PasswordResetService} from './services/password-reset.service';
+import {MqttSubscriberService} from './services/mqtt-subscriber.service';
 
 export { ApplicationConfig };
 
@@ -64,6 +65,7 @@ export class NeatpalletBackApplication extends BootMixin(
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
     this.bind('services.CompruebaImagenController').toClass(CompruebaImagenController);
+    this.lifeCycleObserver(MqttSubscriberService);
     // Customize @loopback/rest-explorer configuration here
     this.configure(RestExplorerBindings.COMPONENT).to({
       path: '/explorer',

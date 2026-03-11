@@ -34,3 +34,4 @@ export * from './cliente.controller';
 export * from './lugar-parada.controller';
 export * from './operario.controller';
 export * from './auth-password.controller';
+export * from './mqtt-message-log.controller';
