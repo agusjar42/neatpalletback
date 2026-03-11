@@ -182,12 +182,26 @@ export class PasswordResetService {
   }
 
   buildResetLink(rawToken: string): string {
-    const base = String(this.frontendBaseUrl ?? '').replace(/\/+$/, '');
+    //
+    //Obtenemos la URL base del frontend desde las variables de entorno según el entorno actual (PRO, DEV, PRE, LOCAL)
+    //
+    let baseUrl = (process.env.ENTORNO == "PRO") ? process.env.HOST_PRO : (process.env.ENTORNO == "DEV") ? process.env.HOST_DEV : (process.env.ENTORNO == "PRE") ? process.env.HOST_PRE : process.env.HOST_LOCAL;
+    //
+    //Si el entorno es local entonces forzamos el protocolo http, en caso contrario forzamos https
+    //
+    baseUrl = (process.env.ENTORNO === "PRO") ? ('https://' + baseUrl) : ('http://' + baseUrl + ':3000');
+    const base = String(baseUrl ?? '').replace(/\/+$/, '');
+    //
+    //Si no está configurada la URL base, lanzamos un error porque no podemos generar el enlace de restablecimiento sin ella
+    //
     if (!base) {
       throw new HttpErrors.InternalServerError(
         'FRONTEND_BASE_URL is not configured.',
       );
     }
+    //
+    //Devolvemos la URL completa para el restablecimiento de contraseña, incluyendo el token como parámetro de consulta. El frontend usará este token para validar la solicitud de restablecimiento. El token se codifica para asegurar que se transmita correctamente en la URL.
+    //
     return `${base}/reset-password?token=${encodeURIComponent(rawToken)}`;
   }
 }

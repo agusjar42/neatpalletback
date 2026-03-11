@@ -18,10 +18,10 @@ export class NodemailerEmailService implements EmailService {
     const ttlMinutes = Number(process.env.RESET_TOKEN_TTL_MINUTES ?? '30') || 30;
 
     if (!this.isSmtpConfigured()) {
-      // Dev fallback: log reset link to console (raw token is only present in the link).
-      // Never log token hashes.
+      //
+      //Si entra aquí es que no está configurado el servicio SMTP para enviar correos electrónicos. 
       console.log(
-        `[DEV] Password reset link for ${toEmail} (expires in ${ttlMinutes} minutes): ${link}`,
+        `No está configurado el servicio SMTP. No se puede enviar el correo de restablecimiento de contraseña a ${toEmail}. Enlace de restablecimiento: ${link}`,
       );
       return;
     }
