@@ -65,3 +65,8 @@ typings/
 
 # La multimedia la quitamos
 /public/multimedia
+
+# Environment variables (never commit secrets)
+.env
+.env.*
+!.env.example
