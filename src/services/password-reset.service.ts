@@ -189,7 +189,7 @@ export class PasswordResetService {
     //
     //Si el entorno es local entonces forzamos el protocolo http, en caso contrario forzamos https
     //
-    baseUrl = (process.env.ENTORNO === "PRO") ? ('https://' + baseUrl) : ('http://' + baseUrl + ':3000');
+    baseUrl = (process.env.ENTORNO === "LOCAL") ? ('http://' + baseUrl + ':3000') : ('https://' + baseUrl);
     const base = String(baseUrl ?? '').replace(/\/+$/, '');
     //
     //Si no está configurada la URL base, lanzamos un error porque no podemos generar el enlace de restablecimiento sin ella
