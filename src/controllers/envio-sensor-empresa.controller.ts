@@ -156,4 +156,37 @@ export class EnvioSensorEmpresaController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.envioSensorEmpresaRepository.deleteById(id);
   }
+
+  @post('/crear-envio-sensor-empresa-desde-tipo-sensor')
+  @response(204, {
+    description: 'Crear sensores de empresa desde tipos de sensor',
+  })
+  async crearSensoresDesdetipoSensor(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              empresaId: {type: 'number'},
+              usuarioCreacion: {type: 'number'},
+            },
+            required: ['empresaId'],
+          },
+        },
+      },
+    })
+    dto: {empresaId: number; usuarioCreacion?: number},
+  ): Promise<void> {
+    const dataSource = this.envioSensorEmpresaRepository.dataSource;
+    await dataSource.execute(
+      `DELETE FROM envio_sensor_empresa WHERE empresaId = ${dto.empresaId}`,
+    );
+    await dataSource.execute(
+      `INSERT INTO envio_sensor_empresa (empresaId, tipoSensorId, orden, valor, usuarioCreacion)
+       SELECT ${dto.empresaId}, ts.id, ts.orden, COALESCE(ts.valorDefecto, '0'), ${dto.usuarioCreacion ?? 0}
+       FROM tipo_sensor ts
+       WHERE ts.empresaId = ${dto.empresaId} AND (ts.activoSn = 'S' OR ts.activoSn IS NULL)`,
+    );
+  }
 }
