@@ -105,6 +105,18 @@ export class TipoSensor extends Entity {
   })
   orden?: number;
 
+  @property({
+    type: 'string',
+    length: 50,
+    mysql: {
+      columnName: 'valorDefecto',
+      dataType: 'varchar',
+      dataLength: 50,
+      nullable: 'Y'
+    }
+  })
+  valorDefecto?: string;
+
   @hasMany(() => EnvioSensor, {keyTo: 'tipoSensorId'})
   envioSensores: EnvioSensor[];
 
