@@ -13,6 +13,7 @@ export * from './empresa.repository';
 export * from './lista-permisos.repository';
 export * from './plantilla-email.repository';
 export * from './envio_contenido.repository';
+export * from './evento_configuracion.repository';
 export * from './envio_configuracion_empresa.repository';
 export * from './envio_configuracion.repository';
 export * from './envio_pallet_movimiento.repository';

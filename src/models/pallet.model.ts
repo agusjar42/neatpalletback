@@ -24,8 +24,15 @@ export class Pallet extends Entity {
   })
   id?: number;
 
-  @belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresaId'}})
-  empresaId: number;
+  @belongsTo(
+    () => Empresa,
+    {name: 'empresa'},
+    {
+      required: false,
+      mysql: {columnName: 'empresaId'},
+    },
+  )
+  empresaId?: number;
 
   @property({
     type: 'string',

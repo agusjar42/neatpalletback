@@ -68,6 +68,14 @@ npm run lint:fix
 - `npm run migrate`: Migrar esquemas de bases de datos para modelos
 - `npm run openapi-spec`: Generar especificaciones OpenAPI en un archivo
 
+## Refactor safety (Step 1)
+
+- Runbook: `database_migrations/2026-03-19_refactor_empresa_step1_runbook.md`
+- Baseline script:
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\refactor-step1-baseline.ps1 -IncludeBackendTests
+```
+
 ## Password reset (Forgot/Reset)
 
 Endpoints (públicos):

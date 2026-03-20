@@ -131,8 +131,7 @@ SELECT
 FROM ((`envio_movimiento` `a` JOIN `envio` `b`)
   JOIN `tipo_sensor` `c`)
 WHERE `a`.`envioId` = `b`.`id`
-  AND `a`.`tipoSensorId` = `c`.`id`
-  AND `b`.`empresaId` = `c`.`empresaId`;
+  AND `a`.`tipoSensorId` = `c`.`id`;
 
 -- View: vista_envio_pallet_contenido
 CREATE OR REPLACE VIEW `vista_envio_pallet_contenido` AS
@@ -205,8 +204,7 @@ SELECT
 FROM ((`envio_sensor` `a` JOIN `envio` `b`)
   JOIN `tipo_sensor` `c`)
 WHERE `a`.`envioId` = `b`.`id`
-  AND `a`.`tipoSensorId` = `c`.`id`
-  AND `c`.`empresaId` = `b`.`empresaId`;
+  AND `a`.`tipoSensorId` = `c`.`id`;
 
 -- View: vista_envio_tipo_sensor_empresa
 CREATE OR REPLACE VIEW `vista_envio_tipo_sensor_empresa` AS

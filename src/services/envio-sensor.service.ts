@@ -23,20 +23,24 @@ export class EnvioSensorService {
     const deleteQuery = `DELETE FROM envio_sensor WHERE envioId = ${envioId}`;
     await dataSource.execute(deleteQuery);
     //
-    //Luego insertamos los sensores por defecto de la empresa
+    //Luego insertamos los sensores desde catalogo global de tipos de sensor.
+    //Si existen overrides por empresa (envio_sensor_empresa), se respetan.
     //
-    const insert = `insert into envio_sensor (orden, 
+    const insert = `insert into envio_sensor (orden,
                                               envioId,
                                               tipoSensorId,
                                               valor,
                                               usuarioCreacion)
-                                       SELECT orden, 
-                                              ${envioId} envioId,
-                                              tipoSensorId,
-                                              valor,
-                                              ${usuarioCreacion} usuarioCreacion
-                                         FROM envio_sensor_empresa
-                                        where empresaId = ${empresaId}`;
+                                      SELECT COALESCE(ese.orden, ts.orden, 0) orden,
+                                             ${envioId} envioId,
+                                             ts.id tipoSensorId,
+                                             COALESCE(ese.valor, '0') valor,
+                                             ${usuarioCreacion} usuarioCreacion
+                                        FROM tipo_sensor ts
+                                   LEFT JOIN envio_sensor_empresa ese
+                                          ON ese.tipoSensorId = ts.id
+                                         AND ese.empresaId = ${empresaId}
+                                       WHERE ts.activoSn = 'S' OR ts.activoSn IS NULL`;
     await dataSource.execute(insert);
   }
 }

@@ -23,22 +23,46 @@ export class EnvioConfiguracionService {
     const deleteQuery = `DELETE FROM envio_configuracion WHERE envioId = ${envioId}`;
     await dataSource.execute(deleteQuery);
     //
-    //Luego insertamos las configuraciones por defecto de la empresa
+    //Luego insertamos las configuraciones por defecto globales.
+    //Si no existen (compatibilidad), usamos la configuracion legacy por empresa.
     //
-    const insert = `insert into envio_configuracion (orden, 
-                                                     envioId,
-                                                     nombre,
-                                                     valor,
-                                                     unidadMedida,
-                                                     usuarioCreacion)
-                                              SELECT orden, 
-                                                     ${envioId} envioId,
-                                                     nombre,
-                                                     valor,
-                                                     unidadMedida,
-                                                     ${usuarioCreacion} usuarioCreacion
-                                                FROM envio_configuracion_empresa
-                                               where empresaId = ${empresaId}`;
+    const eventoConfiguracionCountQuery = `SELECT COUNT(*) AS total
+                                             FROM evento_configuracion
+                                            WHERE (activoSn = 'S' OR activoSn IS NULL)`;
+    const eventoConfiguracionCountResult = (await dataSource.execute(eventoConfiguracionCountQuery)) as Array<{total: number}>;
+    const totalEventoConfiguracion = Number(eventoConfiguracionCountResult?.[0]?.total ?? 0);
+
+    let insert = `insert into envio_configuracion (orden,
+                                                   envioId,
+                                                   nombre,
+                                                   valor,
+                                                   unidadMedida,
+                                                   usuarioCreacion)
+                                            SELECT orden,
+                                                   ${envioId} envioId,
+                                                   nombre,
+                                                   valor,
+                                                   unidadMedida,
+                                                   ${usuarioCreacion} usuarioCreacion
+                                              FROM evento_configuracion
+                                             WHERE (activoSn = 'S' OR activoSn IS NULL)`;
+
+    if (totalEventoConfiguracion <= 0) {
+      insert = `insert into envio_configuracion (orden,
+                                                 envioId,
+                                                 nombre,
+                                                 valor,
+                                                 unidadMedida,
+                                                 usuarioCreacion)
+                                          SELECT orden,
+                                                 ${envioId} envioId,
+                                                 nombre,
+                                                 valor,
+                                                 unidadMedida,
+                                                 ${usuarioCreacion} usuarioCreacion
+                                            FROM envio_configuracion_empresa
+                                           WHERE empresaId = ${empresaId}`;
+    }
     await dataSource.execute(insert);
   }
 }
