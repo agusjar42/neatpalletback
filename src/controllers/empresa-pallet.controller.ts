@@ -16,6 +16,7 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
 import {EmpresaPallet} from '../models';
 import {EmpresaPalletRepository} from '../repositories';
@@ -49,6 +50,33 @@ export class EmpresaPalletController {
     })
     empresaPallet: Omit<EmpresaPallet, 'id'>,
   ): Promise<EmpresaPallet> {
+    if (!empresaPallet.empresaId || !empresaPallet.palletId) {
+      throw new HttpErrors.BadRequest('empresaId y palletId son obligatorios.');
+    }
+
+    const asignacionesPallet = await this.empresaPalletRepository.find({
+      where: {palletId: empresaPallet.palletId},
+    });
+
+    const asignacionMismaEmpresa = asignacionesPallet.find(
+      asignacion => asignacion.empresaId === empresaPallet.empresaId,
+    );
+    if (asignacionMismaEmpresa) {
+      return asignacionMismaEmpresa;
+    }
+
+    const asignacionOtraEmpresa = asignacionesPallet.find(
+      asignacion =>
+        asignacion.empresaId !== undefined &&
+        asignacion.empresaId !== null &&
+        asignacion.empresaId !== empresaPallet.empresaId,
+    );
+    if (asignacionOtraEmpresa) {
+      throw new HttpErrors.Conflict(
+        `El pallet ${empresaPallet.palletId} ya esta asignado a otra empresa.`,
+      );
+    }
+
     return this.empresaPalletRepository.create(empresaPallet);
   }
 
