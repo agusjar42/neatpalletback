@@ -10,6 +10,7 @@ export * from './usuario-credenciales.model';
 export * from './usuario-password-historico.model';
 export * from './usuario-restablecer-password.model';
 export * from './empresa.model';
+export * from './empresa_pallet.model';
 export * from './plantilla-email.model';
 export * from './lista-permisos.model';
 export * from './envio_contenido.model';

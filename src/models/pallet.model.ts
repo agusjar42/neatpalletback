@@ -1,5 +1,4 @@
-import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
-import {Empresa} from './empresa.model';
+import {Entity, model, property, hasMany} from '@loopback/repository';
 import {EnvioPallet} from './envio_pallet.model';
 import {PalletParametro} from './pallet_parametro.model';
 
@@ -23,16 +22,6 @@ export class Pallet extends Entity {
     }
   })
   id?: number;
-
-  @belongsTo(
-    () => Empresa,
-    {name: 'empresa'},
-    {
-      required: false,
-      mysql: {columnName: 'empresaId'},
-    },
-  )
-  empresaId?: number;
 
   @property({
     type: 'string',
@@ -171,7 +160,6 @@ export class Pallet extends Entity {
 }
 
 export interface PalletRelations {
-  empresa?: Empresa;
   envioPallets?: EnvioPallet[];
   palletParametros?: PalletParametro[];
 }

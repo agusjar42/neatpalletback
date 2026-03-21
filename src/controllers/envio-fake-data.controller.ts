@@ -121,9 +121,9 @@ export class EnvioFakeDataController {
     // Crear envío fake
     const envio = await this.crearEnvioFake(empresaId, usuarioCreacion);
 
-    const palletsDisponibles = await this.palletRepository.find({where: {empresaId}});
+    const palletsDisponibles = await this.palletRepository.find();
     if (palletsDisponibles.length === 0) {
-      throw new HttpErrors.UnprocessableEntity(`No hay pallets para empresaId=${empresaId}`);
+      throw new HttpErrors.UnprocessableEntity('No hay pallets disponibles en el sistema');
     }
 
     const productosCliente = await this.productoRepository.find({where: {clienteId: envio.clienteId}});

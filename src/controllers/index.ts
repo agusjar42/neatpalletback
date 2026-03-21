@@ -10,6 +10,7 @@ export * from './rol.controller';
 export * from './traduccion.controller';
 export * from './usuario-password-historico.controller';
 export * from './empresa.controller';
+export * from './empresa-pallet.controller';
 export * from './lista-permisos.controller';
 export * from './plantilla-email.controller';
 export * from './envio_contenido.controller';
