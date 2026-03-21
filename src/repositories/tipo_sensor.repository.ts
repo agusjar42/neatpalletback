@@ -1,8 +1,7 @@
 import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, BelongsToAccessor, HasManyRepositoryFactory} from '@loopback/repository';
+import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
 import {NeatpalletmysqlDataSource} from '../datasources';
-import {TipoSensor, TipoSensorRelations, Empresa, EnvioSensor, EnvioPalletMovimiento} from '../models';
-import {EmpresaRepository} from './empresa.repository';
+import {TipoSensor, TipoSensorRelations, EnvioSensor, EnvioPalletMovimiento} from '../models';
 import {EnvioSensorRepository} from './envio_sensor.repository';
 import {EnvioPalletMovimientoRepository} from './envio_pallet_movimiento.repository';
 
@@ -12,13 +11,11 @@ export class TipoSensorRepository extends DefaultCrudRepository<
   TipoSensorRelations
 > {
 
-  public readonly empresa: BelongsToAccessor<Empresa, typeof TipoSensor.prototype.id>;
   public readonly envioSensores: HasManyRepositoryFactory<EnvioSensor, typeof TipoSensor.prototype.id>;
   public readonly envioPalletMovimientos: HasManyRepositoryFactory<EnvioPalletMovimiento, typeof TipoSensor.prototype.id>;
 
   constructor(
     @inject('datasources.neatpalletmysql') dataSource: NeatpalletmysqlDataSource,
-    @repository.getter('EmpresaRepository') protected empresaRepositoryGetter: Getter<EmpresaRepository>,
     @repository.getter('EnvioSensorRepository') protected envioSensorRepositoryGetter: Getter<EnvioSensorRepository>,
     @repository.getter('EnvioPalletMovimientoRepository') protected envioPalletMovimientoRepositoryGetter: Getter<EnvioPalletMovimientoRepository>,
   ) {
@@ -27,55 +24,23 @@ export class TipoSensorRepository extends DefaultCrudRepository<
     this.registerInclusionResolver('envioPalletMovimientos', this.envioPalletMovimientos.inclusionResolver);
     this.envioSensores = this.createHasManyRepositoryFactoryFor('envioSensores', envioSensorRepositoryGetter,);
     this.registerInclusionResolver('envioSensores', this.envioSensores.inclusionResolver);
-    this.empresa = this.createBelongsToAccessorFor('empresa', empresaRepositoryGetter,);
-    this.registerInclusionResolver('empresa', this.empresa.inclusionResolver);
-  }
-
-  /**
-   * Encuentra tipos de sensor por empresa
-   */
-  async findByEmpresa(empresaId: number): Promise<TipoSensor[]> {
-    return this.find({
-      where: {
-        empresaId: empresaId
-      },
-      include: ['empresa']
-    });
   }
 
   /**
    * Encuentra tipos de sensor activos
    */
-  async findActive(empresaId?: number): Promise<TipoSensor[]> {
-    const whereCondition: any = {
-      activoSn: 'S'
-    };
-
-    if (empresaId) {
-      whereCondition.empresaId = empresaId;
-    }
-
+  async findActive(): Promise<TipoSensor[]> {
     return this.find({
-      where: whereCondition,
-      include: ['empresa']
+      where: {activoSn: 'S'}
     });
   }
 
   /**
    * Busca tipo de sensor por nombre
    */
-  async findByNombre(nombre: string, empresaId?: number): Promise<TipoSensor[]> {
-    const whereCondition: any = {
-      nombre: {like: `%${nombre}%`}
-    };
-
-    if (empresaId) {
-      whereCondition.empresaId = empresaId;
-    }
-
+  async findByNombre(nombre: string): Promise<TipoSensor[]> {
     return this.find({
-      where: whereCondition,
-      include: ['empresa']
+      where: {nombre: {like: `%${nombre}%`}}
     });
   }
 

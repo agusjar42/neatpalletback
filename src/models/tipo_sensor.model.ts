@@ -1,5 +1,4 @@
-import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
-import {Empresa} from './empresa.model';
+import {Entity, model, property, hasMany} from '@loopback/repository';
 import {EnvioSensor} from './envio_sensor.model';
 import {EnvioPalletMovimiento} from './envio_pallet_movimiento.model';
 
@@ -23,9 +22,6 @@ export class TipoSensor extends Entity {
     }
   })
   id?: number;
-
-@belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresaId'}})
-  empresaId: number;
 
   @property({
     type: 'string',
@@ -129,7 +125,6 @@ export class TipoSensor extends Entity {
 }
 
 export interface TipoSensorRelations {
-  empresa?: Empresa;
   envioSensores?: EnvioSensor[];
   envioPalletMovimientos?: EnvioPalletMovimiento[];
 }

@@ -186,7 +186,7 @@ export class EnvioSensorEmpresaController {
       `INSERT INTO envio_sensor_empresa (empresaId, tipoSensorId, orden, valor, usuarioCreacion)
        SELECT ${dto.empresaId}, ts.id, ts.orden, COALESCE(ts.valorDefecto, '0'), ${dto.usuarioCreacion ?? 0}
        FROM tipo_sensor ts
-       WHERE ts.empresaId = ${dto.empresaId} AND (ts.activoSn = 'S' OR ts.activoSn IS NULL)`,
+       WHERE (ts.activoSn = 'S' OR ts.activoSn IS NULL)`,
     );
   }
 }

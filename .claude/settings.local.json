@@ -6,7 +6,9 @@
       "Bash(find:*)",
       "Read(//c/personal/oscar/project/neatpallet/**)",
       "Bash(tree:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(ls -la /c/personal/oscar/project/neatpallet/front/app/\\\\\\(main\\\\\\)/envio-movimiento/)",
+      "Bash(ls -la /c/personal/oscar/project/neatpallet/front/app/\\\\\\(main\\\\\\)/envio-contenido/)"
     ],
     "deny": [],
     "ask": []

@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Empresa} from './empresa.model';
 
 @model({
   settings: {
@@ -20,6 +21,22 @@ export class TipoTransporte extends Entity {
     }
   })
   id?: number;
+
+  @belongsTo(
+    () => Empresa,
+    {name: 'empresa'},
+    {
+      type: 'number',
+      required: true,
+      mysql: {
+        columnName: 'empresaId',
+        dataType: 'int',
+        dataLength: 11,
+        nullable: 'N',
+      },
+    },
+  )
+  empresaId: number;
 
   @property({
     type: 'string',
@@ -105,7 +122,7 @@ export class TipoTransporte extends Entity {
 }
 
 export interface TipoTransporteRelations {
-  // describe navigational properties here
+  empresa?: Empresa;
 }
 
 export type TipoTransporteWithRelations = TipoTransporte & TipoTransporteRelations;
