@@ -126,10 +126,10 @@ export class EnvioFakeDataController {
       throw new HttpErrors.UnprocessableEntity('No hay pallets disponibles en el sistema');
     }
 
-    const productosCliente = await this.productoRepository.find({where: {clienteId: envio.clienteId}});
-    const productosDb = productosCliente.length > 0 ? productosCliente : await this.productoRepository.find();
+    const productosEmpresa = await this.productoRepository.find({where: {empresaId: envio.empresaId}});
+    const productosDb = productosEmpresa.length > 0 ? productosEmpresa : await this.productoRepository.find();
     if (productosDb.length === 0) {
-      throw new HttpErrors.UnprocessableEntity(`No hay productos para clienteId=${envio.clienteId}`);
+      throw new HttpErrors.UnprocessableEntity(`No hay productos para empresaId=${envio.empresaId}`);
     }
 
     // Crear contenidos fake (2-4 contenidos por envío)

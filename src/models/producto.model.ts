@@ -1,5 +1,5 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
-import {Cliente} from './cliente.model';
+import {Empresa} from './empresa.model';
 
 @model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'producto'}}})
 export class Producto extends Entity {
@@ -14,8 +14,8 @@ export class Producto extends Entity {
   })
   id?: number;
 
-  @belongsTo(() => Cliente, {name: 'cliente'}, {mysql: {columnName: 'clienteId'}})
-  clienteId: number;
+  @belongsTo(() => Empresa, {name: 'empresa'}, {mysql: {columnName: 'empresaId'}})
+  empresaId: number;
 
   @property({
     type: 'string',
@@ -79,13 +79,23 @@ export class Producto extends Entity {
   })
   pesoKgs?: number;
 
+  @property({
+    type: 'number',
+    jsonSchema: {nullable: true},
+    precision: 11,
+    scale: 0,
+    generated: false,
+    mysql: {columnName: 'orden', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
+  })
+  orden?: number;
+
   constructor(data?: Partial<Producto>) {
     super(data);
   }
 }
 
 export interface ProductoRelations {
-  cliente?: Cliente;
+  empresa?: Empresa;
 }
 
 export type ProductoWithRelations = Producto & ProductoRelations;

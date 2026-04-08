@@ -91,6 +91,16 @@ export class Cliente extends Entity {
   })
   usuModificacion?: number;
 
+  @property({
+    type: 'number',
+    jsonSchema: {nullable: true},
+    precision: 11,
+    scale: 0,
+    generated: false,
+    mysql: {columnName: 'orden', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
+  })
+  orden?: number;
+
   constructor(data?: Partial<Cliente>) {
     super(data);
   }
