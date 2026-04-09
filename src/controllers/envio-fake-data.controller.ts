@@ -25,6 +25,7 @@ import {
   OperarioRepository,
   ClienteRepository,
   ProductoRepository,
+  EmpresaPalletRepository,
 } from '../repositories';
 import {
   Envio,
@@ -35,6 +36,7 @@ import {
   EnvioSensor,
   Pallet,
   EnvioContenidoPallet,
+  Producto,
 } from '../models';
 import {EnvioConfiguracionService} from '../services/envio-configuracion.service';
 import * as path from 'path';
@@ -90,6 +92,8 @@ export class EnvioFakeDataController {
     public clienteRepository: ClienteRepository,
     @repository(ProductoRepository)
     public productoRepository: ProductoRepository,
+    @repository(EmpresaPalletRepository)
+    public empresaPalletRepository: EmpresaPalletRepository,
     @service(EnvioConfiguracionService)
     public envioConfiguracionService: EnvioConfiguracionService,
   ) {}
@@ -121,16 +125,12 @@ export class EnvioFakeDataController {
     // Crear envío fake
     const envio = await this.crearEnvioFake(empresaId, usuarioCreacion);
 
-    const palletsDisponibles = await this.palletRepository.find();
+    const palletsDisponibles = await this.obtenerPalletsDisponiblesPorEmpresa(empresaId);
     if (palletsDisponibles.length === 0) {
       throw new HttpErrors.UnprocessableEntity('No hay pallets disponibles en el sistema');
     }
 
-    const productosEmpresa = await this.productoRepository.find({where: {empresaId: envio.empresaId}});
-    const productosDb = productosEmpresa.length > 0 ? productosEmpresa : await this.productoRepository.find();
-    if (productosDb.length === 0) {
-      throw new HttpErrors.UnprocessableEntity(`No hay productos para empresaId=${envio.empresaId}`);
-    }
+    const productosDb = await this.obtenerProductosParaContenido(envio.empresaId, usuarioCreacion);
 
     // Crear contenidos fake (2-4 contenidos por envío)
     const numContenidos = this.randomInt(2, 4);
@@ -173,7 +173,7 @@ export class EnvioFakeDataController {
     }
 
     // Crear movimientos fake (50-100 movimientos por envío)
-    const numMovimientos = this.randomInt(50, 100);
+    const numMovimientos = tiposSensores.length > 0 ? this.randomInt(50, 100) : 0;
     const movimientos = [];
     for (let i = 0; i < numMovimientos; i++) {
       // Seleccionar un tipo de sensor aleatorio (pueden repetirse)
@@ -365,6 +365,42 @@ export class EnvioFakeDataController {
     };
 
     return this.envioContenidoPalletRepository.create(envioContenidoPallet);
+  }
+
+  private async obtenerPalletsDisponiblesPorEmpresa(empresaId: number): Promise<Pallet[]> {
+    const asignaciones = await this.empresaPalletRepository.find({
+      where: {empresaId},
+      fields: {palletId: true},
+    });
+
+    const palletIds = asignaciones
+      .map(asignacion => asignacion.palletId)
+      .filter((id): id is number => id !== undefined && id !== null);
+
+    if (palletIds.length > 0) {
+      const palletsEmpresa = await this.palletRepository.find({
+        where: {id: {inq: palletIds}},
+      });
+      if (palletsEmpresa.length > 0) return palletsEmpresa;
+    }
+
+    return this.palletRepository.find();
+  }
+
+  private async obtenerProductosParaContenido(empresaId: number, usuarioCreacion: number): Promise<Producto[]> {
+    const productosEmpresa = await this.productoRepository.find({where: {empresaId}});
+    if (productosEmpresa.length > 0) return productosEmpresa;
+
+    const productoCreado = await this.productoRepository.create({
+      empresaId,
+      nombre: `Producto fake ${this.randomInt(1000, 9999)}`,
+      activoSN: 'S',
+      pesoKgs: this.randomDecimal(1, 100),
+      orden: this.randomInt(1, 9999),
+      usuCreacion: usuarioCreacion,
+    });
+
+    return [productoCreado];
   }
 
   // Funciones auxiliares para generar datos aleatorios
