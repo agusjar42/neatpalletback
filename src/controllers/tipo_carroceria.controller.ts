@@ -100,7 +100,7 @@ export class TipoCarroceriaController {
 
       }
     }
-    const query = `SELECT COUNT(*) AS count FROM tipo_carroceria${filtros}`;
+    const query = `SELECT COUNT(*) AS count FROM empresa_tipo_carroceria${filtros}`;
     const registros = await dataSource.execute(query, []);
     return registros;  }
 
@@ -171,7 +171,7 @@ export class TipoCarroceriaController {
       filtros += ` OFFSET ${filter?.offset}`;
     }
     const query = `SELECT *
-                     FROM tipo_carroceria${filtros}`;
+                     FROM empresa_tipo_carroceria${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }

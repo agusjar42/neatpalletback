@@ -5,7 +5,7 @@ import {Envio} from './envio.model';
 @model({
   settings: {
     mysql: {
-      table: 'envio_pallet'
+      table: 'envio_pallet_usado'
     }
   }
 })

@@ -62,7 +62,7 @@ export class EnvioConfiguracionEmpresaController {
     @param.where(EnvioConfiguracionEmpresa) where?: Where<EnvioConfiguracionEmpresa>,
   ): Promise<Count> {
     const dataSource = this.envioConfiguracionEmpresaRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'envio_configuracion_empresa', where);
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'empresa_configuracion', where);
   }
 
   @get('/envio-configuracion-empresas')
@@ -81,7 +81,7 @@ export class EnvioConfiguracionEmpresaController {
     @param.filter(EnvioConfiguracionEmpresa) filter?: Filter<EnvioConfiguracionEmpresa>,
   ): Promise<EnvioConfiguracionEmpresa[]> {
     const dataSource = this.envioConfiguracionEmpresaRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'envio_configuracion_empresa', filter, '*');
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'empresa_configuracion', filter, '*');
   } 
 
   @get('/envio-configuracion-empresas/{id}')

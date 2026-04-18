@@ -180,10 +180,10 @@ export class EnvioSensorEmpresaController {
   ): Promise<void> {
     const dataSource = this.envioSensorEmpresaRepository.dataSource;
     await dataSource.execute(
-      `DELETE FROM envio_sensor_empresa WHERE empresaId = ${dto.empresaId}`,
+      `DELETE FROM empresa_sensor WHERE empresaId = ${dto.empresaId}`,
     );
     await dataSource.execute(
-      `INSERT INTO envio_sensor_empresa (empresaId, tipoSensorId, orden, valor, usuarioCreacion)
+      `INSERT INTO empresa_sensor (empresaId, tipoSensorId, orden, valor, usuarioCreacion)
        SELECT ${dto.empresaId}, ts.id, ts.orden, COALESCE(ts.valorDefecto, '0'), ${dto.usuarioCreacion ?? 0}
        FROM tipo_sensor ts
        WHERE (ts.activoSn = 'S' OR ts.activoSn IS NULL)`,

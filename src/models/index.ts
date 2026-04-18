@@ -12,7 +12,6 @@ export * from './usuario-restablecer-password.model';
 export * from './empresa.model';
 export * from './empresa_pallet.model';
 export * from './plantilla-email.model';
-export * from './lista-permisos.model';
 export * from './envio_contenido.model';
 export * from './evento_configuracion.model';
 export * from './envio_configuracion_empresa.model';

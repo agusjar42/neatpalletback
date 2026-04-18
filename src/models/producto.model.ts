@@ -1,7 +1,7 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {Empresa} from './empresa.model';
 
-@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'producto'}}})
+@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'empresa_producto'}}})
 export class Producto extends Entity {
   @property({
     type: 'number',

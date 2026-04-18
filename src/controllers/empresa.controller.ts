@@ -203,7 +203,7 @@ export class EmpresaController {
         // Auto-crear sensores de empresa desde tipos de sensor
         const dataSource = this.empresaRepository.dataSource;
         await dataSource.execute(
-          `INSERT INTO envio_sensor_empresa (empresaId, tipoSensorId, orden, valor, usuarioCreacion)
+          `INSERT INTO empresa_sensor (empresaId, tipoSensorId, orden, valor, usuarioCreacion)
            SELECT ${empresaCreada.id as number}, ts.id, ts.orden, COALESCE(ts.valorDefecto, '0'), ${empresa.usuCreacion ?? 0}
            FROM tipo_sensor ts
            WHERE (ts.activoSn = 'S' OR ts.activoSn IS NULL)`,

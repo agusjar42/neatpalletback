@@ -10,7 +10,7 @@ export class EnvioConfiguracionService {
   ) {}
 
   /**
-   * Inserta en envio_configuracion los datos de envio_configuracion_empresa para la empresa indicada.
+   * Inserta en envio_configuracion los datos de empresa_configuracion para la empresa indicada.
    * @param envioId El ID del envío.
    * @param empresaId El ID de la empresa.
    * @param usuarioCreacion El ID del usuario que crea la configuración.
@@ -60,7 +60,7 @@ export class EnvioConfiguracionService {
                                                  valor,
                                                  unidadMedida,
                                                  ${usuarioCreacion} usuarioCreacion
-                                            FROM envio_configuracion_empresa
+                                            FROM empresa_configuracion
                                            WHERE empresaId = ${empresaId}`;
     }
     await dataSource.execute(insert);

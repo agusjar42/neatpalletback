@@ -5,7 +5,7 @@ import {Empresa} from './empresa.model';
 @model({
   settings: {
     mysql: {
-      table: 'envio_sensor_empresa'
+      table: 'empresa_sensor'
     }
   }
 })

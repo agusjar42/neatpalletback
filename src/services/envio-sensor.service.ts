@@ -10,7 +10,7 @@ export class EnvioSensorService {
   ) {}
 
   /**
-   * Inserta en envio_sensor los datos de envio_sensor_empresa para la empresa indicada.
+   * Inserta en envio_sensor los datos de empresa_sensor para la empresa indicada.
    * @param envioId El ID del envío.
    * @param empresaId El ID de la empresa.
    * @param usuarioCreacion El ID del usuario que crea el sensor.
@@ -24,7 +24,7 @@ export class EnvioSensorService {
     await dataSource.execute(deleteQuery);
     //
     //Luego insertamos los sensores desde catalogo global de tipos de sensor.
-    //Si existen overrides por empresa (envio_sensor_empresa), se respetan.
+    //Si existen overrides por empresa (empresa_sensor), se respetan.
     //
     const insert = `insert into envio_sensor (orden,
                                               envioId,
@@ -37,7 +37,7 @@ export class EnvioSensorService {
                                              COALESCE(ese.valor, '0') valor,
                                              ${usuarioCreacion} usuarioCreacion
                                         FROM tipo_sensor ts
-                                   LEFT JOIN envio_sensor_empresa ese
+                                   LEFT JOIN empresa_sensor ese
                                           ON ese.tipoSensorId = ts.id
                                          AND ese.empresaId = ${empresaId}
                                        WHERE ts.activoSn = 'S' OR ts.activoSn IS NULL`;

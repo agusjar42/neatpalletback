@@ -11,7 +11,6 @@ export * from './usuario.repository';
 export * from './usuario-restablecer-password.repository';
 export * from './empresa.repository';
 export * from './empresa_pallet.repository';
-export * from './lista-permisos.repository';
 export * from './plantilla-email.repository';
 export * from './envio_contenido.repository';
 export * from './evento_configuracion.repository';
