@@ -62,48 +62,7 @@ export class PalletParametroController {
     @param.where(PalletParametro) where?: Where<PalletParametro>,
   ): Promise<Count> {
     const dataSource = this.palletParametroRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM vista_pallet_parametro_parametro_pallet${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'vista_pallet_parametro_parametro_pallet', where);
   }
 
   @get('/pallet-parametros')
@@ -121,60 +80,9 @@ export class PalletParametroController {
   async find(
     @param.filter(PalletParametro) filter?: Filter<PalletParametro>,
   ): Promise<PalletParametro[]> {
-    const dataSource = this.palletParametroRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (filter?.where) {
-      for (const [key] of Object.entries(filter?.where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((filter?.where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    // Agregar ordenamiento
-    if (filter?.order) {
-      filtros += ` ORDER BY ${filter.order}`;
-    }
-    // Agregar paginación
-    if (filter?.limit) {
-      filtros += ` LIMIT ${filter?.limit}`;
-    }
-    if (filter?.offset) {
-      filtros += ` OFFSET ${filter?.offset}`;
-    }
-    const query = `SELECT * FROM vista_pallet_parametro_parametro_pallet${filtros}`;
-    const registros = await dataSource.execute(query);
-    return registros;
+      const dataSource = this.palletParametroRepository.dataSource;
+      const camposSelect = "*, DATE_FORMAT(fechaImpresion, '%d/%m/%Y') AS fechaImpresionEspanol"
+      return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_pallet_parametro_parametro_pallet', filter, camposSelect);
   }
 
   @get('/pallet-parametros/{id}')

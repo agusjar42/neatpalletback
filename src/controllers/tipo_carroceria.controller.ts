@@ -21,6 +21,7 @@ import {TipoCarroceria} from '../models';
 import {TipoCarroceriaRepository} from '../repositories';
 import { authorize } from '@loopback/authorization';
 import { authenticate } from '@loopback/authentication';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 @authenticate('jwt')
 @authorize({allowedRoles: ['API']})
@@ -61,48 +62,8 @@ export class TipoCarroceriaController {
     @param.where(TipoCarroceria) where?: Where<TipoCarroceria>,
   ): Promise<Count> {
     const dataSource = this.tipoCarroceriaRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM empresa_tipo_carroceria${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros;  }
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'empresa_tipo_carroceria', where);
+  }
 
   @get('/tipo-carrocerias')
   @response(200, {
@@ -119,61 +80,9 @@ export class TipoCarroceriaController {
   async find(
     @param.filter(TipoCarroceria) filter?: Filter<TipoCarroceria>,
   ): Promise<TipoCarroceria[]> {
-    const dataSource = this.tipoCarroceriaRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (filter?.where) {
-      for (const [key] of Object.entries(filter?.where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((filter?.where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    // Agregar ordenamiento
-    if (filter?.order) {
-      filtros += ` ORDER BY ${filter.order}`;
-    }
-    // Agregar paginación
-    if (filter?.limit) {
-      filtros += ` LIMIT ${filter?.limit}`;
-    }
-    if (filter?.offset) {
-      filtros += ` OFFSET ${filter?.offset}`;
-    }
-    const query = `SELECT *
-                     FROM empresa_tipo_carroceria${filtros}`;
-    const registros = await dataSource.execute(query);
-    return registros;
+      const dataSource = this.tipoCarroceriaRepository.dataSource;
+      const camposSelect = "*"
+      return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'empresa_tipo_carroceria', filter, camposSelect);
   }
 
   @get('/tipo-carrocerias/{id}')

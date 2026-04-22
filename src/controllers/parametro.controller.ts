@@ -62,48 +62,7 @@ export class ParametroController {
     @param.where(Parametro) where?: Where<Parametro>,
   ): Promise<Count> {
     const dataSource = this.parametroRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM parametro${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'parametro', where);
   }
 
   @get('/parametros')
@@ -121,61 +80,9 @@ export class ParametroController {
   async find(
     @param.filter(Parametro) filter?: Filter<Parametro>,
   ): Promise<Parametro[]> {
-    const dataSource = this.parametroRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (filter?.where) {
-      for (const [key] of Object.entries(filter?.where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((filter?.where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    // Agregar ordenamiento
-    if (filter?.order) {
-      filtros += ` ORDER BY ${filter.order}`;
-    }
-    // Agregar paginación
-    if (filter?.limit) {
-      filtros += ` LIMIT ${filter?.limit}`;
-    }
-    if (filter?.offset) {
-      filtros += ` OFFSET ${filter?.offset}`;
-    }
-    const query = `SELECT *
-                     FROM parametro${filtros}`;
-    const registros = await dataSource.execute(query);
-    return registros;
+      const dataSource = this.parametroRepository.dataSource;
+      const camposSelect = "*"
+      return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'parametro', filter, camposSelect);
   }
 
   @get('/parametros/{id}')
