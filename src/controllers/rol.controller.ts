@@ -158,7 +158,7 @@ export class RolController {
   })
   async vistaEmpresaRolCount(@param.where(Rol) where?: Where<Rol>,): Promise<Rol[]> {
     const dataSource = this.rolRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'vista_empresa_rol', where);
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'rol', where);
   }
 
   @get('/buscarIdRol')

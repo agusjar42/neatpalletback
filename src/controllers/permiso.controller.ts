@@ -137,7 +137,12 @@ export class PermisoController {
     description: 'Permiso DELETE success',
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.permisoRepository.deleteById(id);
+    try {
+      await this.permisoRepository.deleteById(id);
+    } catch (error) {
+      console.error('Error deleting permiso:', error);
+      throw new Error('Error deleting permiso');
+    }
   }
 
   @get('/vistaEmpresaRolPermiso')
