@@ -188,6 +188,43 @@ export class UsuariosController {
     };
   }
 
+  @authenticate.skip()
+  @post('/jwt/refresh-token')
+  @response(200, {
+    description: 'Renueva el access token usando un refresh token valido',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            accessToken: {type: 'string'},
+            refreshToken: {type: 'string'},
+          },
+        },
+      },
+    },
+  })
+  async refreshToken(
+    @requestBody({
+      description: 'Refresh token',
+      required: true,
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            required: ['refreshToken'],
+            properties: {
+              refreshToken: {type: 'string'},
+            },
+          },
+        },
+      },
+    })
+    body: {refreshToken: string},
+  ): Promise<TokenObject> {
+    return this.refreshService.refreshToken(body.refreshToken);
+  }
+
   @authenticate('jwt')
   @authorize({allowedRoles: ['API']})
 

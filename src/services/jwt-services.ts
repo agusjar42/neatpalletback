@@ -12,6 +12,8 @@ const signAsync = promisify(jwt.sign);
 const verifyAsync = promisify(jwt.verify);
 
 export class JWTService implements TokenService {
+    private readonly tokenInvalidationClockSkewMs = 5 * 60 * 1000;
+
     constructor(
       @inject(TokenServiceBindings.TOKEN_SECRET)
       private jwtSecret: string,
@@ -42,7 +44,15 @@ export class JWTService implements TokenService {
           if (user?.fechaModificacion) {
             const fechaModificacionMs = new Date(user.fechaModificacion).getTime();
             const tokenIatMs = tokenIatSeconds * 1000;
-            if (Number.isFinite(fechaModificacionMs) && tokenIatMs < fechaModificacionMs) {
+            const fechaModificacionEsFutura =
+              fechaModificacionMs > Date.now() + this.tokenInvalidationClockSkewMs;
+            const tokenEmitidoAntesDeModificar =
+              tokenIatMs + this.tokenInvalidationClockSkewMs < fechaModificacionMs;
+            if (
+              Number.isFinite(fechaModificacionMs) &&
+              !fechaModificacionEsFutura &&
+              tokenEmitidoAntesDeModificar
+            ) {
               throw new HttpErrors.Unauthorized(`Sesión inválida`);
             }
           }
@@ -54,10 +64,13 @@ export class JWTService implements TokenService {
             [securityId]: decodedToken.id,
             nombre: decodedToken.nombre,
             id: decodedToken.id,
-            rol_id: decodedToken.rol_id,
+            rolId: decodedToken.rolId,
           },
         );
       } catch (error) {
+        if (error instanceof HttpErrors.Unauthorized) {
+          throw error;
+        }
         throw new HttpErrors.Unauthorized(
           `Sesión caducada`,
         );
@@ -74,7 +87,7 @@ export class JWTService implements TokenService {
       const userInfoForToken = {
         id: userProfile[securityId],
         nombre: userProfile.nombre,
-        rolId: userProfile.rol_id,
+        rolId: userProfile.rolId,
       };
       // Generamos el JSON Web Token
       let token: string;
