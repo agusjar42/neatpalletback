@@ -17,151 +17,159 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {EnvioSensorEmpresa} from '../models';
-import {EnvioSensorEmpresaRepository} from '../repositories';
-import { SqlFilterUtil } from '../utils/sql-filter.util';
-import { authorize } from '@loopback/authorization';
-import { authenticate } from '@loopback/authentication';
+import {SensorEmpresa} from '../models';
+import {SensorEmpresaRepository} from '../repositories';
+import {SqlFilterUtil} from '../utils/sql-filter.util';
+import {authorize} from '@loopback/authorization';
+import {authenticate} from '@loopback/authentication';
 
 @authenticate('jwt')
 @authorize({allowedRoles: ['API']})
-
-export class EnvioSensorEmpresaController {
+export class SensorEmpresaController {
   constructor(
-    @repository(EnvioSensorEmpresaRepository)
-    public envioSensorEmpresaRepository : EnvioSensorEmpresaRepository,
+    @repository(SensorEmpresaRepository)
+    public sensorEmpresaRepository: SensorEmpresaRepository,
   ) {}
 
-  @post('/envio-sensor-empresas')
+  @post('/sensor-empresas')
   @response(200, {
-    description: 'EnvioSensorEmpresa model instance',
-    content: {'application/json': {schema: getModelSchemaRef(EnvioSensorEmpresa)}},
+    description: 'SensorEmpresa model instance',
+    content: {'application/json': {schema: getModelSchemaRef(SensorEmpresa)}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(EnvioSensorEmpresa, {
-            title: 'NewEnvioSensorEmpresa',
+          schema: getModelSchemaRef(SensorEmpresa, {
+            title: 'NewSensorEmpresa',
             exclude: ['id'],
           }),
         },
       },
     })
-    envioSensorEmpresa: Omit<EnvioSensorEmpresa, 'id'>,
-  ): Promise<EnvioSensorEmpresa> {
-    return this.envioSensorEmpresaRepository.create(envioSensorEmpresa);
+    sensorEmpresa: Omit<SensorEmpresa, 'id'>,
+  ): Promise<SensorEmpresa> {
+    return this.sensorEmpresaRepository.create(sensorEmpresa);
   }
 
-  @get('/envio-sensor-empresas/count')
+  @get('/sensor-empresas/count')
   @response(200, {
-    description: 'EnvioSensorEmpresa model count',
+    description: 'SensorEmpresa model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async count(
-    @param.where(EnvioSensorEmpresa) where?: Where<EnvioSensorEmpresa>,
+    @param.where(SensorEmpresa) where?: Where<SensorEmpresa>,
   ): Promise<Count> {
-    const dataSource = this.envioSensorEmpresaRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'vista_envio_tipo_sensor_empresa', where);
+    const dataSource = this.sensorEmpresaRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(
+      dataSource,
+      'vista_sensor_empresa_tipo_sensor',
+      where,
+    );
   }
 
-  @get('/envio-sensor-empresas')
+  @get('/sensor-empresas')
   @response(200, {
-    description: 'Array of EnvioSensorEmpresa model instances',
+    description: 'Array of SensorEmpresa model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(EnvioSensorEmpresa, {includeRelations: true}),
+          items: getModelSchemaRef(SensorEmpresa, {includeRelations: true}),
         },
       },
     },
   })
   async find(
-    @param.filter(EnvioSensorEmpresa) filter?: Filter<EnvioSensorEmpresa>,
-  ): Promise<EnvioSensorEmpresa[]> {
-    const dataSource = this.envioSensorEmpresaRepository.dataSource;
-    const camposSelect = "*"
-    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_envio_tipo_sensor_empresa', filter, camposSelect);
+    @param.filter(SensorEmpresa) filter?: Filter<SensorEmpresa>,
+  ): Promise<SensorEmpresa[]> {
+    const dataSource = this.sensorEmpresaRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQuerySelect(
+      dataSource,
+      'vista_sensor_empresa_tipo_sensor',
+      filter,
+      '*',
+    );
   }
 
-  @patch('/envio-sensor-empresas')
+  @patch('/sensor-empresas')
   @response(200, {
-    description: 'EnvioSensorEmpresa PATCH success count',
+    description: 'SensorEmpresa PATCH success count',
     content: {'application/json': {schema: CountSchema}},
   })
   async updateAll(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(EnvioSensorEmpresa, {partial: true}),
+          schema: getModelSchemaRef(SensorEmpresa, {partial: true}),
         },
       },
     })
-    envioSensorEmpresa: EnvioSensorEmpresa,
-    @param.where(EnvioSensorEmpresa) where?: Where<EnvioSensorEmpresa>,
+    sensorEmpresa: SensorEmpresa,
+    @param.where(SensorEmpresa) where?: Where<SensorEmpresa>,
   ): Promise<Count> {
-    return this.envioSensorEmpresaRepository.updateAll(envioSensorEmpresa, where);
+    return this.sensorEmpresaRepository.updateAll(sensorEmpresa, where);
   }
 
-  @get('/envio-sensor-empresas/{id}')
+  @get('/sensor-empresas/{id}')
   @response(200, {
-    description: 'EnvioSensorEmpresa model instance',
+    description: 'SensorEmpresa model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(EnvioSensorEmpresa, {includeRelations: true}),
+        schema: getModelSchemaRef(SensorEmpresa, {includeRelations: true}),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(EnvioSensorEmpresa, {exclude: 'where'}) filter?: FilterExcludingWhere<EnvioSensorEmpresa>
-  ): Promise<EnvioSensorEmpresa> {
-    return this.envioSensorEmpresaRepository.findById(id, filter);
+    @param.filter(SensorEmpresa, {exclude: 'where'})
+    filter?: FilterExcludingWhere<SensorEmpresa>,
+  ): Promise<SensorEmpresa> {
+    return this.sensorEmpresaRepository.findById(id, filter);
   }
 
-  @patch('/envio-sensor-empresas/{id}')
+  @patch('/sensor-empresas/{id}')
   @response(204, {
-    description: 'EnvioSensorEmpresa PATCH success',
+    description: 'SensorEmpresa PATCH success',
   })
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(EnvioSensorEmpresa, {partial: true}),
+          schema: getModelSchemaRef(SensorEmpresa, {partial: true}),
         },
       },
     })
-    envioSensorEmpresa: EnvioSensorEmpresa,
+    sensorEmpresa: SensorEmpresa,
   ): Promise<void> {
-    await this.envioSensorEmpresaRepository.updateById(id, envioSensorEmpresa);
+    await this.sensorEmpresaRepository.updateById(id, sensorEmpresa);
   }
 
-  @put('/envio-sensor-empresas/{id}')
+  @put('/sensor-empresas/{id}')
   @response(204, {
-    description: 'EnvioSensorEmpresa PUT success',
+    description: 'SensorEmpresa PUT success',
   })
   async replaceById(
     @param.path.number('id') id: number,
-    @requestBody() envioSensorEmpresa: EnvioSensorEmpresa,
+    @requestBody() sensorEmpresa: SensorEmpresa,
   ): Promise<void> {
-    await this.envioSensorEmpresaRepository.replaceById(id, envioSensorEmpresa);
+    await this.sensorEmpresaRepository.replaceById(id, sensorEmpresa);
   }
 
-  @del('/envio-sensor-empresas/{id}')
+  @del('/sensor-empresas/{id}')
   @response(204, {
-    description: 'EnvioSensorEmpresa DELETE success',
+    description: 'SensorEmpresa DELETE success',
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.envioSensorEmpresaRepository.deleteById(id);
+    await this.sensorEmpresaRepository.deleteById(id);
   }
 
-  @post('/crear-envio-sensor-empresa-desde-tipo-sensor')
+  @post('/crear-sensor-empresa-desde-tipo-sensor')
   @response(204, {
     description: 'Crear sensores de empresa desde tipos de sensor',
   })
-  async crearSensoresDesdetipoSensor(
+  async crearSensoresDesdeTipoSensor(
     @requestBody({
       content: {
         'application/json': {
@@ -178,12 +186,12 @@ export class EnvioSensorEmpresaController {
     })
     dto: {empresaId: number; usuarioCreacion?: number},
   ): Promise<void> {
-    const dataSource = this.envioSensorEmpresaRepository.dataSource;
+    const dataSource = this.sensorEmpresaRepository.dataSource;
     await dataSource.execute(
-      `DELETE FROM empresa_sensor WHERE empresaId = ${dto.empresaId}`,
+      `DELETE FROM sensor_empresa WHERE empresaId = ${dto.empresaId}`,
     );
     await dataSource.execute(
-      `INSERT INTO empresa_sensor (empresaId, tipoSensorId, orden, valor, usuarioCreacion)
+      `INSERT INTO sensor_empresa (empresaId, tipoSensorId, orden, valor, usuarioCreacion)
        SELECT ${dto.empresaId}, ts.id, ts.orden, COALESCE(ts.valorDefecto, '0'), ${dto.usuarioCreacion ?? 0}
        FROM tipo_sensor ts
        WHERE (ts.activoSn = 'S' OR ts.activoSn IS NULL)`,

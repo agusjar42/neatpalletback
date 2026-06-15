@@ -5,11 +5,11 @@ import {Empresa} from './empresa.model';
 @model({
   settings: {
     mysql: {
-      table: 'empresa_sensor'
+      table: 'sensor_empresa'
     }
   }
 })
-export class EnvioSensorEmpresa extends Entity {
+export class SensorEmpresa extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -95,14 +95,14 @@ export class EnvioSensorEmpresa extends Entity {
   })
   orden?: number;
 
-  constructor(data?: Partial<EnvioSensorEmpresa>) {
+  constructor(data?: Partial<SensorEmpresa>) {
     super(data);
   }
 }
 
-export interface EnvioSensorEmpresaRelations {
+export interface SensorEmpresaRelations {
   tipoSensor?: TipoSensor;
   empresa?: Empresa;
 }
 
-export type EnvioSensorEmpresaWithRelations = EnvioSensorEmpresa & EnvioSensorEmpresaRelations;
+export type SensorEmpresaWithRelations = SensorEmpresa & SensorEmpresaRelations;
