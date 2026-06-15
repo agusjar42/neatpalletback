@@ -98,6 +98,8 @@ export class EmpresaController {
               // Propiedades de Empresa (excluyendo id)
               codigo: {type: 'string'},
               nombre: {type: 'string'},
+              estado: {type: 'string'},
+              plan: {type: 'string'},
               descripcion: {type: 'string'},
               email: {type: 'string'},
               password: {type: 'string'},
@@ -281,6 +283,8 @@ export class EmpresaController {
               // Propiedades de Empresa (todas opcionales para update)
               codigo: {type: 'string'},
               nombre: {type: 'string'},
+              estado: {type: 'string'},
+              plan: {type: 'string'},
               descripcion: {type: 'string'},
               email: {type: 'string'},
               password: {type: 'string'},
@@ -377,6 +381,8 @@ export class EmpresaController {
               // Propiedades de Empresa (todas opcionales para update)
               codigo: {type: 'string'},
               nombre: {type: 'string'},
+              estado: {type: 'string'},
+              plan: {type: 'string'},
               descripcion: {type: 'string'},
               email: {type: 'string'},
               password: {type: 'string'},
@@ -423,6 +429,8 @@ export class EmpresaController {
               // Propiedades de Empresa
               codigo: {type: 'string'},
               nombre: {type: 'string'},
+              estado: {type: 'string'},
+              plan: {type: 'string'},
               descripcion: {type: 'string'},
               email: {type: 'string'},
               password: {type: 'string'},

@@ -34,6 +34,24 @@ export class Empresa extends Entity {
   @property({
     type: 'string',
     jsonSchema: {nullable: true},
+    length: 20,
+    generated: false,
+    mysql: {columnName: 'estado', dataType: 'varchar', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  estado?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 20,
+    generated: false,
+    mysql: {columnName: 'plan', dataType: 'varchar', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  plan?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
     length: 500,
     generated: false,
     mysql: {columnName: 'descripcion', dataType: 'varchar', dataLength: 500, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},

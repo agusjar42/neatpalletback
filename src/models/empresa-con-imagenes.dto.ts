@@ -31,7 +31,13 @@ export class EmpresaConImagenesDto extends Empresa {
    * Extrae solo los datos de la empresa (sin campos temporales)
    */
   toEmpresa(): Empresa {
-    const {imagenBase64, imagenNombre, imagenTipo, logoBase64, logoNombre, logoTipo, ...empresaData} = this;
+    const empresaData = {...this.toJSON()} as Record<string, unknown>;
+    delete empresaData.imagenBase64;
+    delete empresaData.imagenNombre;
+    delete empresaData.imagenTipo;
+    delete empresaData.logoBase64;
+    delete empresaData.logoNombre;
+    delete empresaData.logoTipo;
     return new Empresa(empresaData);
   }
 
