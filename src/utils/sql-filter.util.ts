@@ -2,6 +2,27 @@ import { Filter, Where } from '@loopback/repository';
 
 export class SqlFilterUtil {
   /**
+   * Devuelve la primera tabla existente de una lista de candidatos.
+   * Sirve para convivir con esquemas antiguos y nuevos durante migraciones.
+   */
+  static async resolverTablaExistente(dataSource: any, tableNames: string[]): Promise<string> {
+    for (const tableName of tableNames) {
+      const result = await dataSource.execute(
+        `SELECT COUNT(*) AS count
+         FROM information_schema.tables
+         WHERE table_schema = DATABASE() AND table_name = ?`,
+        [tableName],
+      );
+
+      if (result?.[0]?.count > 0) {
+        return tableName;
+      }
+    }
+
+    return tableNames[0];
+  }
+
+  /**
    * Construye los filtros SQL a partir de un objeto where de LoopBack
    * @param where - Objeto where de LoopBack
    * @returns String con los filtros SQL

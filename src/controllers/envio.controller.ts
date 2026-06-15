@@ -41,6 +41,54 @@ export class EnvioController {
     public envioSensorService: EnvioSensorService,
   ) {}
 
+  private normalizarFiltroFechas<T>(valor?: T): T | undefined {
+    if (valor == null) {
+      return valor;
+    }
+
+    const valorNormalizado = JSON.parse(
+      JSON.stringify(valor)
+        .replace(/fechaSalidaEspanol/g, 'fechaSalida')
+        .replace(/fechaLlegadaEspanol/g, 'fechaLlegada'),
+    );
+
+    const convertirFechaFiltro = (dato: any, campoActual?: string): any => {
+      if (dato == null) {
+        return dato;
+      }
+
+      if (typeof dato === 'string' && (campoActual === 'fechaSalida' || campoActual === 'fechaLlegada')) {
+        const matchFechaHora = dato.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}:\d{2})$/);
+        if (matchFechaHora) {
+          const [, dia, mes, anio, hora] = matchFechaHora;
+          return `${anio}-${mes}-${dia}T${hora}`;
+        }
+
+        const matchFecha = dato.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (matchFecha) {
+          const [, dia, mes, anio] = matchFecha;
+          return `${anio}-${mes}-${dia}`;
+        }
+      }
+
+      if (Array.isArray(dato)) {
+        return dato.map(item => convertirFechaFiltro(item, campoActual));
+      }
+
+      if (typeof dato === 'object') {
+        const resultado: any = {};
+        for (const [key, value] of Object.entries(dato)) {
+          resultado[key] = convertirFechaFiltro(value, key);
+        }
+        return resultado;
+      }
+
+      return dato;
+    };
+
+    return convertirFechaFiltro(valorNormalizado);
+  }
+
   @post('/envios')
   @response(200, {
     description: 'Envio model instance',
@@ -128,7 +176,8 @@ export class EnvioController {
     @param.where(Envio) where?: Where<Envio>,
   ): Promise<Count> {
     const dataSource = this.envioRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'vista_empresa_envio_cliente', where);
+    const whereNormalizado = this.normalizarFiltroFechas(where);
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'vista_empresa_envio_cliente', whereNormalizado);
   }
 
   @get('/resumen-envio/count')
@@ -166,9 +215,11 @@ export class EnvioController {
   async find(
     @param.filter(Envio) filter?: Filter<Envio>,
   ): Promise<Envio[]> {
+    const filterNormalizado = this.normalizarFiltroFechas(filter);
+
     const dataSource = this.envioRepository.dataSource;
     const camposSelect = "*,\n                          DATE_FORMAT(fechaSalida, '%d/%m/%Y %H:%i') AS fechaSalidaEspanol,\n                          DATE_FORMAT(fechaLlegada, '%d/%m/%Y %H:%i') AS fechaLlegadaEspanol"
-    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_empresa_envio_cliente', filter, camposSelect);
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_empresa_envio_cliente', filterNormalizado, camposSelect);
   }
 
   @patch('/envios')

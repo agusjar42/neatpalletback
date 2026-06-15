@@ -62,7 +62,11 @@ export class TipoTransporteController {
     @param.where(TipoTransporte) where?: Where<TipoTransporte>,
   ): Promise<Count> {
     const dataSource = this.tipoTransporteRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'empresa_tipo_transporte', where);
+    const tableName = await SqlFilterUtil.resolverTablaExistente(dataSource, [
+      'empresa_tipo_transporte',
+      'tipo_transporte',
+    ]);
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, tableName, where);
   }
 
   @get('/tipo-transportes')
@@ -81,8 +85,12 @@ export class TipoTransporteController {
     @param.filter(TipoTransporte) filter?: Filter<TipoTransporte>,
   ): Promise<TipoTransporte[]> {
     const dataSource = this.tipoTransporteRepository.dataSource;
+    const tableName = await SqlFilterUtil.resolverTablaExistente(dataSource, [
+      'empresa_tipo_transporte',
+      'tipo_transporte',
+    ]);
     const camposSelect = "*"
-    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'empresa_tipo_transporte', filter, camposSelect);
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, tableName, filter, camposSelect);
     
   }
 
