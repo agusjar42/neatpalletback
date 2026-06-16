@@ -167,10 +167,20 @@ export class EmpresaController {
 	          );
 	        }
 
-	        const permisosDestino = await this.permisoRepository.count({rolId: rolAdmin.id as number}, {transaction: tx});
-	        if (permisosDestino.count === 0) {
-	          const permisosOrigen = await this.permisoRepository.find({where: {rolId: 1}}, {transaction: tx});
-	          const permisosClonados = permisosOrigen.map((p) => {
+	        const permisosOrigen = await this.permisoRepository.find({where: {rolId: 1}}, {transaction: tx});
+          const permisosDestino = await this.permisoRepository.find(
+            {where: {rolId: rolAdmin.id as number}},
+            {transaction: tx},
+          );
+          const permisosDestinoSet = new Set(
+            permisosDestino.map((permiso) => `${permiso.modulo}|${permiso.controlador}|${permiso.accion}`),
+          );
+	          const permisosClonados = permisosOrigen
+            .filter((permiso) => {
+              const clave = `${permiso.modulo}|${permiso.controlador}|${permiso.accion}`;
+              return !permisosDestinoSet.has(clave);
+            })
+            .map((p) => {
 	            const {id, rolId, ...rest} = p;
 	            return {
 	              ...rest,
@@ -178,9 +188,8 @@ export class EmpresaController {
 	              usuCreacion: (rest as any).usuCreacion ?? empresaCreada.usuCreacion,
 	            } as Omit<Permiso, 'id'>;
 	          });
-	          if (permisosClonados.length > 0) {
-	            await this.permisoRepository.createAll(permisosClonados, {transaction: tx});
-	          }
+	        if (permisosClonados.length > 0) {
+	          await this.permisoRepository.createAll(permisosClonados, {transaction: tx});
 	        }
 
 	        const usuarioCreado = await this.usuarioRepository.create(
