@@ -33,9 +33,36 @@ export class Cliente extends Entity {
     jsonSchema: {nullable: true},
     length: 50,
     generated: false,
+    mysql: {columnName: 'codigo', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  codigo?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 50,
+    generated: false,
     mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   nombre?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 500,
+    generated: false,
+    mysql: {columnName: 'direccion', dataType: 'varchar', dataLength: 500, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  direccion?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 100,
+    generated: false,
+    mysql: {columnName: 'horario', dataType: 'varchar', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  horario?: string;
 
   @property({
     type: 'string',
@@ -54,6 +81,15 @@ export class Cliente extends Entity {
     mysql: {columnName: 'mail', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   mail?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 1,
+    generated: false,
+    mysql: {columnName: 'activoSN', dataType: 'varchar', dataLength: 1, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  activoSN?: string;
 
   @property({
     type: 'date',

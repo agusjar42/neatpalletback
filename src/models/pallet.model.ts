@@ -37,6 +37,18 @@ export class Pallet extends Entity {
 
   @property({
     type: 'string',
+    length: 20,
+    mysql: {
+      columnName: 'adquisicion',
+      dataType: 'varchar',
+      dataLength: 20,
+      nullable: 'Y'
+    }
+  })
+  adquisicion?: string;
+
+  @property({
+    type: 'string',
     length: 50,
     mysql: {
       columnName: 'codigo',
@@ -93,6 +105,30 @@ export class Pallet extends Entity {
     }
   })
   modelo?: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mysql: {
+      columnName: 'estado',
+      dataType: 'varchar',
+      dataLength: 50,
+      nullable: 'Y'
+    }
+  })
+  estado?: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mysql: {
+      columnName: 'ultimaSenal',
+      dataType: 'varchar',
+      dataLength: 50,
+      nullable: 'Y'
+    }
+  })
+  ultimaSenal?: string;
 
   @property({
     type: 'number',

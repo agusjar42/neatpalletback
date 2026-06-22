@@ -22,9 +22,45 @@ export class Producto extends Entity {
     jsonSchema: {nullable: true},
     length: 50,
     generated: false,
+    mysql: {columnName: 'sku', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  sku?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 50,
+    generated: false,
     mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
   nombre?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 100,
+    generated: false,
+    mysql: {columnName: 'familia', dataType: 'varchar', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  familia?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 100,
+    generated: false,
+    mysql: {columnName: 'rangoTemp', dataType: 'varchar', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  rangoTemp?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 100,
+    generated: false,
+    mysql: {columnName: 'vidaUtil', dataType: 'varchar', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+  })
+  vidaUtil?: string;
 
   @property({
     type: 'date',

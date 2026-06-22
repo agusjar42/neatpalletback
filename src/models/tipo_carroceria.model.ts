@@ -42,6 +42,18 @@ export class TipoCarroceria extends Entity {
     type: 'string',
     length: 50,
     mysql: {
+      columnName: 'codigo',
+      dataType: 'varchar',
+      dataLength: 50,
+      nullable: 'Y'
+    }
+  })
+  codigo?: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mysql: {
       columnName: 'nombre',
       dataType: 'varchar',
       dataLength: 50,
@@ -49,6 +61,18 @@ export class TipoCarroceria extends Entity {
     }
   })
   nombre?: string;
+
+  @property({
+    type: 'string',
+    length: 100,
+    mysql: {
+      columnName: 'capacidad',
+      dataType: 'varchar',
+      dataLength: 100,
+      nullable: 'Y'
+    }
+  })
+  capacidad?: string;
 
   @property({
     type: 'number',
