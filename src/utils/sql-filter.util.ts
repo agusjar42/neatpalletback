@@ -2,19 +2,29 @@ import { Filter, Where } from '@loopback/repository';
 
 export class SqlFilterUtil {
   /**
+   * Comprueba si una tabla existe en la base de datos actual.
+   * @param dataSource - DataSource de LoopBack
+   * @param tableName - Nombre de la tabla
+   * @returns true si existe, false en caso contrario
+   */
+  static async existeTabla(dataSource: any, tableName: string): Promise<boolean> {
+    const result = await dataSource.execute(
+      `SELECT COUNT(*) AS count
+       FROM information_schema.tables
+       WHERE table_schema = DATABASE() AND table_name = ?`,
+      [tableName],
+    );
+
+    return Number(result?.[0]?.count ?? 0) > 0;
+  }
+
+  /**
    * Devuelve la primera tabla existente de una lista de candidatos.
    * Sirve para convivir con esquemas antiguos y nuevos durante migraciones.
    */
   static async resolverTablaExistente(dataSource: any, tableNames: string[]): Promise<string> {
     for (const tableName of tableNames) {
-      const result = await dataSource.execute(
-        `SELECT COUNT(*) AS count
-         FROM information_schema.tables
-         WHERE table_schema = DATABASE() AND table_name = ?`,
-        [tableName],
-      );
-
-      if (result?.[0]?.count > 0) {
+      if (await this.existeTabla(dataSource, tableName)) {
         return tableName;
       }
     }

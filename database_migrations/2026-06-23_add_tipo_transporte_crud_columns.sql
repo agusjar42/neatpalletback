@@ -11,8 +11,5 @@ ALTER TABLE `empresa_tipo_transporte`
 --
 --Compatibilidad con instalaciones anteriores a la renombrada de tablas
 --
-ALTER TABLE `tipo_transporte`
-  ADD COLUMN IF NOT EXISTS `codigo` varchar(50) NULL AFTER `empresaId`,
-  ADD COLUMN IF NOT EXISTS `vehiculo` varchar(100) NULL AFTER `codigo`,
-  ADD COLUMN IF NOT EXISTS `uso` varchar(100) NULL AFTER `vehiculo`,
-  ADD COLUMN IF NOT EXISTS `categoria` varchar(50) NULL AFTER `uso`;
+--No aplicar cambios sobre `tipo_transporte`.
+--La tabla valida en este proyecto es `empresa_tipo_transporte`.

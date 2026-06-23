@@ -62,11 +62,11 @@ export class TipoTransporteController {
     @param.where(TipoTransporte) where?: Where<TipoTransporte>,
   ): Promise<Count> {
     const dataSource = this.tipoTransporteRepository.dataSource;
-    const tableName = await SqlFilterUtil.resolverTablaExistente(dataSource, [
+    return await SqlFilterUtil.ejecutarQueryCount(
+      dataSource,
       'empresa_tipo_transporte',
-      'tipo_transporte',
-    ]);
-    return await SqlFilterUtil.ejecutarQueryCount(dataSource, tableName, where);
+      where,
+    );
   }
 
   @get('/tipo-transportes')
@@ -85,12 +85,27 @@ export class TipoTransporteController {
     @param.filter(TipoTransporte) filter?: Filter<TipoTransporte>,
   ): Promise<TipoTransporte[]> {
     const dataSource = this.tipoTransporteRepository.dataSource;
-    const tableName = await SqlFilterUtil.resolverTablaExistente(dataSource, [
-      'empresa_tipo_transporte',
-      'tipo_transporte',
-    ]);
-    const camposSelect = "*"
-    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, tableName, filter, camposSelect);
+    const whereClause = SqlFilterUtil.construirClausulaWhere(filter?.where);
+    const orderClause = SqlFilterUtil.construirClausulaOrder(filter?.order);
+    const paginationClause = SqlFilterUtil.construirClausulaPaginacion(
+      filter?.limit,
+      filter?.offset,
+    );
+
+    const query = `
+      SELECT
+        ett.*,
+        tv.nombre AS vehiculo,
+        tc.nombre AS categoria
+      FROM empresa_tipo_transporte ett
+      LEFT JOIN tipo_vehiculo tv ON tv.id = ett.tipoVehiculoId
+      LEFT JOIN tipo_categoria tc ON tc.id = ett.tipoCategoriaId
+      ${whereClause.replace(/WHERE 1=1/g, 'WHERE 1=1')}
+      ${orderClause}
+      ${paginationClause}
+    `;
+
+    return await dataSource.execute(query);
     
   }
 
