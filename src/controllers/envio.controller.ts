@@ -218,22 +218,7 @@ export class EnvioController {
     const filterNormalizado = this.normalizarFiltroFechas(filter);
 
     const dataSource = this.envioRepository.dataSource;
-    //
-    //Calculamos el pallet visible del envio desde la relacion existente
-    //para no depender de una columna fisica nueva en la tabla envio
-    //
-    const palletSelect = "(SELECT p.codigo FROM envio_pallet_usado ep INNER JOIN pallet p ON p.id = ep.palletId WHERE ep.envioId = vista_empresa_envio_cliente.id ORDER BY ep.id ASC LIMIT 1) AS palletCodigo";
-    //
-    //Generamos un estado simple para el listado del CRUD
-    //sin cambiar el contrato de alta o edicion del envio
-    //
-    const estadoSelect = `CASE
-                            WHEN fechaSalida IS NOT NULL AND fechaSalida <> '' THEN 'En transito'
-                            ELSE 'Pendiente'
-                          END AS estadoEnvio`;
     const camposSelect = `*,
-                          ${palletSelect},
-                          ${estadoSelect},
                           DATE_FORMAT(fechaSalida, '%d/%m/%Y %H:%i') AS fechaSalidaEspanol,
                           DATE_FORMAT(fechaLlegada, '%d/%m/%Y %H:%i') AS fechaLlegadaEspanol`;
     return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_empresa_envio_cliente', filterNormalizado, camposSelect);

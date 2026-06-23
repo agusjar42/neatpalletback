@@ -114,6 +114,18 @@ export class Envio extends Entity {
   fechaSalida?: string;
 
   @property({
+    type: 'string',
+    length: 50,
+    mysql: {
+      columnName: 'estadoEnvio',
+      dataType: 'varchar',
+      dataLength: 50,
+      nullable: 'Y'
+    }
+  })
+  estadoEnvio?: string;
+
+  @property({
     type: 'number',
     mysql: {
       columnName: 'paradasPrevistas',
