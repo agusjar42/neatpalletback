@@ -42,6 +42,54 @@ export class TipoTransporte extends Entity {
     type: 'string',
     length: 50,
     mysql: {
+      columnName: 'codigo',
+      dataType: 'varchar',
+      dataLength: 50,
+      nullable: 'Y'
+    }
+  })
+  codigo?: string;
+
+  @property({
+    type: 'string',
+    length: 100,
+    mysql: {
+      columnName: 'vehiculo',
+      dataType: 'varchar',
+      dataLength: 100,
+      nullable: 'Y'
+    }
+  })
+  vehiculo?: string;
+
+  @property({
+    type: 'string',
+    length: 100,
+    mysql: {
+      columnName: 'uso',
+      dataType: 'varchar',
+      dataLength: 100,
+      nullable: 'Y'
+    }
+  })
+  uso?: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mysql: {
+      columnName: 'categoria',
+      dataType: 'varchar',
+      dataLength: 50,
+      nullable: 'Y'
+    }
+  })
+  categoria?: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mysql: {
       columnName: 'nombre',
       dataType: 'varchar',
       dataLength: 50,

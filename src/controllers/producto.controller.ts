@@ -63,7 +63,8 @@ export class ProductoController {
     @param.where(Producto) where?: Where<Producto>,
   ): Promise<Count> {
     const dataSource = this.productoRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'producto', where);
+    const tableName = 'empresa_producto';
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, tableName, where);
   }
 
   @get('/productos')
@@ -82,7 +83,8 @@ export class ProductoController {
     @param.filter(Producto) filter?: Filter<Producto>,
   ): Promise<Producto[]> {
     const dataSource = this.productoRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'producto', filter, '*');
+    const tableName = 'empresa_producto';
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, tableName, filter, '*');
   }
 
   @patch('/productos')

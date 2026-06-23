@@ -27,7 +27,6 @@ export * from './parametro.controller';
 export * from './tipo_carroceria.controller';
 export * from './tipo_sensor.controller';
 export * from './tipo_transporte.controller';
-export * from './envio-fake-data.controller';
 export * from './envio-contenido-pallet.controller';
 export * from './envio-sensor-empresa.controller';
 export * from './producto.controller';

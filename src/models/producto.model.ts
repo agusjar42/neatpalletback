@@ -1,7 +1,7 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {Empresa} from './empresa.model';
 
-@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'producto'}}})
+@model({settings: {idInjection: false, mysql: {schema: 'neatpallet', table: 'empresa_producto'}}})
 export class Producto extends Entity {
   @property({
     type: 'number',
@@ -101,11 +101,11 @@ export class Producto extends Entity {
   @property({
     type: 'string',
     jsonSchema: {nullable: true},
-    length: 1,
+    length: 20,
     generated: false,
-    mysql: {columnName: 'activoSN', dataType: 'varchar', dataLength: 1, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'estado', dataType: 'varchar', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
-  activoSN?: string;
+  estado?: string;
 
   @property({
     type: 'number',
