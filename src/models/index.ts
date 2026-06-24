@@ -19,6 +19,7 @@ export * from './envio_configuracion.model';
 export {EnvioMovimiento, EnvioMovimientoRelations, EnvioMovimientoWithRelations} from './envio_movimiento.model';
 export * from './envio_pallet.model';
 export * from './envio_parada.model';
+export * from './envio_operario.model';
 export * from './envio_sensor.model';
 export * from './envio_sensor_empresa.model';
 export * from './envio.model';

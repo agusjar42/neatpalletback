@@ -19,6 +19,7 @@ export * from './envio_configuracion.repository';
 export {EnvioMovimientoRepository} from './envio_movimiento.repository';
 export * from './envio_pallet.repository';
 export * from './envio_parada.repository';
+export * from './envio_operario.repository';
 export * from './envio_sensor.repository';
 export * from './envio_sensor_empresa.repository';
 export * from './envio.repository';

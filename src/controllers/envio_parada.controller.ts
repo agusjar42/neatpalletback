@@ -80,7 +80,7 @@ export class EnvioParadaController {
     @param.filter(EnvioParada) filter?: Filter<EnvioParada>,
   ): Promise<EnvioParada[]> {
     const dataSource = this.envioParadaRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_envio_parada_envio', filter, '*, DATE_FORMAT(fecha, \'%d/%m/%Y %H:%i\') AS fechaEspanol');
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_envio_parada_envio', filter, '*');
   }
 
   @get('/envio-paradas/{id}')

@@ -19,6 +19,7 @@ export * from './envio_configuracion.controller';
 export {EnvioMovimientoController} from './envio_movimiento.controller';
 export * from './envio_pallet.controller';
 export * from './envio_parada.controller';
+export * from './envio_operario.controller';
 export * from './envio_sensor.controller';
 export * from './envio.controller';
 export * from './pallet_parametro.controller';

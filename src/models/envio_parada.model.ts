@@ -29,6 +29,18 @@ export class EnvioParada extends Entity {
 
   @property({
     type: 'string',
+    length: 30,
+    mysql: {
+      columnName: 'tipo',
+      dataType: 'varchar',
+      dataLength: 30,
+      nullable: 'Y'
+    }
+  })
+  tipo?: string;
+
+  @property({
+    type: 'string',
     length: 20,
     mysql: {
       columnName: 'fecha',
@@ -38,6 +50,54 @@ export class EnvioParada extends Entity {
     }
   })
   fecha?: string;
+
+  @property({
+    type: 'string',
+    length: 20,
+    mysql: {
+      columnName: 'eta',
+      dataType: 'varchar',
+      dataLength: 20,
+      nullable: 'Y'
+    }
+  })
+  eta?: string;
+
+  @property({
+    type: 'string',
+    length: 20,
+    mysql: {
+      columnName: 'horaReal',
+      dataType: 'varchar',
+      dataLength: 20,
+      nullable: 'Y'
+    }
+  })
+  horaReal?: string;
+
+  @property({
+    type: 'string',
+    length: 20,
+    mysql: {
+      columnName: 'detencion',
+      dataType: 'varchar',
+      dataLength: 20,
+      nullable: 'Y'
+    }
+  })
+  detencion?: string;
+
+  @property({
+    type: 'string',
+    length: 20,
+    mysql: {
+      columnName: 'estado',
+      dataType: 'varchar',
+      dataLength: 20,
+      nullable: 'Y'
+    }
+  })
+  estado?: string;
 
   @belongsTo(() => LugarParada, {name: 'lugarParada'}, {mysql: {columnName: 'lugarParadaId'}})
   lugarParadaId?: number;
