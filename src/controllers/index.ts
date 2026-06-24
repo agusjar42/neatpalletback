@@ -16,7 +16,7 @@ export * from './envio_contenido.controller';
 export * from './evento_configuracion.controller';
 export * from './envio_configuracion_empresa.controller';
 export * from './envio_configuracion.controller';
-export * from './envio_pallet_movimiento.controller';
+export {EnvioMovimientoController} from './envio_movimiento.controller';
 export * from './envio_pallet.controller';
 export * from './envio_parada.controller';
 export * from './envio_sensor.controller';

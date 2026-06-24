@@ -1,15 +1,15 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {TipoSensor} from './tipo_sensor.model';
-import {EnvioPallet} from './envio_pallet.model';
+import {Envio} from './envio.model';
 
 @model({
   settings: {
     mysql: {
-      table: 'envio_pallet_movimiento'
+      table: 'envio_movimiento'
     }
   }
 })
-export class EnvioPalletMovimiento extends Entity {
+export class EnvioMovimiento extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -26,7 +26,18 @@ export class EnvioPalletMovimiento extends Entity {
   @belongsTo(() => TipoSensor, {name: 'tipoSensor'}, {mysql: {columnName: 'tipoSensorId'}})
   tipoSensorId: number;
 
-  @belongsTo(() => EnvioPallet, {name: 'envioPallet'}, {mysql: {columnName: 'envioPalletId'}})
+  @belongsTo(() => Envio, {name: 'envio'}, {mysql: {columnName: 'envioId'}})
+  envioId: number;
+
+  @property({
+    type: 'number',
+    mysql: {
+      columnName: 'envioPalletId',
+      dataType: 'int',
+      dataLength: 11,
+      nullable: 'N'
+    }
+  })
   envioPalletId: number;
 
   @property({
@@ -159,14 +170,14 @@ export class EnvioPalletMovimiento extends Entity {
   })
   orden?: number;
 
-  constructor(data?: Partial<EnvioPalletMovimiento>) {
+  constructor(data?: Partial<EnvioMovimiento>) {
     super(data);
   }
 }
 
-export interface EnvioPalletMovimientoRelations {
+export interface EnvioMovimientoRelations {
   tipoSensor?: TipoSensor;
-  envioPallet?: EnvioPallet;
+  envio?: Envio;
 }
 
-export type EnvioPalletMovimientoWithRelations = EnvioPalletMovimiento & EnvioPalletMovimientoRelations;
+export type EnvioMovimientoWithRelations = EnvioMovimiento & EnvioMovimientoRelations;

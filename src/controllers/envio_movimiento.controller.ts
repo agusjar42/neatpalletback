@@ -17,8 +17,8 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {EnvioPalletMovimiento} from '../models';
-import {EnvioPalletMovimientoRepository} from '../repositories';
+import {EnvioMovimiento} from '../models';
+import {EnvioMovimientoRepository} from '../repositories';
 import { ImageService } from '../services/image.service';
 import { ImageProcessingService } from '../services/procesarImagenesBase64.service';
 import { service } from '@loopback/core';
@@ -29,10 +29,10 @@ import { authenticate } from '@loopback/authentication';
 @authenticate('jwt')
 @authorize({allowedRoles: ['API']})
 
-export class EnvioPalletMovimientoController {
+export class EnvioMovimientoController {
   constructor(
-    @repository(EnvioPalletMovimientoRepository)
-    public envioPalletMovimientoRepository : EnvioPalletMovimientoRepository,
+    @repository(EnvioMovimientoRepository)
+    public envioMovimientoRepository : EnvioMovimientoRepository,
     @service(ImageService) private imageService: ImageService,
     @service(ImageProcessingService) private imageProcessingService: ImageProcessingService,
   ) {}
@@ -52,58 +52,63 @@ export class EnvioPalletMovimientoController {
 
   @post('/envio-movimientos')
   @response(200, {
-    description: 'EnvioPalletMovimiento model instance',
-    content: {'application/json': {schema: getModelSchemaRef(EnvioPalletMovimiento)}},
+    description: 'EnvioMovimiento model instance',
+    content: {'application/json': {schema: getModelSchemaRef(EnvioMovimiento)}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(EnvioPalletMovimiento, {
-            title: 'NewEnvioPalletMovimiento',
+          schema: getModelSchemaRef(EnvioMovimiento, {
+            title: 'NewEnvioMovimiento',
             exclude: ['id'],
           }),
         },
       },
     })
-    envioPalletMovimiento: Omit<EnvioPalletMovimiento, 'id'>,
-  ): Promise<EnvioPalletMovimiento> {
+    envioMovimiento: Omit<EnvioMovimiento, 'id'>,
+  ): Promise<EnvioMovimiento> {
     //
     // Procesa las imágenes y crea el registro
     //
-    const dataProcesada = await this.imageProcessingService.procesarImagenesBase64(envioPalletMovimiento, this.imageConfigs);
-    return this.envioPalletMovimientoRepository.create(dataProcesada);
+    const dataProcesada = await this.imageProcessingService.procesarImagenesBase64(envioMovimiento, this.imageConfigs);
+    return this.envioMovimientoRepository.create(dataProcesada);
   }
 
   @get('/envio-movimientos/count')
   @response(200, {
-    description: 'EnvioPalletMovimiento model count',
+    description: 'EnvioMovimiento model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async count(
-    @param.where(EnvioPalletMovimiento) where?: Where<EnvioPalletMovimiento>,
+    @param.where(EnvioMovimiento) where?: Where<EnvioMovimiento>,
   ): Promise<Count> {
-    const dataSource = this.envioPalletMovimientoRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'vista_envio_pallet_movimiento_envio_tipo_sensor', where);
+    const dataSource = this.envioMovimientoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'envio_movimiento', where);
   }
 
   @get('/envio-movimientos')
   @response(200, {
-    description: 'Array of EnvioPalletMovimiento model instances',
+    description: 'Array of EnvioMovimiento model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(EnvioPalletMovimiento, {includeRelations: true}),
+          items: getModelSchemaRef(EnvioMovimiento, {includeRelations: true}),
         },
       },
     },
   })
   async find(
-    @param.filter(EnvioPalletMovimiento) filter?: Filter<EnvioPalletMovimiento>,
-  ): Promise<EnvioPalletMovimiento[]> {
-    const dataSource = this.envioPalletMovimientoRepository.dataSource;
-    const registros = await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_envio_pallet_movimiento_envio_tipo_sensor', filter, '*, DATE_FORMAT(fecha, \'%d/%m/%Y %H:%i\') AS fechaEspanol');
+    @param.filter(EnvioMovimiento) filter?: Filter<EnvioMovimiento>,
+  ): Promise<EnvioMovimiento[]> {
+    const dataSource = this.envioMovimientoRepository.dataSource;
+    const registros = await SqlFilterUtil.ejecutarQuerySelect(
+      dataSource,
+      'envio_movimiento m LEFT JOIN envio e ON m.envioId = e.id LEFT JOIN tipo_sensor ts ON m.tipoSensorId = ts.id',
+      filter,
+      'm.*, e.origenRuta AS origenRuta, ts.nombre AS nombreSensor, ts.nombre AS nombreTipoSensor, DATE_FORMAT(m.fecha, \'%d/%m/%Y %H:%i\') AS fechaEspanol',
+    );
     //
     // Procesar URLs de imágenes en los resultados
     //
@@ -118,23 +123,23 @@ export class EnvioPalletMovimientoController {
 
   @get('/envio-movimientos/{id}')
   @response(200, {
-    description: 'EnvioPalletMovimiento model instance',
+    description: 'EnvioMovimiento model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(EnvioPalletMovimiento, {includeRelations: true}),
+        schema: getModelSchemaRef(EnvioMovimiento, {includeRelations: true}),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(EnvioPalletMovimiento, {exclude: 'where'}) filter?: FilterExcludingWhere<EnvioPalletMovimiento>
-  ): Promise<EnvioPalletMovimiento> {
-    const registro = await this.envioPalletMovimientoRepository.findById(id, filter);
+    @param.filter(EnvioMovimiento, {exclude: 'where'}) filter?: FilterExcludingWhere<EnvioMovimiento>
+  ): Promise<EnvioMovimiento> {
+    const registro = await this.envioMovimientoRepository.findById(id, filter);
     //
     // Procesar URLs de imágenes para el registro individual
     //
     const registroProcesado = Object.assign(
-      new EnvioPalletMovimiento(),
+      new EnvioMovimiento(),
       registro,
       {
         imagen: this.imageService.procesarUrlImagen(registro.imagen)
@@ -146,31 +151,31 @@ export class EnvioPalletMovimientoController {
 
   @patch('/envio-movimientos/{id}')
   @response(204, {
-    description: 'EnvioPalletMovimiento PATCH success',
+    description: 'EnvioMovimiento PATCH success',
   })
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(EnvioPalletMovimiento, {partial: true}),
+          schema: getModelSchemaRef(EnvioMovimiento, {partial: true}),
         },
       },
     })
-    envioPalletMovimiento: EnvioPalletMovimiento,
+    envioMovimiento: EnvioMovimiento,
   ): Promise<void> {
     //
     // Procesa las imágenes y crea el registro
     //
-    const dataProcesada = await this.imageProcessingService.procesarImagenesBase64(envioPalletMovimiento, this.imageConfigs);
-    await this.envioPalletMovimientoRepository.updateById(id, dataProcesada);
+    const dataProcesada = await this.imageProcessingService.procesarImagenesBase64(envioMovimiento, this.imageConfigs);
+    await this.envioMovimientoRepository.updateById(id, dataProcesada);
   }
 
   @del('/envio-movimientos/{id}')
   @response(204, {
-    description: 'EnvioPalletMovimiento DELETE success',
+    description: 'EnvioMovimiento DELETE success',
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.envioPalletMovimientoRepository.deleteById(id);
+    await this.envioMovimientoRepository.deleteById(id);
   }
 }

@@ -1,9 +1,9 @@
 import {inject, Getter} from '@loopback/core';
 import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
 import {NeatpalletmysqlDataSource} from '../datasources';
-import {TipoSensor, TipoSensorRelations, EnvioSensor, EnvioPalletMovimiento} from '../models';
+import {TipoSensor, TipoSensorRelations, EnvioSensor, EnvioMovimiento} from '../models';
 import {EnvioSensorRepository} from './envio_sensor.repository';
-import {EnvioPalletMovimientoRepository} from './envio_pallet_movimiento.repository';
+import {EnvioMovimientoRepository} from './envio_movimiento.repository';
 
 export class TipoSensorRepository extends DefaultCrudRepository<
   TipoSensor,
@@ -12,16 +12,16 @@ export class TipoSensorRepository extends DefaultCrudRepository<
 > {
 
   public readonly envioSensores: HasManyRepositoryFactory<EnvioSensor, typeof TipoSensor.prototype.id>;
-  public readonly envioPalletMovimientos: HasManyRepositoryFactory<EnvioPalletMovimiento, typeof TipoSensor.prototype.id>;
+  public readonly envioMovimientos: HasManyRepositoryFactory<EnvioMovimiento, typeof TipoSensor.prototype.id>;
 
   constructor(
     @inject('datasources.neatpalletmysql') dataSource: NeatpalletmysqlDataSource,
     @repository.getter('EnvioSensorRepository') protected envioSensorRepositoryGetter: Getter<EnvioSensorRepository>,
-    @repository.getter('EnvioPalletMovimientoRepository') protected envioPalletMovimientoRepositoryGetter: Getter<EnvioPalletMovimientoRepository>,
+    @repository.getter('EnvioMovimientoRepository') protected envioMovimientoRepositoryGetter: Getter<EnvioMovimientoRepository>,
   ) {
     super(TipoSensor, dataSource);
-    this.envioPalletMovimientos = this.createHasManyRepositoryFactoryFor('envioPalletMovimientos', envioPalletMovimientoRepositoryGetter,);
-    this.registerInclusionResolver('envioPalletMovimientos', this.envioPalletMovimientos.inclusionResolver);
+    this.envioMovimientos = this.createHasManyRepositoryFactoryFor('envioMovimientos', envioMovimientoRepositoryGetter,);
+    this.registerInclusionResolver('envioMovimientos', this.envioMovimientos.inclusionResolver);
     this.envioSensores = this.createHasManyRepositoryFactoryFor('envioSensores', envioSensorRepositoryGetter,);
     this.registerInclusionResolver('envioSensores', this.envioSensores.inclusionResolver);
   }

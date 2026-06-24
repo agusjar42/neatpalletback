@@ -16,7 +16,7 @@ export * from './envio_contenido.model';
 export * from './evento_configuracion.model';
 export * from './envio_configuracion_empresa.model';
 export * from './envio_configuracion.model';
-export * from './envio_pallet_movimiento.model';
+export {EnvioMovimiento, EnvioMovimientoRelations, EnvioMovimientoWithRelations} from './envio_movimiento.model';
 export * from './envio_pallet.model';
 export * from './envio_parada.model';
 export * from './envio_sensor.model';

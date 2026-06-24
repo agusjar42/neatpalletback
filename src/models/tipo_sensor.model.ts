@@ -1,6 +1,6 @@
 import {Entity, model, property, hasMany} from '@loopback/repository';
 import {EnvioSensor} from './envio_sensor.model';
-import {EnvioPalletMovimiento} from './envio_pallet_movimiento.model';
+import {EnvioMovimiento} from './envio_movimiento.model';
 
 @model({
   settings: {
@@ -116,8 +116,8 @@ export class TipoSensor extends Entity {
   @hasMany(() => EnvioSensor, {keyTo: 'tipoSensorId'})
   envioSensores: EnvioSensor[];
 
-  @hasMany(() => EnvioPalletMovimiento, {keyTo: 'tipoSensorId'})
-  envioPalletMovimientos: EnvioPalletMovimiento[];
+  @hasMany(() => EnvioMovimiento, {keyTo: 'tipoSensorId'})
+  envioMovimientos: EnvioMovimiento[];
 
   constructor(data?: Partial<TipoSensor>) {
     super(data);
@@ -126,7 +126,7 @@ export class TipoSensor extends Entity {
 
 export interface TipoSensorRelations {
   envioSensores?: EnvioSensor[];
-  envioPalletMovimientos?: EnvioPalletMovimiento[];
+  envioMovimientos?: EnvioMovimiento[];
 }
 
 export type TipoSensorWithRelations = TipoSensor & TipoSensorRelations;

@@ -61,7 +61,10 @@ export class EnvioPalletController {
     @param.where(EnvioPallet) where?: Where<EnvioPallet>,
   ): Promise<Count> {
     const dataSource = this.envioPalletRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'vista_envio_pallet_contenido', where);
+    //
+    //Contamos sobre la tabla real envio_pallet para no depender de vistas legacy
+    //
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'envio_pallet', where);
   }
 
   @get('/envio-pallets')
@@ -80,7 +83,16 @@ export class EnvioPalletController {
     @param.filter(EnvioPallet) filter?: Filter<EnvioPallet>,
   ): Promise<EnvioPallet[]> {
     const dataSource = this.envioPalletRepository.dataSource;
-    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_envio_pallet_contenido', filter, '*');
+    //
+    //Leemos desde la tabla real envio_pallet y enriquecemos con envio y pallet
+    //para evitar dependencias con vistas antiguas como envio_pallet_usado
+    //
+    return await SqlFilterUtil.ejecutarQuerySelect(
+      dataSource,
+      'envio_pallet ep LEFT JOIN envio e ON ep.envioId = e.id LEFT JOIN pallet p ON ep.palletId = p.id',
+      filter,
+      'ep.id, ep.envioId, e.origenRuta AS origenRuta, ep.palletId, p.codigo AS codigoPallet, p.alias AS aliasPallet, ep.fechaCreacion, ep.fechaModificacion, ep.usuarioCreacion, ep.usuarioModificacion',
+    );
   }
 
   @get('/envio-pallets/{id}')
