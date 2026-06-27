@@ -49,27 +49,31 @@ export class Pallet extends Entity {
 
   @property({
     type: 'string',
+    required: true,
     length: 50,
+    jsonSchema: {nullable: false},
     mysql: {
       columnName: 'codigo',
       dataType: 'varchar',
       dataLength: 50,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  codigo?: string;
+  codigo: string;
 
   @property({
     type: 'string',
+    required: true,
     length: 50,
+    jsonSchema: {nullable: false},
     mysql: {
       columnName: 'alias',
       dataType: 'varchar',
       dataLength: 50,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  alias?: string;
+  alias: string;
 
   @property({
     type: 'number',
@@ -175,14 +179,16 @@ export class Pallet extends Entity {
 
   @property({
     type: 'number',
+    required: true,
+    jsonSchema: {nullable: false},
     mysql: {
       columnName: 'orden',
       dataType: 'int',
       dataLength: 4,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  orden?: number;
+  orden: number;
 
   @hasMany(() => EnvioPallet, {keyTo: 'palletId'})
   envioPallets: EnvioPallet[];

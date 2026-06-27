@@ -26,12 +26,13 @@ export class Rol extends Entity {
 
   @property({
     type: 'string',
-    jsonSchema: {nullable: true},
+    required: true,
+    jsonSchema: {nullable: false},
     length: 50,
     generated: false,
-    mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'N', generated: false},
   })
-  nombre?: string;
+  nombre: string;
 
   @property({
     type: 'string',
@@ -53,12 +54,13 @@ export class Rol extends Entity {
 
   @property({
     type: 'string',
-    jsonSchema: {nullable: true},
+    required: true,
+    jsonSchema: {nullable: false},
     length: 150,
     generated: false,
-    mysql: {columnName: 'dashboardUrl', dataType: 'varchar', dataLength: 150, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'dashboardUrl', dataType: 'varchar', dataLength: 150, dataPrecision: null, dataScale: null, nullable: 'N', generated: false},
   })
-  dashboardUrl?: string;
+  dashboardUrl: string;
 
   @property({
     type: 'date',
@@ -117,13 +119,14 @@ export class Rol extends Entity {
 
   @property({
     type: 'number',
-    jsonSchema: {nullable: true},
+    required: true,
+    jsonSchema: {nullable: false},
     precision: 4,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'orden', dataType: 'int', dataLength: 4, dataPrecision: 4, dataScale: 0, nullable: 'Y', generated: false},
+    mysql: {columnName: 'orden', dataType: 'int', dataLength: 4, dataPrecision: 4, dataScale: 0, nullable: 'N', generated: false},
   })
-  orden?: number;
+  orden: number;
 
   // Define well-known properties here
 
