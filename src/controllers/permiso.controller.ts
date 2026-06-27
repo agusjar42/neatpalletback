@@ -15,6 +15,13 @@ export class PermisoController {
     public permisoRepository : PermisoRepository,
   ) {}
 
+  //
+  //Normalizamos una combinacion controlador-accion para poder compararla sin duplicados
+  //
+  private crearClavePermiso(controlador?: string, accion?: string): string {
+    return `${controlador ?? ''}|${accion ?? ''}`;
+  }
+
   @post('/permisos')
   @response(200, {
     description: 'Permiso model instance',
@@ -34,6 +41,162 @@ export class PermisoController {
     permiso: Omit<Permiso, 'id'>,
   ): Promise<Permiso> {
     return this.permisoRepository.create(permiso);
+  }
+
+  @post('/permisos/actualizar-matriz')
+  @response(200, {
+    description: 'Actualiza permisos en bloque para un rol',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            creados: {type: 'number'},
+            eliminados: {type: 'number'},
+            omitidos: {type: 'number'},
+          },
+        },
+      },
+    },
+  })
+  async actualizarMatriz(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            required: ['rolId', 'permisos', 'marcar', 'usuId'],
+            properties: {
+              rolId: {type: 'number'},
+              rolNombre: {type: 'string'},
+              marcar: {type: 'boolean'},
+              usuId: {type: 'number'},
+              permisos: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['controlador', 'accion'],
+                  properties: {
+                    controlador: {type: 'string'},
+                    accion: {type: 'string'},
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+    cuerpo: {
+      rolId: number;
+      rolNombre?: string;
+      marcar: boolean;
+      usuId: number;
+      permisos: Array<{controlador: string; accion: string;}>;
+    },
+  ): Promise<{creados: number; eliminados: number; omitidos: number;}> {
+    //
+    //Validamos los datos minimos para evitar operaciones peligrosas
+    //
+    if (!cuerpo?.rolId || !Array.isArray(cuerpo?.permisos) || cuerpo.permisos.length === 0) {
+      throw new HttpErrors.UnprocessableEntity('No se recibieron permisos validos para actualizar');
+    }
+
+    //
+    //Protegemos el rol de sistemas igual que ya hace el frontend en el borrado individual
+    //
+    if (!cuerpo.marcar && cuerpo.rolNombre === 'Sistemas') {
+      throw new HttpErrors.UnprocessableEntity('No se puede eliminar permisos del rol de Sistemas');
+    }
+
+    //
+    //Eliminamos permisos repetidos y descartamos combinaciones incompletas
+    //
+    const permisosNormalizados = cuerpo.permisos.reduce((acumulado, permiso) => {
+      if (!permiso?.controlador || !permiso?.accion) {
+        return acumulado;
+      }
+
+      const clave = this.crearClavePermiso(permiso.controlador, permiso.accion);
+      if (!acumulado.mapa.has(clave)) {
+        acumulado.mapa.add(clave);
+        acumulado.lista.push({
+          controlador: permiso.controlador,
+          accion: permiso.accion,
+        });
+      }
+
+      return acumulado;
+    }, {
+      mapa: new Set<string>(),
+      lista: [] as Array<{controlador: string; accion: string;}>,
+    }).lista;
+
+    //
+    //Leemos solo los permisos existentes del rol para las combinaciones afectadas
+    //
+    const whereExistentes: Where<Permiso> = {
+      rolId: cuerpo.rolId,
+      modulo: 'Neatpallet',
+      or: permisosNormalizados.map((permiso) => ({
+        controlador: permiso.controlador,
+        accion: permiso.accion,
+      })),
+    };
+
+    const permisosExistentes = await this.permisoRepository.find({where: whereExistentes});
+    const permisosExistentesMap = new Map(
+      permisosExistentes.map((permiso) => [
+        this.crearClavePermiso(permiso.controlador, permiso.accion),
+        permiso,
+      ]),
+    );
+
+    //
+    //Si hay que marcar, insertamos solo lo que falte
+    //
+    if (cuerpo.marcar) {
+      const permisosCrear = permisosNormalizados
+        .filter((permiso) => !permisosExistentesMap.has(this.crearClavePermiso(permiso.controlador, permiso.accion)))
+        .map((permiso) => ({
+          rolId: cuerpo.rolId,
+          modulo: 'Neatpallet',
+          controlador: permiso.controlador,
+          accion: permiso.accion,
+          usuCreacion: cuerpo.usuId,
+        }));
+
+      if (permisosCrear.length > 0) {
+        await this.permisoRepository.createAll(permisosCrear);
+      }
+
+      return {
+        creados: permisosCrear.length,
+        eliminados: 0,
+        omitidos: permisosNormalizados.length - permisosCrear.length,
+      };
+    }
+
+    //
+    //Si hay que desmarcar, borramos solo los ids existentes en una unica operacion
+    //
+    const idsEliminar = permisosExistentes
+      .map((permiso) => permiso.id)
+      .filter((id): id is number => typeof id === 'number');
+
+    if (idsEliminar.length > 0) {
+      await this.permisoRepository.deleteAll({
+        id: {
+          inq: idsEliminar,
+        },
+      });
+    }
+
+    return {
+      creados: 0,
+      eliminados: idsEliminar.length,
+      omitidos: permisosNormalizados.length - idsEliminar.length,
+    };
   }
 
   @get('/permisos/count')
