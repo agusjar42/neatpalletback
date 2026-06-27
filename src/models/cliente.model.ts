@@ -39,12 +39,12 @@ export class Cliente extends Entity {
 
   @property({
     type: 'string',
-    jsonSchema: {nullable: true},
+    jsonSchema: {nullable: false},
     length: 50,
     generated: false,
-    mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'N', generated: false},
   })
-  nombre?: string;
+  nombre: string;
 
   @property({
     type: 'string',
@@ -129,13 +129,13 @@ export class Cliente extends Entity {
 
   @property({
     type: 'number',
-    jsonSchema: {nullable: true},
+    jsonSchema: {nullable: false},
     precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'orden', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
+    mysql: {columnName: 'orden', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'N', generated: false},
   })
-  orden?: number;
+  orden: number;
 
   constructor(data?: Partial<Cliente>) {
     super(data);

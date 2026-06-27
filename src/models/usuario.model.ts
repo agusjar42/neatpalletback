@@ -51,12 +51,12 @@ export class Usuario extends Entity {
 
   @property({
     type: 'string',
-    //jsonSchema: {nullable: true},
+    required: true,
     length: 50,
     generated: false,
-    mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'N', generated: false},
   })
-  nombre?: string;
+  nombre: string;
 
   @property({
     type: 'string',

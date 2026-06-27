@@ -35,12 +35,12 @@ export class LugarParada extends Entity {
 
   @property({
     type: 'string',
-    jsonSchema: {nullable: true},
+    jsonSchema: {nullable: false},
     length: 250,
     generated: false,
-    mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'nombre', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'N', generated: false},
   })
-  nombre?: string;
+  nombre: string;
 
   @property({
     type: 'string',
