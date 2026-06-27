@@ -33,7 +33,8 @@ SELECT
   `a`.`id` AS `id`,
   `a`.`tipoSensorId` AS `tipoSensorId`,
   `a`.`empresaId` AS `empresaId`,
-  `a`.`valor` AS `valor`,
+  `a`.`valorMinimo` AS `valorMinimo`,
+  `a`.`valorMaximo` AS `valorMaximo`,
   `b`.`nombre` AS `nombre`,
   `b`.`activoSn` AS `activoSn`,
   `a`.`orden` AS `orden`

@@ -33,13 +33,25 @@ export class EmpresaSensor extends Entity {
     type: 'string',
     length: 50,
     mysql: {
-      columnName: 'valor',
+      columnName: 'valorMinimo',
       dataType: 'varchar',
       dataLength: 50,
       nullable: 'Y'
     }
   })
-  valor?: string;
+  valorMinimo?: string;
+
+  @property({
+    type: 'string',
+    length: 50,
+    mysql: {
+      columnName: 'valorMaximo',
+      dataType: 'varchar',
+      dataLength: 50,
+      nullable: 'Y'
+    }
+  })
+  valorMaximo?: string;
 
   @property({
     type: 'number',
@@ -94,6 +106,18 @@ export class EmpresaSensor extends Entity {
     }
   })
   orden?: number;
+
+  @property({
+    type: 'string',
+    length: 1,
+    mysql: {
+      columnName: 'activoSn',
+      dataType: 'varchar',
+      dataLength: 1,
+      nullable: 'Y'
+    }
+  })
+  activoSn?: string;
 
   constructor(data?: Partial<EmpresaSensor>) {
     super(data);

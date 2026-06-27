@@ -28,10 +28,10 @@ export class EventoConfiguracion extends Entity {
       columnName: 'nombre',
       dataType: 'varchar',
       dataLength: 100,
-      nullable: 'Y',
+      nullable: 'N',
     },
   })
-  nombre?: string;
+  nombre: string;
 
   @property({
     type: 'string',
@@ -63,10 +63,10 @@ export class EventoConfiguracion extends Entity {
       columnName: 'orden',
       dataType: 'int',
       dataLength: 4,
-      nullable: 'Y',
+      nullable: 'N',
     },
   })
-  orden?: number;
+  orden: number;
 
   @property({
     type: 'string',

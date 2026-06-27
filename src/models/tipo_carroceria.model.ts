@@ -57,10 +57,10 @@ export class TipoCarroceria extends Entity {
       columnName: 'nombre',
       dataType: 'varchar',
       dataLength: 50,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  nombre?: string;
+  nombre: string;
 
   @property({
     type: 'string',
@@ -135,10 +135,10 @@ export class TipoCarroceria extends Entity {
       columnName: 'orden',
       dataType: 'int',
       dataLength: 4,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  orden?: number;
+  orden: number;
   
   constructor(data?: Partial<TipoCarroceria>) {
     super(data);

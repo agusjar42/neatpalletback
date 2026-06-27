@@ -26,6 +26,48 @@ import {authenticate} from '@loopback/authentication';
 @authenticate('jwt')
 @authorize({allowedRoles: ['API']})
 export class EmpresaSensorController {
+  //
+  //Usamos una subconsulta en vez de depender de la vista fisica
+  //para evitar roturas cuando cambian columnas en empresa_sensor
+  //
+  private readonly fuenteEmpresaSensorTipoSensor = `(
+    SELECT
+      es.id AS id,
+      es.tipoSensorId AS tipoSensorId,
+      es.empresaId AS empresaId,
+      es.orden AS orden,
+      es.valorMinimo AS valorMinimo,
+      es.valorMaximo AS valorMaximo,
+      es.activoSn AS activoSn,
+      es.usuarioCreacion AS usuarioCreacion,
+      es.fechaCreacion AS fechaCreacion,
+      es.usuarioModificacion AS usuarioModificacion,
+      es.fechaModificacion AS fechaModificacion,
+      ts.nombre AS nombre,
+      ts.unidad AS unidad
+    FROM empresa_sensor es
+    JOIN tipo_sensor ts ON es.tipoSensorId = ts.id
+  ) vista_empresa_sensor_tipo_sensor`;
+
+  //
+  //Normalizamos el estado activo para guardar siempre S o N en bbdd
+  //
+  private normalizarActivoSn(valor: unknown): string | undefined {
+    if (valor === undefined) {
+      return undefined;
+    }
+
+    if (valor === null || valor === '' || valor === false || valor === 'false' || valor === 'N') {
+      return 'N';
+    }
+
+    if (valor === true || valor === 'true' || valor === 'S') {
+      return 'S';
+    }
+
+    return String(valor).toUpperCase() === 'S' ? 'S' : 'N';
+  }
+
   constructor(
     @repository(EmpresaSensorRepository)
     public empresaSensorRepository: EmpresaSensorRepository,
@@ -49,6 +91,10 @@ export class EmpresaSensorController {
     })
     empresaSensor: Omit<EmpresaSensor, 'id'>,
   ): Promise<EmpresaSensor> {
+    //
+    //Aseguramos que activoSn se persista con el formato esperado
+    //
+    empresaSensor.activoSn = this.normalizarActivoSn(empresaSensor.activoSn) ?? 'S';
     return this.empresaSensorRepository.create(empresaSensor);
   }
 
@@ -63,7 +109,7 @@ export class EmpresaSensorController {
     const dataSource = this.empresaSensorRepository.dataSource;
     return await SqlFilterUtil.ejecutarQueryCount(
       dataSource,
-      'vista_empresa_sensor_tipo_sensor',
+      this.fuenteEmpresaSensorTipoSensor,
       where,
     );
   }
@@ -86,7 +132,7 @@ export class EmpresaSensorController {
     const dataSource = this.empresaSensorRepository.dataSource;
     return await SqlFilterUtil.ejecutarQuerySelect(
       dataSource,
-      'vista_empresa_sensor_tipo_sensor',
+      this.fuenteEmpresaSensorTipoSensor,
       filter,
       '*',
     );
@@ -108,6 +154,10 @@ export class EmpresaSensorController {
     empresaSensor: EmpresaSensor,
     @param.where(EmpresaSensor) where?: Where<EmpresaSensor>,
   ): Promise<Count> {
+    //
+    //Normalizamos activoSn tambien en updates masivos
+    //
+    empresaSensor.activoSn = this.normalizarActivoSn(empresaSensor.activoSn);
     return this.empresaSensorRepository.updateAll(empresaSensor, where);
   }
 
@@ -143,6 +193,10 @@ export class EmpresaSensorController {
     })
     empresaSensor: EmpresaSensor,
   ): Promise<void> {
+    //
+    //Normalizamos el flag activo antes de guardar la edicion
+    //
+    empresaSensor.activoSn = this.normalizarActivoSn(empresaSensor.activoSn);
     await this.empresaSensorRepository.updateById(id, empresaSensor);
   }
 
@@ -154,6 +208,10 @@ export class EmpresaSensorController {
     @param.path.number('id') id: number,
     @requestBody() empresaSensor: EmpresaSensor,
   ): Promise<void> {
+    //
+    //Mantenemos el mismo criterio de normalizacion en replace
+    //
+    empresaSensor.activoSn = this.normalizarActivoSn(empresaSensor.activoSn) ?? 'S';
     await this.empresaSensorRepository.replaceById(id, empresaSensor);
   }
 
@@ -191,8 +249,8 @@ export class EmpresaSensorController {
       `DELETE FROM empresa_sensor WHERE empresaId = ${dto.empresaId}`,
     );
     await dataSource.execute(
-      `INSERT INTO empresa_sensor (empresaId, tipoSensorId, orden, valor, usuarioCreacion)
-       SELECT ${dto.empresaId}, ts.id, ts.orden, COALESCE(ts.valorDefecto, '0'), ${dto.usuarioCreacion ?? 0}
+      `INSERT INTO empresa_sensor (empresaId, tipoSensorId, orden, valorMinimo, valorMaximo, activoSn, usuarioCreacion)
+       SELECT ${dto.empresaId}, ts.id, ts.orden, COALESCE(ts.valorDefecto, '0'), NULL, 'S', ${dto.usuarioCreacion ?? 0}
        FROM tipo_sensor ts
        WHERE (ts.activoSn = 'S' OR ts.activoSn IS NULL)`,
     );
