@@ -98,15 +98,16 @@ export class TipoTransporte extends Entity {
 
   @property({
     type: 'string',
+    required: true,
     length: 50,
     mysql: {
       columnName: 'nombre',
       dataType: 'varchar',
       dataLength: 50,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  nombre?: string;
+  nombre: string;
 
   @property({
     type: 'number',
@@ -165,14 +166,15 @@ export class TipoTransporte extends Entity {
 
   @property({
     type: 'number',
+    required: true,
     mysql: {
       columnName: 'orden',
       dataType: 'int',
       dataLength: 4,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  orden?: number;
+  orden: number;
   
   constructor(data?: Partial<TipoTransporte>) {
     super(data);
