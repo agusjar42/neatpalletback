@@ -184,8 +184,7 @@ export class TraduccionController {
     const idiomas = await dataSource.execute(idiomasQuery);
     
     // Construye la consulta dinámica de pivote
-    let selectColumns = 't.clave, MIN(t.id) as id';  // Agregamos el ID del primer registro
-    let pivotColumns = '';
+    let selectColumns = 't.clave, MIN(t.id) as id';
     
     // Ordena los idiomas alfabéticamente antes de procesarlos
     const idiomasOrdenados = [...idiomas].sort((a, b) => a.nombre.localeCompare(b.nombre));
@@ -197,14 +196,12 @@ export class TraduccionController {
       selectColumns += `, MAX(CASE WHEN t.idiomaId = ${idioma.id} THEN t.valor END) as "${columnName}"`;
       // Agrega el ID del registro de traducción
       selectColumns += `, MAX(CASE WHEN t.idiomaId = ${idioma.id} THEN t.id END) as "${columnName}Id"`;
-      pivotColumns += ` LEFT JOIN traduccion t${idioma.id} ON t.clave = t${idioma.id}.clave AND t${idioma.id}.idiomaId = ${idioma.id}`;
     }
 
     // Construye la consulta base con el orden correcto de las cláusulas
     let query = `
       SELECT ${selectColumns}
       FROM traduccion t
-      ${pivotColumns}
     `;
 
     // Aplica la cláusula WHERE si existen filtros
