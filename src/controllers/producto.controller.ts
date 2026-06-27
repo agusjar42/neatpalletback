@@ -33,6 +33,25 @@ export class ProductoController {
     public productoRepository : ProductoRepository,
   ) {}
 
+  //
+  //Normalizamos el campo activoSN para guardar siempre S o N
+  //
+  private normalizarActivoSN(valor?: unknown): string | undefined {
+    if (valor === undefined || valor === null || valor === '') {
+      return undefined;
+    }
+
+    if (valor === true || valor === 'S' || valor === 's' || valor === '1') {
+      return 'S';
+    }
+
+    if (valor === false || valor === 'N' || valor === 'n' || valor === '0') {
+      return 'N';
+    }
+
+    return String(valor).toUpperCase() === 'S' ? 'S' : 'N';
+  }
+
   @post('/productos')
   @response(200, {
     description: 'Producto model instance',
@@ -51,6 +70,10 @@ export class ProductoController {
     })
     producto: Omit<Producto, 'id'>,
   ): Promise<Producto> {
+    //
+    //Normalizamos el valor activo antes de crear el registro
+    //
+    producto.activoSN = this.normalizarActivoSN(producto.activoSN) ?? 'S';
     return this.productoRepository.create(producto);
   }
 
@@ -103,6 +126,10 @@ export class ProductoController {
     producto: Producto,
     @param.where(Producto) where?: Where<Producto>,
   ): Promise<Count> {
+    //
+    //Normalizamos el valor activo antes de actualizar registros
+    //
+    producto.activoSN = this.normalizarActivoSN(producto.activoSN);
     return this.productoRepository.updateAll(producto, where);
   }
 
@@ -137,6 +164,10 @@ export class ProductoController {
     })
     producto: Producto,
   ): Promise<void> {
+    //
+    //Normalizamos el valor activo antes de actualizar el registro
+    //
+    producto.activoSN = this.normalizarActivoSN(producto.activoSN);
     await this.productoRepository.updateById(id, producto);
   }
 
@@ -148,6 +179,10 @@ export class ProductoController {
     @param.path.number('id') id: number,
     @requestBody() producto: Producto,
   ): Promise<void> {
+    //
+    //Normalizamos el valor activo antes de reemplazar el registro
+    //
+    producto.activoSN = this.normalizarActivoSN(producto.activoSN) ?? 'S';
     await this.productoRepository.replaceById(id, producto);
   }
 

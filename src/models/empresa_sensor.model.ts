@@ -102,10 +102,10 @@ export class EmpresaSensor extends Entity {
       columnName: 'orden',
       dataType: 'int',
       dataLength: 4,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  orden?: number;
+  orden: number;
 
   @property({
     type: 'string',
