@@ -100,58 +100,62 @@ export class EnvioParada extends Entity {
   estado?: string;
 
   @belongsTo(() => LugarParada, {name: 'lugarParada'}, {mysql: {columnName: 'lugarParadaId'}})
-  lugarParadaId?: number;
+  lugarParadaId: number;
 
   @property({
     type: 'string',
+    required: true,
     length: 50,
     mysql: {
       columnName: 'lugarParadaGps',
       dataType: 'varchar',
       dataLength: 50,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  lugarParadaGps?: string;
+  lugarParadaGps: string;
 
   @property({
     type: 'string',
+    required: true,
     length: 50,
     mysql: {
       columnName: 'direccion',
       dataType: 'varchar',
       dataLength: 50,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  direccion?: string;
+  direccion: string;
 
   @belongsTo(() => Operario, {name: 'operario'}, {mysql: {columnName: 'operarioId'}})
   operarioId: number;
 
   @property({
     type: 'string',
+    required: true,
     length: 20,
     mysql: {
       columnName: 'telefonoOperario',
       dataType: 'varchar',
       dataLength: 20,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  telefonoOperario?: string;
+  telefonoOperario: string;
 
   @property({
     type: 'string',
+    required: true,
     length: 100,
     mysql: {
       columnName: 'emailOperario',
       dataType: 'varchar',
       dataLength: 100,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  emailOperario?: string;
+  emailOperario: string;
 
   @property({
     type: 'number',
@@ -198,14 +202,15 @@ export class EnvioParada extends Entity {
 
   @property({
     type: 'number',
+    required: true,
     mysql: {
       columnName: 'orden',
       dataType: 'int',
       dataLength: 4,
-      nullable: 'Y'
+      nullable: 'N'
     }
   })
-  orden?: number;
+  orden: number;
 
   constructor(data?: Partial<EnvioParada>) {
     super(data);
