@@ -21,7 +21,7 @@ export * from './envio_pallet.repository';
 export * from './envio_parada.repository';
 export * from './envio_operario.repository';
 export * from './envio_sensor.repository';
-export * from './envio_sensor_empresa.repository';
+export * from './empresa_sensor.repository';
 export * from './envio.repository';
 export * from './pallet_parametro.repository';
 export * from './pallet.repository';

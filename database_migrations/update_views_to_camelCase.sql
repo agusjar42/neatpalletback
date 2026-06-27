@@ -207,7 +207,7 @@ WHERE `a`.`envioId` = `b`.`id`
   AND `a`.`tipoSensorId` = `c`.`id`;
 
 -- View: vista_envio_tipo_sensor_empresa
-CREATE OR REPLACE VIEW `vista_envio_tipo_sensor_empresa` AS
+CREATE OR REPLACE VIEW `vista_empresa_sensor_tipo_sensor` AS
 SELECT
   `a`.`id` AS `id`,
   `a`.`tipoSensorId` AS `tipoSensorId`,
@@ -215,8 +215,11 @@ SELECT
   `a`.`valor` AS `valor`,
   `b`.`nombre` AS `nombre`,
   `b`.`activoSn` AS `activoSn`
-FROM (`envio_sensor_empresa` `a` JOIN `tipo_sensor` `b`)
+FROM (`empresa_sensor` `a` JOIN `tipo_sensor` `b`)
 WHERE `a`.`tipoSensorId` = `b`.`id`;
+
+CREATE OR REPLACE VIEW `vista_envio_tipo_sensor_empresa` AS
+SELECT * FROM `vista_empresa_sensor_tipo_sensor`;
 
 -- View: vista_log_usuario_empresa
 CREATE OR REPLACE VIEW `vista_log_usuario_empresa` AS

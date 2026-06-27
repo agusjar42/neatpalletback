@@ -31,7 +31,7 @@ export * from './tipo_sensor.controller';
 export * from './tipo_transporte.controller';
 export * from './tipo_vehiculo.controller';
 export * from './envio-contenido-pallet.controller';
-export * from './envio-sensor-empresa.controller';
+export * from './empresa-sensor.controller';
 export * from './producto.controller';
 export * from './cliente.controller';
 export * from './lugar-parada.controller';

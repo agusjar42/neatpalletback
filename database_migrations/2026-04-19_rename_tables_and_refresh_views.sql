@@ -322,7 +322,7 @@ FROM (((`envio_parada` `a`
   JOIN `cliente_operario` `c` ON (`a`.`operarioId` = `c`.`id`))
   JOIN `cliente_lugar_parada` `d` ON (`a`.`lugarParadaId` = `d`.`id`));
 
-CREATE OR REPLACE VIEW `vista_envio_tipo_sensor_empresa` AS
+CREATE OR REPLACE VIEW `vista_empresa_sensor_tipo_sensor` AS
 SELECT
   `a`.`id` AS `id`,
   `a`.`tipoSensorId` AS `tipoSensorId`,
@@ -333,3 +333,6 @@ SELECT
   `a`.`orden` AS `orden`
 FROM (`empresa_sensor` `a` JOIN `tipo_sensor` `b`)
 WHERE (`a`.`tipoSensorId` = `b`.`id`);
+
+CREATE OR REPLACE VIEW `vista_envio_tipo_sensor_empresa` AS
+SELECT * FROM `vista_empresa_sensor_tipo_sensor`;

@@ -18,13 +18,13 @@ WHERE NOT EXISTS (
   WHERE b.id = lp.id
 );
 
-CREATE TABLE IF NOT EXISTS `zzz_backup_20260615_empresa_sensor` LIKE `empresa_sensor`;
-INSERT INTO `zzz_backup_20260615_empresa_sensor`
+CREATE TABLE IF NOT EXISTS `zzz_backup_20260615_sensor_empresa` LIKE `sensor_empresa`;
+INSERT INTO `zzz_backup_20260615_sensor_empresa`
 SELECT *
-FROM `empresa_sensor` es
+FROM `sensor_empresa` es
 WHERE NOT EXISTS (
   SELECT 1
-  FROM `zzz_backup_20260615_empresa_sensor` b
+  FROM `zzz_backup_20260615_sensor_empresa` b
   WHERE b.id = es.id
 );
 
@@ -50,6 +50,6 @@ WHERE NOT EXISTS (
 
 DROP TABLE IF EXISTS `operario`;
 DROP TABLE IF EXISTS `lugar_parada`;
-DROP TABLE IF EXISTS `empresa_sensor`;
+DROP TABLE IF EXISTS `sensor_empresa`;
 DROP TABLE IF EXISTS `empresa_producto`;
 DROP TABLE IF EXISTS `envio_configuracion_empresa`;
